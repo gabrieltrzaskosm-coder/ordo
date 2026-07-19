@@ -122,7 +122,7 @@ export function EquipaManager({ staff }: { staff: StaffMember[] }) {
       </form>
       <p className="mt-2 text-xs text-neutral-400">
         A palavra-passe é visível para a definir e comunicar à pessoa. Peça que a
-        troque no primeiro acesso (fluxo de troca de senha entra numa fase futura).
+        troque no primeiro acesso, em <code>/conta</code>.
       </p>
     </main>
   );

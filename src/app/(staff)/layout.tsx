@@ -29,9 +29,12 @@ export default async function StaffLayout({
           </nav>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-neutral-400">
+          <Link
+            href="/conta"
+            className="text-xs text-neutral-400 hover:text-neutral-900"
+          >
             {session.email} · {session.role}
-          </span>
+          </Link>
           <form action={signOut}>
             <button className="rounded-lg border border-neutral-300 px-3 py-1 text-sm">
               Sair

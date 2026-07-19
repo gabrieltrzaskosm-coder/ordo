@@ -1,0 +1,18 @@
+# Configuração mínima do Supabase CLI para desenvolvimento local.
+# Documentação: https://supabase.com/docs/guides/cli/config
+project_id = "app-pedidos"
+
+[db]
+port = 54322
+major_version = 15
+
+[api]
+port = 54321
+schemas = ["public"]
+extra_search_path = ["public"]
+
+[studio]
+port = 54323
+
+[auth]
+enable_signup = true

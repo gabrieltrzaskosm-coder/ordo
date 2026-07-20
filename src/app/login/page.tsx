@@ -8,10 +8,12 @@ export default async function LoginPage({
 }) {
   const { erro } = await searchParams;
 
-  const aviso =
-    erro === "sem-acesso"
-      ? "Esta conta não está associada a nenhum estabelecimento."
-      : null;
+  const AVISOS: Record<string, string> = {
+    "sem-acesso": "Esta conta não está associada a nenhum estabelecimento.",
+    "link-invalido": "Link inválido. Peça um novo email de recuperação.",
+    "link-expirado": "O link expirou. Peça um novo email de recuperação.",
+  };
+  const aviso = erro ? (AVISOS[erro] ?? null) : null;
 
   return (
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center p-6">
@@ -26,6 +28,11 @@ export default async function LoginPage({
       )}
       <LoginForm />
       <p className="mt-4 text-sm text-neutral-500">
+        <Link href="/recuperar" className="underline">
+          Esqueci-me da palavra-passe
+        </Link>
+      </p>
+      <p className="mt-2 text-sm text-neutral-500">
         Ainda não tem restaurante?{" "}
         <Link href="/signup" className="underline">
           Criar conta

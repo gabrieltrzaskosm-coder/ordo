@@ -1,9 +1,12 @@
 "use server";
 
-// Signup do dono: cria a conta, o estabelecimento e o registo de staff (owner),
-// depois faz login. Usa o admin client (service role) para criar o utilizador
-// já confirmado — evita a fricção do email de confirmação nesta fase. Antes de
-// produção, ativar verificação de email.
+// Signup do dono: cria a conta, o estabelecimento e o registo de staff (owner).
+//
+// A conta é criada pelo fluxo público (signUp), não pelo admin client, porque é
+// esse que dispara o email de confirmação — admin.createUser não envia nada.
+// O estabelecimento e o staff são criados já a seguir (via admin, porque ainda
+// não há sessão para passar a RLS); o acesso só abre quando o email é
+// confirmado em /auth/confirm.
 //
 // Ordem importa: se a criação do estabelecimento falhar depois de o utilizador
 // existir, apagamos o utilizador para não deixar contas órfãs.
@@ -12,6 +15,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { publicEnv } from "@/lib/env";
 import { slugify } from "@/lib/slug";
 
 export type SignupState = { error: string | null };
@@ -37,18 +41,26 @@ export async function signUp(
     };
   }
   const { establishmentName, email, password } = parsed.data;
-  const admin = createAdminClient();
 
-  const { data: created, error: userErr } = await admin.auth.admin.createUser({
+  const supabase = await createClient();
+  const { data, error: signUpErr } = await supabase.auth.signUp({
     email,
     password,
-    email_confirm: true,
+    options: { emailRedirectTo: `${publicEnv.appUrl}/auth/confirm` },
   });
-  if (userErr || !created?.user) {
-    // Mensagem genérica; o caso comum é email já registado.
+  if (signUpErr || !data.user) {
     return { error: "Não foi possível criar a conta com este email." };
   }
-  const userId = created.user.id;
+
+  // Email já registado: o Supabase devolve um utilizador obfuscado, com
+  // `identities` vazio, para não revelar quem tem conta. Paramos aqui — criar
+  // um estabelecimento agora dava-o a quem já existe (e revelava o registo).
+  if (data.user.identities && data.user.identities.length === 0) {
+    redirect("/signup/confirmar");
+  }
+
+  const userId = data.user.id;
+  const admin = createAdminClient();
 
   const { data: est, error: estErr } = await admin
     .from("establishments")
@@ -72,14 +84,12 @@ export async function signUp(
     return { error: "Falha ao concluir o registo. Tente novamente." };
   }
 
-  // Login (define os cookies de sessão via o cliente de servidor).
-  const supabase = await createClient();
-  const { error: signInErr } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-  if (signInErr) redirect("/login");
+  // Com "Confirm email" desligado no projeto, o signUp já devolve sessão e não
+  // há nada a confirmar — segue direto para a gestão.
+  if (data.session) {
+    revalidatePath("/", "layout");
+    redirect("/gestao");
+  }
 
-  revalidatePath("/", "layout");
-  redirect("/gestao");
+  redirect("/signup/confirmar");
 }

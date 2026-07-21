@@ -5,7 +5,7 @@ import { getTableStatus, type TrackedOrder } from "./actions";
 
 const STEPS: { key: TrackedOrder["status"]; label: string }[] = [
   { key: "placed", label: "Recebido" },
-  { key: "in_prep", label: "Em preparação" },
+  { key: "in_prep", label: "A preparar" },
   { key: "ready", label: "Pronto" },
   { key: "served", label: "Entregue" },
 ];
@@ -36,64 +36,70 @@ export function OrderTracker({ token }: { token: string }) {
   if (!orders || orders.length === 0) return null;
 
   return (
-    <section className="mb-6 space-y-3">
-      <h2 className="text-sm font-medium text-neutral-500">O seu pedido</h2>
+    <section className="mb-8 space-y-3">
+      <h2 className="px-1 text-xs font-semibold uppercase tracking-wide text-muted">
+        O seu pedido
+      </h2>
       {orders.map((o) => {
         const current = stepIndex(o.status);
+        const itemCount = o.items.reduce((n, i) => n + i.qty, 0);
         return (
-          <div key={o.id} className="rounded-lg border border-neutral-200 p-3">
-            <div className="mb-3 flex items-center justify-between">
-              <p className="text-sm">
+          <div
+            key={o.id}
+            className="rounded-2xl border border-line bg-surface p-4 shadow-[var(--shadow-card)]"
+          >
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <p className="min-w-0 truncate text-sm font-medium text-ink">
                 {o.customerName ?? "Pedido"}
-                <span className="text-neutral-400">
+                <span className="font-normal text-muted">
                   {" · "}
-                  {o.items.reduce((n, i) => n + i.qty, 0)} item(s)
+                  {itemCount} {itemCount === 1 ? "item" : "itens"}
                 </span>
               </p>
               <span
-                className={`rounded-full px-2 py-0.5 text-xs ${
+                className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${
                   o.paid
-                    ? "bg-green-100 text-green-900"
-                    : "bg-neutral-100 text-neutral-500"
+                    ? "bg-success-weak text-success"
+                    : "bg-surface-2 text-muted"
                 }`}
               >
                 {o.paid ? "Pago" : "Por pagar"}
               </span>
             </div>
 
-            <ol className="flex items-center">
+            <ol className="flex items-start">
               {STEPS.map((s, i) => {
                 const done = i <= current;
-                const doneBar = "bg-green-500";
-                const pendingBar = "bg-neutral-200 dark:bg-neutral-700";
+                const active = i === current;
                 return (
-                  <li key={s.key} className="flex flex-1 flex-col items-center">
+                  <li
+                    key={s.key}
+                    className="flex flex-1 flex-col items-center"
+                  >
                     <div className="flex w-full items-center">
-                      {i > 0 && (
-                        <div
-                          className={`h-0.5 flex-1 ${
-                            i <= current ? doneBar : pendingBar
-                          }`}
-                        />
-                      )}
-                      <div
-                        className={`h-3 w-3 shrink-0 rounded-full ${
-                          done ? doneBar : pendingBar
-                        }`}
+                      <span
+                        className={`h-0.5 flex-1 rounded-full transition-colors ${
+                          i > 0 && i <= current ? "bg-success" : "bg-line"
+                        } ${i === 0 ? "opacity-0" : ""}`}
                       />
-                      {i < STEPS.length - 1 && (
-                        <div
-                          className={`h-0.5 flex-1 ${
-                            i < current ? doneBar : pendingBar
-                          }`}
-                        />
-                      )}
+                      <span
+                        className={`relative flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full transition-colors ${
+                          done ? "bg-success" : "bg-line"
+                        }`}
+                      >
+                        {active && (
+                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-60" />
+                        )}
+                      </span>
+                      <span
+                        className={`h-0.5 flex-1 rounded-full transition-colors ${
+                          i < current ? "bg-success" : "bg-line"
+                        } ${i === STEPS.length - 1 ? "opacity-0" : ""}`}
+                      />
                     </div>
                     <span
-                      className={`mt-1 text-center text-[11px] ${
-                        done
-                          ? "font-medium text-neutral-900 dark:text-neutral-100"
-                          : "text-neutral-400 dark:text-neutral-500"
+                      className={`mt-1.5 text-center text-[11px] leading-tight ${
+                        done ? "font-semibold text-ink" : "text-muted"
                       }`}
                     >
                       {s.label}

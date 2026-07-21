@@ -32,6 +32,8 @@ function lineUnit(line: CartLine) {
   return line.basePriceCents + line.modifiers.reduce((s, m) => s + m.delta, 0);
 }
 
+const safeBottom = "pb-[calc(1rem+env(safe-area-inset-bottom))]";
+
 export function ClienteMenu({
   token,
   menu,
@@ -116,6 +118,21 @@ export function ClienteMenu({
     !modalItem ||
     modalItem.groups.every((g) => !g.single || (choices[g.id]?.length ?? 0) === 1);
 
+  // Preço corrente no modal (base + extras escolhidos).
+  const modalUnit = modalItem
+    ? modalItem.priceCents +
+      modalItem.groups.reduce((s, g) => {
+        const picked = choices[g.id] ?? [];
+        return (
+          s +
+          picked.reduce((gs, id) => {
+            const m = g.modifiers.find((x) => x.id === id);
+            return gs + (m?.priceDeltaCents ?? 0);
+          }, 0)
+        );
+      }, 0)
+    : 0;
+
   function toggleChoice(groupId: string, modId: string, single: boolean) {
     setChoices((c) => {
       if (single) return { ...c, [groupId]: [modId] };
@@ -172,47 +189,57 @@ export function ClienteMenu({
       <button
         onClick={chamar}
         disabled={pending}
-        className="mb-4 w-full rounded-lg border border-neutral-300 py-2 text-sm"
+        className="mb-6 flex w-full items-center justify-center gap-2 rounded-full border border-line bg-surface py-2.5 text-sm font-medium text-ink transition active:scale-[0.99] disabled:opacity-50"
       >
+        <BellIcon />
         Chamar atendente
       </button>
 
       {menu.map((cat) => (
-        <section key={cat.id} className="mb-6">
-          <h2 className="mb-2 text-sm font-medium text-neutral-500">{cat.name}</h2>
-          <ul className="space-y-2">
+        <section key={cat.id} className="mb-7">
+          <h2 className="mb-3 px-1 text-base font-semibold text-ink">
+            {cat.name}
+          </h2>
+          <ul className="space-y-2.5">
             {cat.items.map((item) => (
               <li
                 key={item.id}
-                className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3"
+                className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-3 shadow-[var(--shadow-card)]"
               >
                 {item.imageUrl && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={item.imageUrl}
                     alt={item.name}
-                    className="h-16 w-16 shrink-0 rounded-lg object-cover"
+                    className="h-18 w-18 shrink-0 rounded-xl object-cover"
+                    style={{ height: "4.5rem", width: "4.5rem" }}
                   />
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="font-medium">{item.name}</p>
+                  <p className="font-medium leading-snug text-ink">{item.name}</p>
                   {item.description && (
-                    <p className="truncate text-sm text-neutral-500">
+                    <p className="mt-0.5 line-clamp-2 text-[13px] leading-snug text-muted">
                       {item.description}
                     </p>
                   )}
-                  <p className="text-sm">{formatMoney(item.priceCents, currency)}</p>
-                  {item.groups.length > 0 && (
-                    <p className="text-xs text-neutral-400">opções disponíveis</p>
-                  )}
+                  <div className="mt-1.5 flex items-center gap-2">
+                    <span className="tnum text-sm font-semibold text-ink">
+                      {formatMoney(item.priceCents, currency)}
+                    </span>
+                    {item.groups.length > 0 && (
+                      <span className="rounded-full bg-brand-weak px-2 py-0.5 text-[11px] font-medium text-brand-strong">
+                        opções
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <button
                   onClick={() => onAddClick(item)}
                   disabled={!item.available}
-                  className="h-8 w-8 shrink-0 rounded-full border disabled:opacity-40"
-                  aria-label="Adicionar"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand text-brand-ink shadow-sm transition active:scale-90 disabled:bg-surface-2 disabled:text-muted disabled:shadow-none"
+                  aria-label={`Adicionar ${item.name}`}
                 >
-                  +
+                  {item.available ? <PlusIcon /> : <span className="text-[10px] font-semibold">—</span>}
                 </button>
               </li>
             ))}
@@ -220,43 +247,69 @@ export function ClienteMenu({
         </section>
       ))}
 
-      {status && (
-        <p className="mb-3 rounded-lg bg-neutral-100 p-3 text-sm">{status}</p>
+      {status && !placedOrder && count === 0 && (
+        <p className="mb-3 rounded-2xl bg-surface-2 px-4 py-3 text-sm text-ink">
+          {status}
+        </p>
       )}
 
       {/* ---------- Modal de opções ---------- */}
       {modalItem && (
-        <div className="fixed inset-0 z-10 flex items-end bg-black/40">
-          <div className="max-h-[85vh] w-full overflow-y-auto rounded-t-2xl bg-white p-4">
-            <div className="mx-auto max-w-md">
-              <h3 className="mb-1 text-lg font-medium">{modalItem.name}</h3>
-              <p className="mb-4 text-sm text-neutral-500">
+        <div
+          className="fixed inset-0 z-40 flex items-end justify-center bg-ink/40"
+          style={{ animation: "backdrop-in 0.2s ease" }}
+          onClick={() => setModalItem(null)}
+        >
+          <div
+            className="max-h-[88vh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-surface shadow-[var(--shadow-sheet)]"
+            style={{ animation: "sheet-in 0.32s var(--ease-out-quint)" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sticky top-0 flex justify-center bg-surface pt-3">
+              <span className="h-1.5 w-10 rounded-full bg-line" />
+            </div>
+            <div className="px-5 pb-4 pt-3">
+              <h3 className="text-lg font-semibold text-ink">{modalItem.name}</h3>
+              <p className="tnum mt-0.5 text-sm text-muted">
                 {formatMoney(modalItem.priceCents, currency)}
               </p>
 
               {modalItem.groups.map((g) => (
-                <div key={g.id} className="mb-4">
-                  <p className="mb-1 text-sm font-medium">
-                    {g.name}{" "}
-                    <span className="text-xs font-normal text-neutral-400">
-                      {g.single ? "(escolha 1)" : "(opcional)"}
+                <div key={g.id} className="mt-5">
+                  <div className="mb-2 flex items-center gap-2">
+                    <p className="text-sm font-semibold text-ink">{g.name}</p>
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                        g.single
+                          ? "bg-brand-weak text-brand-strong"
+                          : "bg-surface-2 text-muted"
+                      }`}
+                    >
+                      {g.single ? "escolha 1" : "opcional"}
                     </span>
-                  </p>
-                  <ul className="space-y-1">
+                  </div>
+                  <ul className="space-y-2">
                     {g.modifiers.map((m) => {
                       const picked = (choices[g.id] ?? []).includes(m.id);
                       return (
                         <li key={m.id}>
-                          <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-neutral-200 p-2 text-sm">
+                          <label
+                            className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 text-sm transition ${
+                              picked
+                                ? "border-brand bg-brand-weak"
+                                : "border-line bg-surface"
+                            }`}
+                          >
                             <input
                               type={g.single ? "radio" : "checkbox"}
                               name={g.id}
                               checked={picked}
                               onChange={() => toggleChoice(g.id, m.id, g.single)}
+                              className="h-4 w-4 accent-brand"
                             />
-                            <span className="flex-1">{m.name}</span>
+                            <span className="flex-1 text-ink">{m.name}</span>
                             {m.priceDeltaCents > 0 && (
-                              <span className="text-neutral-500">
+                              <span className="tnum font-medium text-muted">
                                 +{formatMoney(m.priceDeltaCents, currency)}
                               </span>
                             )}
@@ -267,22 +320,26 @@ export function ClienteMenu({
                   </ul>
                 </div>
               ))}
+            </div>
 
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setModalItem(null)}
-                  className="flex-1 rounded-lg border border-neutral-300 py-2 text-sm"
-                >
-                  Cancelar
-                </button>
-                <button
-                  onClick={confirmModal}
-                  disabled={!modalValid}
-                  className="flex-1 rounded-lg bg-black py-2 text-sm text-white disabled:opacity-40"
-                >
-                  Adicionar
-                </button>
-              </div>
+            <div
+              className={`sticky bottom-0 flex gap-2 border-t border-line bg-surface px-5 pt-3 ${safeBottom}`}
+            >
+              <button
+                onClick={() => setModalItem(null)}
+                className="rounded-full border border-line bg-surface px-5 py-3 text-sm font-medium text-ink transition active:scale-[0.98]"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmModal}
+                disabled={!modalValid}
+                className="tnum flex-1 rounded-full bg-brand py-3 text-sm font-semibold text-brand-ink transition active:scale-[0.98] disabled:bg-surface-2 disabled:text-muted"
+              >
+                {modalValid
+                  ? `Adicionar · ${formatMoney(modalUnit, currency)}`
+                  : "Escolha as opções"}
+              </button>
             </div>
           </div>
         </div>
@@ -290,35 +347,41 @@ export function ClienteMenu({
 
       {/* ---------- Carrinho + envio ---------- */}
       {count > 0 && !placedOrder && (
-        <div className="fixed inset-x-0 bottom-0 border-t border-neutral-200 bg-white p-4">
-          <div className="mx-auto max-w-md space-y-2">
-            <ul className="max-h-40 space-y-2 overflow-y-auto">
+        <div
+          className={`fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface px-4 pt-3 shadow-[var(--shadow-bar)] ${safeBottom}`}
+        >
+          <div className="mx-auto max-w-md space-y-3">
+            <ul className="max-h-40 space-y-2.5 overflow-y-auto">
               {cart.map((l) => (
-                <li key={l.key} className="flex items-center gap-2 text-sm">
+                <li key={l.key} className="flex items-center gap-2.5 text-sm">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate">{l.name}</p>
+                    <p className="truncate font-medium text-ink">{l.name}</p>
                     {l.modifiers.length > 0 && (
-                      <p className="truncate text-xs text-neutral-500">
+                      <p className="truncate text-xs text-muted">
                         {l.modifiers.map((m) => m.name).join(", ")}
                       </p>
                     )}
                   </div>
-                  <button
-                    onClick={() => changeQty(l.key, -1)}
-                    className="h-7 w-7 rounded-full border"
-                    aria-label="Remover um"
-                  >
-                    −
-                  </button>
-                  <span className="w-4 text-center">{l.qty}</span>
-                  <button
-                    onClick={() => changeQty(l.key, 1)}
-                    className="h-7 w-7 rounded-full border"
-                    aria-label="Adicionar um"
-                  >
-                    +
-                  </button>
-                  <span className="w-16 text-right">
+                  <div className="flex items-center gap-1 rounded-full border border-line p-0.5">
+                    <button
+                      onClick={() => changeQty(l.key, -1)}
+                      className="flex h-6 w-6 items-center justify-center rounded-full text-ink transition active:scale-90"
+                      aria-label="Remover um"
+                    >
+                      <MinusIcon />
+                    </button>
+                    <span className="tnum w-4 text-center text-sm font-semibold text-ink">
+                      {l.qty}
+                    </span>
+                    <button
+                      onClick={() => changeQty(l.key, 1)}
+                      className="flex h-6 w-6 items-center justify-center rounded-full text-ink transition active:scale-90"
+                      aria-label="Adicionar um"
+                    >
+                      <MinusPlusIcon />
+                    </button>
+                  </div>
+                  <span className="tnum w-16 text-right font-medium text-ink">
                     {formatMoney(lineUnit(l) * l.qty, currency)}
                   </span>
                 </li>
@@ -328,24 +391,39 @@ export function ClienteMenu({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="O seu nome"
-              className="w-full rounded-lg border border-neutral-300 px-3 py-2"
+              className="w-full rounded-full border border-line bg-canvas px-4 py-2.5 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none"
             />
             <button
               onClick={submit}
               disabled={pending || !name.trim()}
-              className="w-full rounded-lg bg-black py-3 text-white disabled:opacity-40"
+              className="tnum flex w-full items-center justify-between rounded-full bg-brand px-5 py-3.5 font-semibold text-brand-ink transition active:scale-[0.99] disabled:bg-surface-2 disabled:text-muted"
             >
-              Enviar pedido · {count} item(s) · {formatMoney(subtotal, currency)}
+              <span>{pending ? "A enviar…" : "Enviar pedido"}</span>
+              <span className="flex items-center gap-2">
+                <span className="rounded-full bg-black/15 px-2 py-0.5 text-xs">
+                  {count}
+                </span>
+                {formatMoney(subtotal, currency)}
+              </span>
             </button>
           </div>
         </div>
       )}
 
       {placedOrder && (
-        <div className="fixed inset-x-0 bottom-0 border-t border-neutral-200 bg-white p-4">
+        <div
+          className={`fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface px-4 pt-4 shadow-[var(--shadow-bar)] ${safeBottom}`}
+        >
           <div className="mx-auto max-w-md space-y-3">
+            {status && (
+              <p className="rounded-xl bg-success-weak px-3 py-2 text-center text-sm font-medium text-success">
+                {status}
+              </p>
+            )}
             <div>
-              <p className="mb-2 text-sm text-neutral-500">Gorjeta</p>
+              <p className="mb-2 text-sm font-medium text-ink">
+                Adicionar gorjeta?
+              </p>
               <div className="flex flex-wrap gap-2">
                 {[
                   { label: "Sem", cents: 0 },
@@ -361,10 +439,10 @@ export function ClienteMenu({
                         setTipCustom(false);
                         setTipCents(opt.cents);
                       }}
-                      className={`flex-1 rounded-lg border py-2 text-sm ${
+                      className={`flex-1 rounded-full border py-2 text-sm font-medium transition active:scale-[0.97] ${
                         selected
-                          ? "border-black bg-black text-white"
-                          : "border-neutral-300"
+                          ? "border-brand bg-brand text-brand-ink"
+                          : "border-line bg-surface text-ink"
                       }`}
                     >
                       {opt.label}
@@ -376,10 +454,10 @@ export function ClienteMenu({
                     setTipCustom(true);
                     setTipCents(eurosToCents(tipCustomValue));
                   }}
-                  className={`flex-1 rounded-lg border py-2 text-sm ${
+                  className={`flex-1 rounded-full border py-2 text-sm font-medium transition active:scale-[0.97] ${
                     tipCustom
-                      ? "border-black bg-black text-white"
-                      : "border-neutral-300"
+                      ? "border-brand bg-brand text-brand-ink"
+                      : "border-line bg-surface text-ink"
                   }`}
                 >
                   Outro
@@ -395,20 +473,22 @@ export function ClienteMenu({
                     setTipCents(eurosToCents(e.target.value));
                   }}
                   placeholder="Valor da gorjeta em €"
-                  className="mt-2 w-full rounded-lg border border-neutral-300 px-3 py-2"
+                  className="mt-2 w-full rounded-full border border-line bg-canvas px-4 py-2.5 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none"
                 />
               )}
             </div>
             <button
               onClick={pay}
               disabled={pending}
-              className="w-full rounded-lg bg-black py-3 text-white disabled:opacity-40"
+              className="tnum w-full rounded-full bg-brand py-3.5 font-semibold text-brand-ink transition active:scale-[0.99] disabled:opacity-50"
             >
-              Pagar {formatMoney(placedOrder.subtotalCents + tipCents, currency)}
+              {pending
+                ? "A abrir pagamento…"
+                : `Pagar ${formatMoney(placedOrder.subtotalCents + tipCents, currency)}`}
             </button>
             <button
               onClick={() => setPlacedOrder(null)}
-              className="w-full py-1 text-center text-sm text-neutral-500"
+              className="w-full py-1 text-center text-sm text-muted"
             >
               Pagar depois
             </button>
@@ -416,5 +496,61 @@ export function ClienteMenu({
         </div>
       )}
     </div>
+  );
+}
+
+/* ---------- Ícones (inline, sem dependências) ---------- */
+
+function PlusIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M12 5v14M5 12h14"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function MinusIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M5 12h14"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+// "+" pequeno para o stepper do carrinho.
+function MinusPlusIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M12 6v12M6 12h12"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function BellIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }

@@ -1,26 +1,105 @@
 @import "tailwindcss";
 
+/* =============================================================
+   Design tokens — App Pedidos
+   Committed light theme. The customer orders on a phone at a table
+   under variable light; food and prices must read cleanly and feel
+   trustworthy. One warm accent (terracotta) carries the brand; the
+   rest is a near-neutral ramp. OKLCH throughout, contrast-checked.
+   ============================================================= */
+@theme {
+  --color-canvas: oklch(0.985 0.003 70); /* page background, near-white */
+  --color-surface: oklch(1 0 0); /* cards, sheets */
+  --color-surface-2: oklch(0.965 0.005 70); /* subtle fills */
+  --color-ink: oklch(0.24 0.012 55); /* primary text ~ 12:1 on canvas */
+  --color-muted: oklch(0.46 0.012 55); /* secondary text ~ 5.3:1 */
+  --color-line: oklch(0.905 0.005 70); /* hairline borders */
+
+  --color-brand: oklch(0.53 0.15 40); /* terracotta */
+  --color-brand-strong: oklch(0.46 0.15 40); /* pressed / hover */
+  --color-brand-ink: oklch(0.99 0 0); /* text on brand ~ 4.8:1 */
+  --color-brand-weak: oklch(0.955 0.03 50); /* tint background */
+
+  --color-success: oklch(0.5 0.12 155);
+  --color-success-weak: oklch(0.955 0.04 155);
+  --color-warn: oklch(0.5 0.1 65);
+  --color-warn-weak: oklch(0.955 0.05 80);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --radius-lg: 1rem;
+  --radius-xl: 1.375rem;
+
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --shadow-sheet: 0 -8px 40px -12px oklch(0.24 0.02 55 / 0.18);
+  --shadow-bar: 0 -1px 24px -8px oklch(0.24 0.02 55 / 0.14);
+  --shadow-card: 0 1px 2px oklch(0.24 0.02 55 / 0.05);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prices and numeric readouts line up cleanly. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: var(--color-brand-weak);
+  color: var(--color-brand-strong);
+}
+
+/* Visible, on-brand focus for keyboard users; not shown on mouse press. */
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

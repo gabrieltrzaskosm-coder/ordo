@@ -19,26 +19,37 @@ export default async function MesaPage({
   const menu = await getMenu(session.establishmentId);
 
   return (
-    <main className="mx-auto max-w-md p-4 pb-40">
-      <header className="mb-4">
-        <p className="text-sm text-neutral-500">{session.establishmentName}</p>
-        <h1 className="text-xl font-medium">{session.tableLabel}</h1>
+    <div className="min-h-full">
+      <header className="sticky top-0 z-20 border-b border-line bg-canvas/85 backdrop-blur-md">
+        <div className="mx-auto flex max-w-md items-center justify-between px-4 py-3">
+          <div className="min-w-0">
+            <p className="truncate text-[15px] font-semibold text-ink">
+              {session.establishmentName}
+            </p>
+            <p className="text-xs text-muted">Peça e pague à mesa</p>
+          </div>
+          <span className="shrink-0 rounded-full bg-brand-weak px-3 py-1 text-xs font-semibold text-brand-strong">
+            {session.tableLabel}
+          </span>
+        </div>
       </header>
 
-      {sp.pago === "1" && (
-        <p className="mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-900">
-          Pagamento recebido. Obrigado!
-        </p>
-      )}
-      {sp.cancelado === "1" && (
-        <p className="mb-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-900">
-          Pagamento cancelado. Pode tentar de novo.
-        </p>
-      )}
+      <main className="mx-auto max-w-md px-4 pb-44 pt-4">
+        {sp.pago === "1" && (
+          <p className="mb-4 rounded-2xl bg-success-weak px-4 py-3 text-sm font-medium text-success">
+            Pagamento recebido. Bom apetite!
+          </p>
+        )}
+        {sp.cancelado === "1" && (
+          <p className="mb-4 rounded-2xl bg-warn-weak px-4 py-3 text-sm font-medium text-warn">
+            Pagamento cancelado. Pode tentar de novo.
+          </p>
+        )}
 
-      <OrderTracker token={token} />
+        <OrderTracker token={token} />
 
-      <ClienteMenu token={token} menu={menu} currency={session.currency} />
-    </main>
+        <ClienteMenu token={token} menu={menu} currency={session.currency} />
+      </main>
+    </div>
   );
 }

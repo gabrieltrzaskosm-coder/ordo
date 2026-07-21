@@ -42,11 +42,11 @@ export function TablesManager({
     <main className="mx-auto max-w-3xl p-6">
       <div className="mb-1 flex items-center gap-3">
         <h1 className="text-xl font-medium">Mesas & QR codes</h1>
-        <Link href="/gestao" className="text-sm text-neutral-500 hover:underline">
+        <Link href="/gestao" className="text-sm text-muted hover:underline">
           ← Gestão
         </Link>
       </div>
-      <p className="mb-6 text-sm text-neutral-500">
+      <p className="mb-6 text-sm text-muted">
         Cada mesa tem um código único. Imprima e coloque na mesa.
       </p>
 
@@ -67,11 +67,11 @@ export function TablesManager({
           name="label"
           required
           placeholder="Nova mesa (ex.: Mesa 3, Esplanada 1)"
-          className="flex-1 rounded-lg border border-neutral-300 px-3 py-2"
+          className="flex-1 rounded-lg border border-line px-3 py-2"
         />
         <button
           disabled={pending}
-          className="rounded-lg bg-black px-4 text-sm text-white disabled:opacity-40"
+          className="rounded-lg bg-brand px-4 text-sm text-brand-ink disabled:opacity-40"
         >
           Criar mesa
         </button>
@@ -82,7 +82,7 @@ export function TablesManager({
           <div
             key={t.id}
             className={`rounded-lg border p-4 ${
-              t.active ? "border-neutral-200" : "border-neutral-200 bg-neutral-50"
+              t.active ? "border-line" : "border-line bg-neutral-50"
             }`}
           >
             <div className="mb-3 flex items-center justify-between">
@@ -103,7 +103,7 @@ export function TablesManager({
               className="mb-3 rounded bg-white"
             />
 
-            <p className="mb-3 truncate text-xs text-neutral-400" title={t.url}>
+            <p className="mb-3 truncate text-xs text-muted" title={t.url}>
               {t.url}
             </p>
 
@@ -111,21 +111,21 @@ export function TablesManager({
               <a
                 href={t.qrDataUrl}
                 download={`qr-${t.label.replace(/\s+/g, "-").toLowerCase()}.png`}
-                className="rounded-lg border border-neutral-300 px-3 py-1 text-xs"
+                className="rounded-lg border border-line px-3 py-1 text-xs"
               >
                 Descarregar
               </a>
               <button
                 disabled={pending}
                 onClick={() => run(() => setTableActive(t.id, !t.active))}
-                className="rounded-lg border border-neutral-300 px-3 py-1 text-xs"
+                className="rounded-lg border border-line px-3 py-1 text-xs"
               >
                 {t.active ? "Desativar" : "Ativar"}
               </button>
               <button
                 disabled={pending}
                 onClick={() => run(() => regenerateToken(t.id))}
-                className="rounded-lg border border-neutral-300 px-3 py-1 text-xs"
+                className="rounded-lg border border-line px-3 py-1 text-xs"
                 title="Invalida o QR antigo — é preciso reimprimir"
               >
                 Novo código
@@ -133,7 +133,7 @@ export function TablesManager({
               <button
                 disabled={pending}
                 onClick={() => run(() => deleteTable(t.id))}
-                className="px-2 text-xs text-neutral-400 hover:text-red-700"
+                className="px-2 text-xs text-muted hover:text-red-700"
               >
                 Remover
               </button>
@@ -143,7 +143,7 @@ export function TablesManager({
       </div>
 
       {tables.length === 0 && (
-        <p className="rounded-lg border border-dashed border-neutral-300 p-8 text-center text-sm text-neutral-400">
+        <p className="rounded-lg border border-dashed border-line p-8 text-center text-sm text-muted">
           Ainda não há mesas. Crie a primeira acima.
         </p>
       )}

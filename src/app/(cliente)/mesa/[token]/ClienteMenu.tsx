@@ -189,14 +189,26 @@ export function ClienteMenu({
       <button
         onClick={chamar}
         disabled={pending}
-        className="mb-6 flex w-full items-center justify-center gap-2 rounded-full border border-line bg-surface py-2.5 text-sm font-medium text-ink transition active:scale-[0.99] disabled:opacity-50"
+        className="reveal mb-6 flex w-full items-center justify-center gap-2 rounded-full border border-line bg-surface py-2.5 text-sm font-medium text-ink transition hover:border-brand/40 active:scale-[0.99] disabled:opacity-50"
       >
         <BellIcon />
         Chamar atendente
       </button>
 
-      {menu.map((cat) => (
-        <section key={cat.id} className="mb-7">
+      {menu.length === 0 && (
+        <div className="reveal rounded-2xl border border-dashed border-line py-12 text-center">
+          <p className="text-sm text-muted">
+            O menu ainda está a ser preparado. Volte daqui a pouco.
+          </p>
+        </div>
+      )}
+
+      {menu.map((cat, ci) => (
+        <section
+          key={cat.id}
+          className="reveal mb-7"
+          style={{ animationDelay: `${ci * 70}ms` }}
+        >
           <h2 className="mb-3 px-1 text-base font-semibold text-ink">
             {cat.name}
           </h2>
@@ -204,7 +216,7 @@ export function ClienteMenu({
             {cat.items.map((item) => (
               <li
                 key={item.id}
-                className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-3 shadow-[var(--shadow-card)]"
+                className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-3 shadow-[var(--shadow-card)] transition-colors hover:border-brand/40"
               >
                 {item.imageUrl && (
                   // eslint-disable-next-line @next/next/no-img-element

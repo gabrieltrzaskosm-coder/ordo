@@ -37,11 +37,11 @@ export function EquipaManager({ staff }: { staff: StaffMember[] }) {
     <main className="mx-auto max-w-2xl p-6">
       <div className="mb-1 flex items-center gap-3">
         <h1 className="text-xl font-medium">Equipa</h1>
-        <Link href="/gestao" className="text-sm text-neutral-500 hover:underline">
+        <Link href="/gestao" className="text-sm text-muted hover:underline">
           ← Gestão
         </Link>
       </div>
-      <p className="mb-6 text-sm text-neutral-500">
+      <p className="mb-6 text-sm text-muted">
         Crie contas para a cozinha e o atendimento. Cada pessoa entra em{" "}
         <code>/login</code> com o email e a palavra-passe que definir.
       </p>
@@ -54,12 +54,12 @@ export function EquipaManager({ staff }: { staff: StaffMember[] }) {
         {staff.map((m) => (
           <li
             key={m.id}
-            className="flex items-center justify-between rounded-lg border border-neutral-200 p-3"
+            className="flex items-center justify-between rounded-lg border border-line p-3"
           >
             <div>
               <p className="font-medium">
                 {m.displayName ?? "—"}{" "}
-                <span className="text-sm font-normal text-neutral-500">
+                <span className="text-sm font-normal text-muted">
                   · {ROLE_LABEL[m.role]}
                 </span>
               </p>
@@ -68,7 +68,7 @@ export function EquipaManager({ staff }: { staff: StaffMember[] }) {
               <button
                 disabled={pending}
                 onClick={() => run(() => removeStaff(m.id))}
-                className="text-xs text-neutral-400 hover:text-red-700"
+                className="text-xs text-muted hover:text-red-700"
               >
                 Remover
               </button>
@@ -77,7 +77,7 @@ export function EquipaManager({ staff }: { staff: StaffMember[] }) {
         ))}
       </ul>
 
-      <h2 className="mb-3 text-sm font-medium text-neutral-500">
+      <h2 className="mb-3 text-sm font-medium text-muted">
         Adicionar membro
       </h2>
       <form
@@ -87,12 +87,12 @@ export function EquipaManager({ staff }: { staff: StaffMember[] }) {
         <input
           name="displayName"
           placeholder="Nome (ex.: João)"
-          className="rounded-lg border border-neutral-300 px-3 py-2"
+          className="rounded-lg border border-line px-3 py-2"
         />
         <select
           name="role"
           defaultValue="kitchen"
-          className="rounded-lg border border-neutral-300 px-3 py-2"
+          className="rounded-lg border border-line px-3 py-2"
         >
           <option value="kitchen">Cozinha</option>
           <option value="waiter">Atendente</option>
@@ -103,7 +103,7 @@ export function EquipaManager({ staff }: { staff: StaffMember[] }) {
           type="email"
           required
           placeholder="Email"
-          className="rounded-lg border border-neutral-300 px-3 py-2"
+          className="rounded-lg border border-line px-3 py-2"
         />
         <input
           name="password"
@@ -111,16 +111,16 @@ export function EquipaManager({ staff }: { staff: StaffMember[] }) {
           required
           minLength={8}
           placeholder="Palavra-passe (mín. 8)"
-          className="rounded-lg border border-neutral-300 px-3 py-2"
+          className="rounded-lg border border-line px-3 py-2"
         />
         <button
           disabled={pending}
-          className="rounded-lg bg-black py-2 text-sm text-white disabled:opacity-40 sm:col-span-2"
+          className="rounded-lg bg-brand py-2 text-sm text-brand-ink disabled:opacity-40 sm:col-span-2"
         >
           Criar conta de acesso
         </button>
       </form>
-      <p className="mt-2 text-xs text-neutral-400">
+      <p className="mt-2 text-xs text-muted">
         A palavra-passe é visível para a definir e comunicar à pessoa. Peça que a
         troque no primeiro acesso, em <code>/conta</code>.
       </p>

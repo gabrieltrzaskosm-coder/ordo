@@ -42,6 +42,25 @@
   color-scheme: light;
 }
 
+/* Temas por área. O sistema neutro é partilhado; só o acento muda, sobreposto
+   num wrapper. Os utilitários bg-brand/text-brand-ink herdam estes overrides.
+   - Cliente (/mesa): terracota (default acima).
+   - Gestão: vermelho (financeiro/decisão).
+   - Cozinha: azul (operacional, legível de longe num ecrã ocupado). */
+.theme-manager {
+  --color-brand: oklch(0.52 0.2 27);
+  --color-brand-strong: oklch(0.44 0.2 27);
+  --color-brand-ink: oklch(0.99 0 0);
+  --color-brand-weak: oklch(0.955 0.035 27);
+}
+
+.theme-kitchen {
+  --color-brand: oklch(0.54 0.14 248);
+  --color-brand-strong: oklch(0.46 0.15 248);
+  --color-brand-ink: oklch(0.99 0 0);
+  --color-brand-weak: oklch(0.955 0.03 248);
+}
+
 body {
   background: var(--color-canvas);
   color: var(--color-ink);
@@ -52,6 +71,13 @@ body {
 /* Prices and numeric readouts line up cleanly. */
 .tnum {
   font-variant-numeric: tabular-nums;
+}
+
+/* Entrada suave. fill backwards => antes/durante o delay mostra o estado
+   inicial; se a animação nunca correr, o elemento fica na sua opacidade natural
+   (1). Nunca esconde conteúdo por depender da animação. */
+.reveal {
+  animation: rise-in 0.5s var(--ease-out-quint) backwards;
 }
 
 ::selection {

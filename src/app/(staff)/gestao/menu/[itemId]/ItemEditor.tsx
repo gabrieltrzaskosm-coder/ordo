@@ -52,11 +52,11 @@ export function ItemEditor({
     <main className="mx-auto max-w-2xl p-6">
       <div className="mb-1 flex items-center gap-3">
         <h1 className="text-xl font-medium">{name}</h1>
-        <Link href="/gestao/menu" className="text-sm text-neutral-500 hover:underline">
+        <Link href="/gestao/menu" className="text-sm text-muted hover:underline">
           ← Menu
         </Link>
       </div>
-      <p className="mb-6 text-sm text-neutral-500">
+      <p className="mb-6 text-sm text-muted">
         Imagem e opções deste prato. Aparecem no menu do cliente.
       </p>
 
@@ -66,7 +66,7 @@ export function ItemEditor({
 
       {/* ---------- Imagem ---------- */}
       <section className="mb-8">
-        <h2 className="mb-2 text-sm font-medium text-neutral-500">Imagem</h2>
+        <h2 className="mb-2 text-sm font-medium text-muted">Imagem</h2>
         <div className="flex items-center gap-4">
           {imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -76,7 +76,7 @@ export function ItemEditor({
               className="h-24 w-24 rounded-lg object-cover"
             />
           ) : (
-            <div className="flex h-24 w-24 items-center justify-center rounded-lg border border-dashed border-neutral-300 text-xs text-neutral-400">
+            <div className="flex h-24 w-24 items-center justify-center rounded-lg border border-dashed border-line text-xs text-muted">
               Sem imagem
             </div>
           )}
@@ -95,7 +95,7 @@ export function ItemEditor({
             <div className="flex gap-2">
               <button
                 disabled={pending}
-                className="rounded-lg bg-black px-3 py-1.5 text-sm text-white disabled:opacity-40"
+                className="rounded-lg bg-brand px-3 py-1.5 text-sm text-brand-ink disabled:opacity-40"
               >
                 Carregar
               </button>
@@ -104,7 +104,7 @@ export function ItemEditor({
                   type="button"
                   disabled={pending}
                   onClick={() => run(() => removeItemImage(itemId))}
-                  className="rounded-lg border border-neutral-300 px-3 py-1.5 text-sm"
+                  className="rounded-lg border border-line px-3 py-1.5 text-sm"
                 >
                   Remover
                 </button>
@@ -116,28 +116,28 @@ export function ItemEditor({
 
       {/* ---------- Grupos de opções ---------- */}
       <section>
-        <h2 className="mb-2 text-sm font-medium text-neutral-500">Opções</h2>
+        <h2 className="mb-2 text-sm font-medium text-muted">Opções</h2>
 
         {groups.length === 0 && (
-          <p className="mb-4 rounded-lg border border-dashed border-neutral-300 p-4 text-sm text-neutral-400">
+          <p className="mb-4 rounded-lg border border-dashed border-line p-4 text-sm text-muted">
             Sem opções. Crie um grupo (ex.: &quot;Ponto da carne&quot;, &quot;Retirar
             ingredientes&quot;).
           </p>
         )}
 
         {groups.map((g) => (
-          <div key={g.id} className="mb-4 rounded-lg border border-neutral-200 p-3">
+          <div key={g.id} className="mb-4 rounded-lg border border-line p-3">
             <div className="mb-2 flex items-center justify-between">
               <div>
                 <span className="font-medium">{g.name}</span>
-                <span className="ml-2 text-xs text-neutral-500">
+                <span className="ml-2 text-xs text-muted">
                   {g.single ? "escolha única" : "múltipla"}
                 </span>
               </div>
               <button
                 disabled={pending}
                 onClick={() => run(() => deleteGroup(itemId, g.id))}
-                className="text-xs text-neutral-400 hover:text-red-700"
+                className="text-xs text-muted hover:text-red-700"
               >
                 Remover grupo
               </button>
@@ -152,7 +152,7 @@ export function ItemEditor({
                   <span>
                     {m.name}
                     {m.priceDeltaCents > 0 && (
-                      <span className="text-neutral-500">
+                      <span className="text-muted">
                         {" "}
                         +{formatMoney(m.priceDeltaCents)}
                       </span>
@@ -161,7 +161,7 @@ export function ItemEditor({
                   <button
                     disabled={pending}
                     onClick={() => run(() => deleteModifier(itemId, m.id))}
-                    className="text-xs text-neutral-400 hover:text-red-700"
+                    className="text-xs text-muted hover:text-red-700"
                   >
                     Remover
                   </button>
@@ -178,16 +178,16 @@ export function ItemEditor({
                 name="name"
                 required
                 placeholder="Opção (ex.: Mal passado, Sem cebola)"
-                className="flex-1 rounded-lg border border-neutral-300 px-3 py-1.5 text-sm"
+                className="flex-1 rounded-lg border border-line px-3 py-1.5 text-sm"
               />
               <input
                 name="price"
                 placeholder="Extra € (opcional)"
-                className="w-28 rounded-lg border border-neutral-300 px-3 py-1.5 text-sm"
+                className="w-28 rounded-lg border border-line px-3 py-1.5 text-sm"
               />
               <button
                 disabled={pending}
-                className="rounded-lg border border-neutral-300 px-3 text-sm"
+                className="rounded-lg border border-line px-3 text-sm"
               >
                 Adicionar opção
               </button>
@@ -203,19 +203,19 @@ export function ItemEditor({
             name="name"
             required
             placeholder="Novo grupo (ex.: Ponto da carne)"
-            className="flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+            className="flex-1 rounded-lg border border-line px-3 py-2 text-sm"
           />
           <select
             name="type"
             defaultValue="single"
-            className="rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+            className="rounded-lg border border-line px-3 py-2 text-sm"
           >
             <option value="single">Escolha única (obrigatória)</option>
             <option value="multi">Múltipla (opcional)</option>
           </select>
           <button
             disabled={pending}
-            className="rounded-lg bg-black px-4 text-sm text-white disabled:opacity-40"
+            className="rounded-lg bg-brand px-4 text-sm text-brand-ink disabled:opacity-40"
           >
             Criar grupo
           </button>

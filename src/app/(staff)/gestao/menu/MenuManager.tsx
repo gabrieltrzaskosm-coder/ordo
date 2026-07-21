@@ -46,11 +46,11 @@ export function MenuManager({ categories }: { categories: ManagedCategory[] }) {
     <main className="mx-auto max-w-3xl p-6">
       <div className="mb-1 flex items-center gap-3">
         <h1 className="text-xl font-medium">Menu</h1>
-        <Link href="/gestao" className="text-sm text-neutral-500 hover:underline">
+        <Link href="/gestao" className="text-sm text-muted hover:underline">
           ← Gestão
         </Link>
       </div>
-      <p className="mb-6 text-sm text-neutral-500">
+      <p className="mb-6 text-sm text-muted">
         Alterações aparecem de imediato no menu dos clientes.
       </p>
 
@@ -66,30 +66,30 @@ export function MenuManager({ categories }: { categories: ManagedCategory[] }) {
           name="name"
           required
           placeholder="Nova categoria (ex.: Sobremesas)"
-          className="flex-1 rounded-lg border border-neutral-300 px-3 py-2"
+          className="flex-1 rounded-lg border border-line px-3 py-2"
         />
         <button
           disabled={pending}
-          className="rounded-lg bg-black px-4 text-sm text-white disabled:opacity-40"
+          className="rounded-lg bg-brand px-4 text-sm text-brand-ink disabled:opacity-40"
         >
           Adicionar
         </button>
       </form>
 
       {categories.length === 0 && (
-        <p className="rounded-lg border border-dashed border-neutral-300 p-8 text-center text-sm text-neutral-400">
+        <p className="rounded-lg border border-dashed border-line p-8 text-center text-sm text-muted">
           Ainda não há categorias. Crie a primeira acima.
         </p>
       )}
 
       {categories.map((cat) => (
         <section key={cat.id} className="mb-8">
-          <div className="mb-2 flex items-center justify-between border-b border-neutral-200 pb-1">
+          <div className="mb-2 flex items-center justify-between border-b border-line pb-1">
             <h2 className="font-medium">{cat.name}</h2>
             <button
               disabled={pending}
               onClick={() => run(() => deleteCategory(cat.id))}
-              className="text-xs text-neutral-400 hover:text-red-700"
+              className="text-xs text-muted hover:text-red-700"
             >
               Remover categoria
             </button>
@@ -99,23 +99,23 @@ export function MenuManager({ categories }: { categories: ManagedCategory[] }) {
             {cat.items.map((item) => (
               <li
                 key={item.id}
-                className="flex items-center justify-between gap-3 rounded-lg border border-neutral-200 p-3"
+                className="flex items-center justify-between gap-3 rounded-lg border border-line p-3"
               >
                 <div className="min-w-0 flex-1">
                   <Link
                     href={`/gestao/menu/${item.id}`}
-                    className={`hover:underline ${item.available ? "font-medium" : "font-medium text-neutral-400 line-through"}`}
+                    className={`hover:underline ${item.available ? "font-medium" : "font-medium text-muted line-through"}`}
                   >
                     {item.name}
                   </Link>
                   {item.description && (
-                    <p className="truncate text-sm text-neutral-500">
+                    <p className="truncate text-sm text-muted">
                       {item.description}
                     </p>
                   )}
                   <Link
                     href={`/gestao/menu/${item.id}`}
-                    className="text-xs text-neutral-500 hover:underline"
+                    className="text-xs text-muted hover:underline"
                   >
                     Imagem e opções →
                   </Link>
@@ -137,18 +137,18 @@ export function MenuManager({ categories }: { categories: ManagedCategory[] }) {
                       name="price"
                       autoFocus
                       defaultValue={(item.priceCents / 100).toFixed(2)}
-                      className="w-20 rounded border border-neutral-300 px-2 py-1 text-sm"
+                      className="w-20 rounded border border-line px-2 py-1 text-sm"
                     />
                     <button
                       disabled={pending}
-                      className="rounded bg-black px-2 py-1 text-xs text-white"
+                      className="rounded bg-brand px-2 py-1 text-xs text-brand-ink"
                     >
                       Guardar
                     </button>
                     <button
                       type="button"
                       onClick={() => setEditing(null)}
-                      className="px-1 text-xs text-neutral-500"
+                      className="px-1 text-xs text-muted"
                     >
                       Cancelar
                     </button>
@@ -156,7 +156,7 @@ export function MenuManager({ categories }: { categories: ManagedCategory[] }) {
                 ) : (
                   <button
                     onClick={() => setEditing(item.id)}
-                    className="rounded px-2 py-1 text-sm hover:bg-neutral-100"
+                    className="rounded px-2 py-1 text-sm hover:bg-surface-2"
                     title="Editar preço"
                   >
                     {formatMoney(item.priceCents)}
@@ -168,7 +168,7 @@ export function MenuManager({ categories }: { categories: ManagedCategory[] }) {
                   value={item.vatCode}
                   onChange={(e) => run(() => setItemVatCode(item.id, e.target.value))}
                   title="Taxa de IVA na fatura"
-                  className="rounded-lg border border-neutral-300 px-1 py-1 text-xs"
+                  className="rounded-lg border border-line px-1 py-1 text-xs"
                 >
                   {VAT_CODES.map((c) => (
                     <option key={c} value={c}>
@@ -183,7 +183,7 @@ export function MenuManager({ categories }: { categories: ManagedCategory[] }) {
                   className={`rounded-lg border px-2 py-1 text-xs ${
                     item.available
                       ? "border-green-300 text-green-800"
-                      : "border-neutral-300 text-neutral-500"
+                      : "border-line text-muted"
                   }`}
                 >
                   {item.available ? "Disponível" : "Esgotado"}
@@ -192,7 +192,7 @@ export function MenuManager({ categories }: { categories: ManagedCategory[] }) {
                 <button
                   disabled={pending}
                   onClick={() => run(() => deleteItem(item.id))}
-                  className="text-xs text-neutral-400 hover:text-red-700"
+                  className="text-xs text-muted hover:text-red-700"
                 >
                   Remover
                 </button>
@@ -209,24 +209,24 @@ export function MenuManager({ categories }: { categories: ManagedCategory[] }) {
               name="name"
               required
               placeholder="Prato"
-              className="flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+              className="flex-1 rounded-lg border border-line px-3 py-2 text-sm"
             />
             <input
               name="description"
               placeholder="Descrição (opcional)"
-              className="flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+              className="flex-1 rounded-lg border border-line px-3 py-2 text-sm"
             />
             <input
               name="price"
               required
               placeholder="8,50"
-              className="w-24 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+              className="w-24 rounded-lg border border-line px-3 py-2 text-sm"
             />
             <select
               name="vatCode"
               defaultValue="NOR"
               title="Taxa de IVA na fatura"
-              className="rounded-lg border border-neutral-300 px-2 py-2 text-sm"
+              className="rounded-lg border border-line px-2 py-2 text-sm"
             >
               {VAT_CODES.map((c) => (
                 <option key={c} value={c}>
@@ -236,7 +236,7 @@ export function MenuManager({ categories }: { categories: ManagedCategory[] }) {
             </select>
             <button
               disabled={pending}
-              className="rounded-lg border border-neutral-300 px-4 text-sm"
+              className="rounded-lg border border-line px-4 text-sm"
             >
               Adicionar prato
             </button>

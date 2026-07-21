@@ -38,11 +38,11 @@ export function FaturacaoManager({ status }: { status: InvoicingStatus }) {
     <main className="mx-auto max-w-lg p-6">
       <div className="mb-1 flex items-center gap-3">
         <h1 className="text-xl font-medium">Faturação</h1>
-        <Link href="/gestao" className="text-sm text-neutral-500 hover:underline">
+        <Link href="/gestao" className="text-sm text-muted hover:underline">
           ← Gestão
         </Link>
       </div>
-      <p className="mb-6 text-sm text-neutral-500">
+      <p className="mb-6 text-sm text-muted">
         Escolha como o restaurante emite a fatura-recibo certificada (AT) após
         cada pagamento.
       </p>
@@ -69,7 +69,7 @@ export function FaturacaoManager({ status }: { status: InvoicingStatus }) {
       )}
 
       {isExternal && (
-        <div className="mb-6 rounded-lg border border-neutral-300 bg-neutral-50 p-4 text-sm">
+        <div className="mb-6 rounded-lg border border-line bg-neutral-50 p-4 text-sm">
           <p className="font-medium">Faturação tratada por fora</p>
           <p className="mt-1 text-neutral-600">
             A app <strong>não emite</strong> documentos fiscais. O restaurante
@@ -81,7 +81,7 @@ export function FaturacaoManager({ status }: { status: InvoicingStatus }) {
       {/* ---------- Escolha / mudança de opção ---------- */}
       {(undecided || showVendusForm) && (
         <section className="mb-8">
-          <h2 className="mb-3 text-sm font-medium text-neutral-500">
+          <h2 className="mb-3 text-sm font-medium text-muted">
             {isVendus ? "Atualizar chave do Vendus" : "Emitir pela app (Vendus)"}
           </h2>
           <form
@@ -99,24 +99,24 @@ export function FaturacaoManager({ status }: { status: InvoicingStatus }) {
               autoComplete="off"
               required
               placeholder="API key do Vendus"
-              className="w-full rounded-lg border border-neutral-300 px-3 py-2"
+              className="w-full rounded-lg border border-line px-3 py-2"
             />
             <select
               name="mode"
               defaultValue={status.mode}
-              className="w-full rounded-lg border border-neutral-300 px-3 py-2"
+              className="w-full rounded-lg border border-line px-3 py-2"
             >
               <option value="tests">Testes (documentos não fiscais)</option>
               <option value="normal">Produção (documentos reais)</option>
             </select>
             <button
               disabled={pending}
-              className="w-full rounded-lg bg-black py-2 text-sm text-white disabled:opacity-40"
+              className="w-full rounded-lg bg-brand py-2 text-sm text-brand-ink disabled:opacity-40"
             >
               {pending ? "A validar…" : "Guardar e validar"}
             </button>
           </form>
-          <p className="mt-2 text-xs text-neutral-400">
+          <p className="mt-2 text-xs text-muted">
             A chave é guardada de forma segura no servidor e nunca é mostrada de
             volta. Obtenha-a no Vendus em Definições → Integrações → API.
           </p>
@@ -129,7 +129,7 @@ export function FaturacaoManager({ status }: { status: InvoicingStatus }) {
         {!isVendus && !showVendusForm && (
           <button
             onClick={() => setShowVendusForm(true)}
-            className="rounded-lg border border-neutral-300 px-3 py-1.5"
+            className="rounded-lg border border-line px-3 py-1.5"
           >
             Emitir pela app (Vendus)
           </button>
@@ -138,7 +138,7 @@ export function FaturacaoManager({ status }: { status: InvoicingStatus }) {
         {isVendus && !showVendusForm && (
           <button
             onClick={() => setShowVendusForm(true)}
-            className="rounded-lg border border-neutral-300 px-3 py-1.5"
+            className="rounded-lg border border-line px-3 py-1.5"
           >
             Atualizar chave
           </button>
@@ -150,7 +150,7 @@ export function FaturacaoManager({ status }: { status: InvoicingStatus }) {
             onClick={() =>
               act(() => setExternalInvoicing(), "Faturação passa a ser tratada por fora.")
             }
-            className="rounded-lg border border-neutral-300 px-3 py-1.5"
+            className="rounded-lg border border-line px-3 py-1.5"
           >
             Faturo por fora (a app não emite)
           </button>
@@ -160,7 +160,7 @@ export function FaturacaoManager({ status }: { status: InvoicingStatus }) {
           <button
             disabled={pending}
             onClick={() => act(() => removeInvoicingConfig())}
-            className="rounded-lg px-3 py-1.5 text-neutral-500 hover:text-red-700"
+            className="rounded-lg px-3 py-1.5 text-muted hover:text-red-700"
           >
             Limpar
           </button>
@@ -168,7 +168,7 @@ export function FaturacaoManager({ status }: { status: InvoicingStatus }) {
         {showVendusForm && !undecided && (
           <button
             onClick={() => setShowVendusForm(false)}
-            className="rounded-lg px-3 py-1.5 text-neutral-500"
+            className="rounded-lg px-3 py-1.5 text-muted"
           >
             Cancelar
           </button>

@@ -21,11 +21,11 @@ export default async function PagamentosPage({
     <main className="mx-auto max-w-2xl p-6">
       <div className="mb-1 flex items-center gap-3">
         <h1 className="text-xl font-medium">Pagamentos</h1>
-        <Link href="/gestao" className="text-sm text-neutral-500 hover:underline">
+        <Link href="/gestao" className="text-sm text-muted hover:underline">
           ← Gestão
         </Link>
       </div>
-      <p className="mb-6 text-sm text-neutral-500">
+      <p className="mb-6 text-sm text-muted">
         Ligue a conta Stripe do restaurante. O dinheiro dos clientes vai direto
         para si — a plataforma nunca o retém.
       </p>
@@ -53,26 +53,26 @@ export default async function PagamentosPage({
           </p>
           <div className="mt-3 flex gap-2">
             <form action={startOnboarding}>
-              <button className="rounded-lg bg-black px-4 py-2 text-sm text-white">
+              <button className="rounded-lg bg-brand px-4 py-2 text-sm text-brand-ink">
                 Continuar configuração
               </button>
             </form>
             <form action={refreshStatus}>
-              <button className="rounded-lg border border-neutral-300 px-4 py-2 text-sm">
+              <button className="rounded-lg border border-line px-4 py-2 text-sm">
                 Verificar estado
               </button>
             </form>
           </div>
         </div>
       ) : (
-        <div className="rounded-lg border border-neutral-200 p-4">
+        <div className="rounded-lg border border-line p-4">
           <p className="font-medium">Ainda não há pagamentos ligados</p>
-          <p className="mt-1 text-sm text-neutral-500">
+          <p className="mt-1 text-sm text-muted">
             Vai ser encaminhado para a Stripe para registar os dados do
             restaurante (NIF, IBAN). Em modo de teste, os dados são simulados.
           </p>
           <form action={startOnboarding} className="mt-3">
-            <button className="rounded-lg bg-black px-4 py-2 text-sm text-white">
+            <button className="rounded-lg bg-brand px-4 py-2 text-sm text-brand-ink">
               Ligar pagamentos
             </button>
           </form>

@@ -73,6 +73,7 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+
 /* Entrada suave. fill backwards => antes/durante o delay mostra o estado
    inicial; se a animação nunca correr, o elemento fica na sua opacidade natural
    (1). Nunca esconde conteúdo por depender da animação. */

@@ -3,6 +3,7 @@ import { resolveTableSession } from "@/lib/session/table";
 import { getMenu } from "@/lib/menu";
 import { ClienteMenu } from "./ClienteMenu";
 import { OrderTracker } from "./OrderTracker";
+import { MenuNav } from "./MenuNav";
 
 export default async function MesaPage({
   params,
@@ -20,7 +21,7 @@ export default async function MesaPage({
 
   return (
     <div className="min-h-full">
-      <header className="sticky top-0 z-20 border-b border-line bg-canvas/85 backdrop-blur-md">
+      <header className="sticky top-0 z-20 border-b border-line bg-canvas/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-md items-center justify-between px-4 py-3">
           <div className="min-w-0">
             <p className="truncate text-[15px] font-semibold text-ink">
@@ -32,6 +33,7 @@ export default async function MesaPage({
             {session.tableLabel}
           </span>
         </div>
+        <MenuNav categories={menu} />
       </header>
 
       <main className="mx-auto max-w-md px-4 pb-44 pt-4">

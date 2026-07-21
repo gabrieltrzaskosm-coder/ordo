@@ -206,7 +206,8 @@ export function ClienteMenu({
       {menu.map((cat, ci) => (
         <section
           key={cat.id}
-          className="reveal mb-7"
+          id={`cat-${cat.id}`}
+          className="reveal mb-7 scroll-mt-28"
           style={{ animationDelay: `${ci * 70}ms` }}
         >
           <h2 className="mb-3 px-1 text-base font-semibold text-ink">

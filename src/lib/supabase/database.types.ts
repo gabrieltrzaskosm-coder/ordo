@@ -14,6 +14,44 @@ export type Database = {
   };
   public: {
     Tables: {
+      establishment_invoicing: {
+        Row: {
+          api_key: string;
+          created_at: string;
+          establishment_id: string;
+          mode: string;
+          provider: string;
+          register_id: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          api_key: string;
+          created_at?: string;
+          establishment_id: string;
+          mode?: string;
+          provider?: string;
+          register_id?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          api_key?: string;
+          created_at?: string;
+          establishment_id?: string;
+          mode?: string;
+          provider?: string;
+          register_id?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "establishment_invoicing_establishment_id_fkey";
+            columns: ["establishment_id"];
+            isOneToOne: true;
+            referencedRelation: "establishments";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       establishments: {
         Row: {
           created_at: string;
@@ -52,33 +90,60 @@ export type Database = {
       };
       invoices: {
         Row: {
+          amount_cents: number | null;
           at_document_ref: string | null;
           created_at: string;
+          error: string | null;
           establishment_id: string;
           id: string;
+          number: string | null;
           payment_id: string;
           pdf_url: string | null;
           provider: string;
+          status: string;
         };
         Insert: {
+          amount_cents?: number | null;
           at_document_ref?: string | null;
           created_at?: string;
+          error?: string | null;
           establishment_id: string;
           id?: string;
+          number?: string | null;
           payment_id: string;
           pdf_url?: string | null;
           provider: string;
+          status?: string;
         };
         Update: {
+          amount_cents?: number | null;
           at_document_ref?: string | null;
           created_at?: string;
+          error?: string | null;
           establishment_id?: string;
           id?: string;
+          number?: string | null;
           payment_id?: string;
           pdf_url?: string | null;
           provider?: string;
+          status?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "invoices_establishment_id_fkey";
+            columns: ["establishment_id"];
+            isOneToOne: false;
+            referencedRelation: "establishments";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "invoices_payment_id_fkey";
+            columns: ["payment_id"];
+            isOneToOne: false;
+            referencedRelation: "payments";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       menu_categories: {
         Row: {
@@ -116,6 +181,7 @@ export type Database = {
           name: string;
           price_cents: number;
           sort: number;
+          vat_code: Database["public"]["Enums"]["vat_code"];
         };
         Insert: {
           available?: boolean;
@@ -128,6 +194,7 @@ export type Database = {
           name: string;
           price_cents: number;
           sort?: number;
+          vat_code?: Database["public"]["Enums"]["vat_code"];
         };
         Update: {
           available?: boolean;
@@ -140,6 +207,7 @@ export type Database = {
           name?: string;
           price_cents?: number;
           sort?: number;
+          vat_code?: Database["public"]["Enums"]["vat_code"];
         };
         Relationships: [
           {
@@ -577,6 +645,7 @@ export type Database = {
       payment_status: "pending" | "paid" | "failed" | "refunded";
       plan_tier: "basic" | "crm" | "ai";
       staff_role: "owner" | "manager" | "kitchen" | "waiter";
+      vat_code: "NOR" | "INT" | "RED" | "ISE";
       waiter_call_status: "open" | "ack" | "resolved";
     };
     CompositeTypes: { [_ in never]: never };

@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireStaff } from "@/lib/auth";
 import { maybeCloseTable } from "@/lib/orders/close";
+import { issueInvoiceForPayment } from "@/lib/invoicing";
 import type { Database } from "@/lib/supabase/database.types";
 
 type OrderStatus = Database["public"]["Enums"]["order_status"];
@@ -75,16 +76,30 @@ export async function markPaid(orderId: string) {
     .eq("id", orderId);
 
   // Regista o pagamento manual para o financeiro ficar completo.
-  await admin.from("payments").insert({
-    establishment_id: order.establishment_id,
-    order_id: order.id,
-    provider: "manual",
-    method: "cash",
-    amount_cents: order.total_cents,
-    status: "paid",
-  });
+  const { data: payment } = await admin
+    .from("payments")
+    .insert({
+      establishment_id: order.establishment_id,
+      order_id: order.id,
+      provider: "manual",
+      method: "cash",
+      amount_cents: order.total_cents,
+      status: "paid",
+    })
+    .select("id")
+    .maybeSingle();
 
   await maybeCloseTable(order.table_id);
+
+  // Fatura-recibo do pagamento manual (best-effort, ver webhook).
+  if (payment) {
+    try {
+      await issueInvoiceForPayment(payment.id);
+    } catch {
+      // falha registada em invoices.status='failed'
+    }
+  }
+
   revalidatePath("/cozinha");
 }
 

@@ -3,12 +3,14 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { formatMoney } from "@/lib/money";
+import { VAT_CODES, VAT_LABELS, type VatCode } from "@/lib/invoicing/vat";
 import {
   createCategory,
   createItem,
   deleteCategory,
   deleteItem,
   setItemAvailability,
+  setItemVatCode,
   updateItemPrice,
 } from "./actions";
 
@@ -18,6 +20,7 @@ export type ManagedItem = {
   description: string | null;
   priceCents: number;
   available: boolean;
+  vatCode: VatCode;
 };
 
 export type ManagedCategory = {
@@ -160,6 +163,20 @@ export function MenuManager({ categories }: { categories: ManagedCategory[] }) {
                   </button>
                 )}
 
+                <select
+                  disabled={pending}
+                  value={item.vatCode}
+                  onChange={(e) => run(() => setItemVatCode(item.id, e.target.value))}
+                  title="Taxa de IVA na fatura"
+                  className="rounded-lg border border-neutral-300 px-1 py-1 text-xs"
+                >
+                  {VAT_CODES.map((c) => (
+                    <option key={c} value={c}>
+                      {VAT_LABELS[c]}
+                    </option>
+                  ))}
+                </select>
+
                 <button
                   disabled={pending}
                   onClick={() => run(() => setItemAvailability(item.id, !item.available))}
@@ -205,6 +222,18 @@ export function MenuManager({ categories }: { categories: ManagedCategory[] }) {
               placeholder="8,50"
               className="w-24 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
             />
+            <select
+              name="vatCode"
+              defaultValue="NOR"
+              title="Taxa de IVA na fatura"
+              className="rounded-lg border border-neutral-300 px-2 py-2 text-sm"
+            >
+              {VAT_CODES.map((c) => (
+                <option key={c} value={c}>
+                  {VAT_LABELS[c]}
+                </option>
+              ))}
+            </select>
             <button
               disabled={pending}
               className="rounded-lg border border-neutral-300 px-4 text-sm"

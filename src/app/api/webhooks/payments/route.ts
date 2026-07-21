@@ -9,6 +9,7 @@ import { getStripe } from "@/lib/stripe/server";
 import { serverEnv } from "@/lib/env";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { maybeCloseTable } from "@/lib/orders/close";
+import { issueInvoiceForPayment } from "@/lib/invoicing";
 
 export async function POST(request: Request) {
   const secret = serverEnv.stripeWebhookSecret();
@@ -58,7 +59,7 @@ export async function POST(request: Request) {
         updated_at: new Date().toISOString(),
       })
       .eq("stripe_checkout_session_id", session.id)
-      .select("order_id, amount_cents, tip_cents")
+      .select("id, order_id, amount_cents, tip_cents")
       .maybeSingle();
 
     // Reflete gorjeta + total pago e carimba paid_at (visível ao staff via
@@ -79,6 +80,14 @@ export async function POST(request: Request) {
 
       // Pagamento pela app pode satisfazer a condição de zerar a mesa.
       if (order) await maybeCloseTable(order.table_id);
+
+      // Emite a fatura-recibo (best-effort). Uma falha aqui NÃO pode reverter o
+      // pagamento nem falhar o webhook — fica registada para reemissão.
+      try {
+        await issueInvoiceForPayment(payment.id);
+      } catch {
+        // já registado em invoices.status='failed' pela própria função
+      }
     }
   }
 

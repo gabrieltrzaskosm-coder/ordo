@@ -16,7 +16,7 @@ export default async function MenuPage() {
 
   const { data: items } = await supabase
     .from("menu_items")
-    .select("id, name, description, price_cents, available, category_id, sort")
+    .select("id, name, description, price_cents, available, category_id, sort, vat_code")
     .order("sort", { ascending: true });
 
   const managed: ManagedCategory[] = (categories ?? []).map((c) => ({
@@ -30,6 +30,7 @@ export default async function MenuPage() {
         description: i.description,
         priceCents: i.price_cents,
         available: i.available,
+        vatCode: i.vat_code,
       })),
   }));
 

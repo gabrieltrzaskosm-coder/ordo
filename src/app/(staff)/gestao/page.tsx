@@ -46,9 +46,8 @@ export default async function GestaoPage() {
       </section>
 
       <p className="mb-8 rounded-lg bg-amber-50 p-3 text-sm text-amber-900">
-        Estes números refletem o valor <strong>pedido</strong>, não o cobrado: o
-        pagamento ainda não está implementado. Gorjetas e faturação entram na
-        próxima fase.
+        Estes números refletem o valor <strong>pedido</strong> (todos os pedidos
+        do dia), não apenas o já cobrado.
       </p>
 
       <div className="grid gap-3 sm:grid-cols-2">
@@ -86,6 +85,15 @@ export default async function GestaoPage() {
           <p className="font-medium">Pagamentos</p>
           <p className="text-sm text-neutral-500">
             Ligar a conta Stripe para receber na mesa.
+          </p>
+        </Link>
+        <Link
+          href="/gestao/faturacao"
+          className="rounded-lg border border-neutral-200 p-4 hover:border-neutral-400"
+        >
+          <p className="font-medium">Faturação</p>
+          <p className="text-sm text-neutral-500">
+            Ligar o Vendus para emitir a fatura-recibo (AT).
           </p>
         </Link>
       </div>

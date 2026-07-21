@@ -17,7 +17,14 @@ import { isVatCode, type VatCode } from "./vat";
 
 export type IssueOutcome =
   | { ok: true; number: string; pdfUrl?: string }
-  | { ok: false; skipped: "not_configured" | "already_issued" | "no_lines" }
+  | {
+      ok: false;
+      skipped:
+        | "not_configured" // sem linha: o restaurante ainda não decidiu
+        | "external" // fatura por fora de propósito — a app não emite
+        | "already_issued"
+        | "no_lines";
+    }
   | { ok: false; error: string };
 
 function asVatCode(v: string | null | undefined): VatCode {
@@ -59,7 +66,16 @@ export async function issueInvoiceForPayment(
     .select("provider, api_key, register_id, mode")
     .eq("establishment_id", payment.establishment_id)
     .maybeSingle();
-  if (!config || config.provider !== "vendus") {
+  if (!config) {
+    // Ainda não decidiu como fatura — não emitimos nada.
+    return { ok: false, skipped: "not_configured" };
+  }
+  if (config.provider === "external") {
+    // Fatura por fora de propósito (POS próprio, contabilista, outro software).
+    return { ok: false, skipped: "external" };
+  }
+  // Fase 2: 'moloni' / 'invoicexpress'. Por agora só o Vendus emite.
+  if (config.provider !== "vendus" || !config.api_key) {
     return { ok: false, skipped: "not_configured" };
   }
 

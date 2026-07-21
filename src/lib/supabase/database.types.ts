@@ -16,7 +16,7 @@ export type Database = {
     Tables: {
       establishment_invoicing: {
         Row: {
-          api_key: string;
+          api_key: string | null;
           created_at: string;
           establishment_id: string;
           mode: string;
@@ -25,7 +25,7 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
-          api_key: string;
+          api_key?: string | null;
           created_at?: string;
           establishment_id: string;
           mode?: string;

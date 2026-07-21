@@ -7,7 +7,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { requireManager } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { fetchDefaultRegisterId } from "@/lib/invoicing/vendus";
+import { fetchApiRegisterId } from "@/lib/invoicing/vendus";
 
 // null = ainda não decidiu; 'external' = fatura por fora (app não emite).
 export type InvoicingProvider = "vendus" | "external" | null;
@@ -86,12 +86,22 @@ export async function saveInvoicingConfig(
 
   let registerId: string | null = null;
   try {
-    registerId = await fetchDefaultRegisterId(apiKey);
+    registerId = await fetchApiRegisterId(apiKey);
   } catch (e) {
     const msg = e instanceof Error ? e.message : "";
     return {
       ok: false,
       error: `Não foi possível validar a chave no Vendus. ${msg}`.trim(),
+    };
+  }
+  if (!registerId) {
+    // Chave válida, mas falta o registo (caixa) do tipo API que o Vendus exige.
+    return {
+      ok: false,
+      error:
+        "Chave válida, mas não há nenhuma caixa do tipo «API» na conta Vendus. " +
+        "Crie uma no backoffice do Vendus (Definições → Caixas → Nova, tipo «API») " +
+        "e volte a guardar.",
     };
   }
 

@@ -103,10 +103,12 @@ export async function createVendusDocument(
 }
 
 /**
- * Valida a API key listando os registos (POS) da conta. Devolve o id do
- * primeiro registo, usado como default ao emitir. Serve de "test connection".
+ * Valida a API key e devolve o id de um registo do tipo `api` (o Vendus só
+ * emite via API por um registo desse tipo — um `pos` dá erro na emissão).
+ * Serve de "test connection". Devolve null se a chave é válida mas não há
+ * nenhum registo API criado (o chamador avisa o utilizador para o criar).
  */
-export async function fetchDefaultRegisterId(
+export async function fetchApiRegisterId(
   apiKey: string,
 ): Promise<string | null> {
   const res = await fetch(`${VENDUS_BASE}/registers/`, {
@@ -116,7 +118,12 @@ export async function fetchDefaultRegisterId(
     const text = await res.text();
     throw new Error(`Vendus ${res.status}: ${text.slice(0, 200)}`);
   }
-  const list = (await res.json()) as Array<{ id?: number | string }>;
-  const first = Array.isArray(list) ? list[0] : undefined;
-  return first?.id != null ? String(first.id) : null;
+  const list = (await res.json()) as Array<{
+    id?: number | string;
+    type?: string;
+  }>;
+  const apiReg = Array.isArray(list)
+    ? list.find((r) => r.type === "api")
+    : undefined;
+  return apiReg?.id != null ? String(apiReg.id) : null;
 }

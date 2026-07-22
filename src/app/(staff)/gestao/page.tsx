@@ -47,23 +47,28 @@ const NAV = [
 // Funcionalidades sujeitas a plano. Enquanto não estiverem construídas, o link
 // leva à página do plano (upsell). Quando forem feitas, passam a apontar para a
 // própria feature (já protegida por requirePlan no servidor).
+// `href` só quando a feature já existe; senão, o clique leva ao upsell. O gate
+// real é o requirePlan no servidor da própria página.
 const PLAN_FEATURES: {
   feature: Feature;
   title: string;
   desc: string;
   icon: string;
+  href?: string;
 }[] = [
   {
     feature: "financeiro",
     title: "Balanço financeiro",
     desc: "Resultados diários e mensais, com exportação.",
     icon: "M3 3v18h18M7 14l3-3 3 3 5-5",
+    href: "/gestao/financeiro",
   },
   {
     feature: "insights",
     title: "Insights de negócio",
     desc: "Horas de pico, ticket médio e mais vendidos.",
     icon: "M8 18v-4M12 18v-8M16 18v-6M3 21h18",
+    href: "/gestao/insights",
   },
   {
     feature: "stock",
@@ -155,13 +160,22 @@ export default async function GestaoPage() {
       <div className="grid gap-3 sm:grid-cols-2">
         {PLAN_FEATURES.map((f) => {
           const unlocked = hasFeature(session.plan, f.feature);
+          // Se existe e está desbloqueada, vai à feature; senão ao upsell.
+          const href = unlocked && f.href ? f.href : "/gestao/plano";
+          const built = Boolean(f.href);
           return (
             <Link
               key={f.feature}
-              href="/gestao/plano"
+              href={href}
               className="group flex items-center gap-4 rounded-2xl border border-line bg-surface p-4 shadow-[var(--shadow-card)] transition hover:border-brand/40"
             >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-muted">
+              <span
+                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
+                  unlocked
+                    ? "bg-brand-weak text-brand-strong"
+                    : "bg-surface-2 text-muted"
+                }`}
+              >
                 <Icon d={f.icon} />
               </span>
               <div className="min-w-0 flex-1">
@@ -172,7 +186,7 @@ export default async function GestaoPage() {
                   </span>
                 </p>
                 <p className="text-sm text-muted">
-                  {unlocked ? "Em breve no seu plano." : f.desc}
+                  {unlocked ? (built ? f.desc : "Em breve no seu plano.") : f.desc}
                 </p>
               </div>
               {unlocked ? <Chevron /> : <LockIcon />}

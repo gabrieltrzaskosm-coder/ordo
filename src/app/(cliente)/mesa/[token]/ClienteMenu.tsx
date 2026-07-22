@@ -38,10 +38,12 @@ export function ClienteMenu({
   token,
   menu,
   currency,
+  bestSellerId = null,
 }: {
   token: string;
   menu: MenuCategory[];
   currency: string;
+  bestSellerId?: string | null;
 }) {
   const [cart, setCart] = useState<CartLine[]>([]);
   const [name, setName] = useState("");
@@ -239,6 +241,11 @@ export function ClienteMenu({
                     <span className="tnum text-sm font-semibold text-ink">
                       {formatMoney(item.priceCents, currency)}
                     </span>
+                    {item.id === bestSellerId && (
+                      <span className="rounded-full bg-brand px-2 py-0.5 text-[11px] font-semibold text-brand-ink">
+                        ★ Mais pedido
+                      </span>
+                    )}
                     {item.groups.length > 0 && (
                       <span className="rounded-full bg-brand-weak px-2 py-0.5 text-[11px] font-medium text-brand-strong">
                         opções

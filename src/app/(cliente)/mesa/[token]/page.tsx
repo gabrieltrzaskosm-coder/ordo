@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
-import { resolveTableSession } from "@/lib/session/table";
+import { resolveTableSession, getBestSellerItemId } from "@/lib/session/table";
 import { getMenu } from "@/lib/menu";
+import { hasFeature } from "@/lib/plans";
 import { ClienteMenu } from "./ClienteMenu";
 import { OrderTracker } from "./OrderTracker";
 import { MenuNav } from "./MenuNav";
@@ -18,6 +19,11 @@ export default async function MesaPage({
   if (!session) notFound();
 
   const menu = await getMenu(session.establishmentId);
+
+  // Destaque do mais pedido — só no plano Max (feature "ia"/divulgação).
+  const bestSellerId = hasFeature(session.plan, "ia")
+    ? await getBestSellerItemId(session.establishmentId)
+    : null;
 
   return (
     <div className="min-h-full">
@@ -50,7 +56,12 @@ export default async function MesaPage({
 
         <OrderTracker token={token} />
 
-        <ClienteMenu token={token} menu={menu} currency={session.currency} />
+        <ClienteMenu
+          token={token}
+          menu={menu}
+          currency={session.currency}
+          bestSellerId={bestSellerId}
+        />
       </main>
     </div>
   );

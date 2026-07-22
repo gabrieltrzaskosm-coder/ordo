@@ -82,6 +82,7 @@ const PLAN_FEATURES: {
     title: "Assistente IA",
     desc: "Resumo do dia, previsão e alertas inteligentes.",
     icon: "M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2M12 9a3 3 0 100 6 3 3 0 000-6z",
+    href: "/gestao/ia",
   },
 ];
 

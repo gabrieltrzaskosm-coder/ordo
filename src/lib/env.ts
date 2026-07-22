@@ -36,4 +36,7 @@ export const serverEnv = {
   stripeWebhookSecret: () => process.env.STRIPE_WEBHOOK_SECRET,
   invoicingProvider: process.env.INVOICING_PROVIDER ?? "vendus",
   invoicingApiKey: () => process.env.INVOICING_API_KEY,
+  // Chave da plataforma (não por restaurante): a IA do plano Max é um custo da
+  // plataforma. Ausente => a feature de resumo mostra "não configurado".
+  anthropicApiKey: () => process.env.ANTHROPIC_API_KEY,
 };

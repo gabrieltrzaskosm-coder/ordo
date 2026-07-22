@@ -8,6 +8,7 @@ import "server-only";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/database.types";
+import { planRank, type Plan } from "@/lib/plans";
 
 export type StaffRole = Database["public"]["Enums"]["staff_role"];
 
@@ -18,6 +19,7 @@ export type StaffSession = {
   role: StaffRole;
   establishmentId: string;
   establishmentName: string;
+  plan: Plan;
 };
 
 /** Exige sessão de staff válida. Redireciona para /login se não houver. */
@@ -31,7 +33,7 @@ export async function requireStaff(): Promise<StaffSession> {
 
   const { data: staff } = await supabase
     .from("staff")
-    .select("id, role, establishment_id, establishments(name)")
+    .select("id, role, establishment_id, establishments(name, plan)")
     .eq("auth_user_id", user.id)
     .maybeSingle();
 
@@ -39,7 +41,10 @@ export async function requireStaff(): Promise<StaffSession> {
   // estabelecimento. Não deve ver nada.
   if (!staff) redirect("/login?erro=sem-acesso");
 
-  const est = staff.establishments as unknown as { name: string } | null;
+  const est = staff.establishments as unknown as {
+    name: string;
+    plan: Plan;
+  } | null;
 
   return {
     userId: user.id,
@@ -48,6 +53,7 @@ export async function requireStaff(): Promise<StaffSession> {
     role: staff.role,
     establishmentId: staff.establishment_id,
     establishmentName: est?.name ?? "",
+    plan: est?.plan ?? "basic",
   };
 }
 
@@ -56,6 +62,19 @@ export async function requireManager(): Promise<StaffSession> {
   const session = await requireStaff();
   if (session.role !== "owner" && session.role !== "manager") {
     redirect("/cozinha?erro=sem-permissao");
+  }
+  return session;
+}
+
+/**
+ * Exige manager E que o plano do estabelecimento inclua `minPlan`. Bloqueia no
+ * servidor — esconder na UI não chega, alguém pode chamar a rota à mão. Se o
+ * plano for insuficiente, manda para a página do plano com o upsell.
+ */
+export async function requirePlan(minPlan: Plan): Promise<StaffSession> {
+  const session = await requireManager();
+  if (planRank(session.plan) < planRank(minPlan)) {
+    redirect(`/gestao/plano?bloqueado=${minPlan}`);
   }
   return session;
 }

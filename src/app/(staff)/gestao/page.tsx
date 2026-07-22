@@ -2,6 +2,12 @@ import Link from "next/link";
 import { requireManager } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { formatMoney } from "@/lib/money";
+import {
+  hasFeature,
+  PLAN_LABELS,
+  FEATURE_MIN_PLAN,
+  type Feature,
+} from "@/lib/plans";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +44,41 @@ const NAV = [
   },
 ];
 
+// Funcionalidades sujeitas a plano. Enquanto não estiverem construídas, o link
+// leva à página do plano (upsell). Quando forem feitas, passam a apontar para a
+// própria feature (já protegida por requirePlan no servidor).
+const PLAN_FEATURES: {
+  feature: Feature;
+  title: string;
+  desc: string;
+  icon: string;
+}[] = [
+  {
+    feature: "financeiro",
+    title: "Balanço financeiro",
+    desc: "Resultados diários e mensais, com exportação.",
+    icon: "M3 3v18h18M7 14l3-3 3 3 5-5",
+  },
+  {
+    feature: "insights",
+    title: "Insights de negócio",
+    desc: "Horas de pico, ticket médio e mais vendidos.",
+    icon: "M8 18v-4M12 18v-8M16 18v-6M3 21h18",
+  },
+  {
+    feature: "stock",
+    title: "Gestão de stock",
+    desc: "Baixa automática e alertas de rutura.",
+    icon: "M3 7l9-4 9 4-9 4-9-4zM3 7v10l9 4 9-4V7",
+  },
+  {
+    feature: "ia",
+    title: "Assistente IA",
+    desc: "Resumo do dia, previsão e alertas inteligentes.",
+    icon: "M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2M12 9a3 3 0 100 6 3 3 0 000-6z",
+  },
+];
+
 export default async function GestaoPage() {
   const session = await requireManager();
   const supabase = await createClient();
@@ -62,8 +103,18 @@ export default async function GestaoPage() {
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-6">
-      <h1 className="text-2xl font-semibold text-ink">Gestão</h1>
-      <p className="mt-1 text-sm text-muted">{session.establishmentName}</p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold text-ink">Gestão</h1>
+          <p className="mt-1 text-sm text-muted">{session.establishmentName}</p>
+        </div>
+        <Link
+          href="/gestao/plano"
+          className="shrink-0 rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-semibold text-ink transition hover:border-brand/40"
+        >
+          Plano {PLAN_LABELS[session.plan]}
+        </Link>
+      </div>
 
       <section className="mt-6 grid grid-cols-3 divide-x divide-line overflow-hidden rounded-2xl border border-line bg-surface shadow-[var(--shadow-card)]">
         {stats.map((s) => (
@@ -86,34 +137,90 @@ export default async function GestaoPage() {
             className="group flex items-center gap-4 rounded-2xl border border-line bg-surface p-4 shadow-[var(--shadow-card)] transition hover:border-brand/40"
           >
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-weak text-brand-strong">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-                <path
-                  d={item.icon}
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <Icon d={item.icon} />
             </span>
             <div className="min-w-0 flex-1">
               <p className="font-semibold text-ink">{item.title}</p>
               <p className="text-sm text-muted">{item.desc}</p>
             </div>
-            <span className="text-muted transition group-hover:translate-x-0.5 group-hover:text-brand">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-                <path
-                  d="M9 6l6 6-6 6"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </span>
+            <Chevron />
           </Link>
         ))}
       </div>
+
+      {/* ---------- Funcionalidades por plano ---------- */}
+      <h2 className="mt-8 mb-3 px-1 text-xs font-semibold uppercase tracking-wide text-muted">
+        Mais funcionalidades
+      </h2>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {PLAN_FEATURES.map((f) => {
+          const unlocked = hasFeature(session.plan, f.feature);
+          return (
+            <Link
+              key={f.feature}
+              href="/gestao/plano"
+              className="group flex items-center gap-4 rounded-2xl border border-line bg-surface p-4 shadow-[var(--shadow-card)] transition hover:border-brand/40"
+            >
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-muted">
+                <Icon d={f.icon} />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="flex items-center gap-2 font-semibold text-ink">
+                  {f.title}
+                  <span className="rounded-full bg-brand-weak px-2 py-0.5 text-[11px] font-semibold text-brand-strong">
+                    {PLAN_LABELS[FEATURE_MIN_PLAN[f.feature]]}
+                  </span>
+                </p>
+                <p className="text-sm text-muted">
+                  {unlocked ? "Em breve no seu plano." : f.desc}
+                </p>
+              </div>
+              {unlocked ? <Chevron /> : <LockIcon />}
+            </Link>
+          );
+        })}
+      </div>
     </main>
+  );
+}
+
+function Icon({ d }: { d: string }) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d={d}
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function Chevron() {
+  return (
+    <span className="text-muted transition group-hover:translate-x-0.5 group-hover:text-brand">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <path
+          d="M9 6l6 6-6 6"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </span>
+  );
+}
+
+function LockIcon() {
+  return (
+    <span className="text-muted">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <rect x="4" y="11" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="1.8" />
+        <path d="M8 11V7a4 4 0 018 0v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      </svg>
+    </span>
   );
 }

@@ -643,7 +643,7 @@ export type Database = {
         | "cancelled";
       payment_method: "card" | "mbway" | "multibanco" | "cash";
       payment_status: "pending" | "paid" | "failed" | "refunded";
-      plan_tier: "basic" | "crm" | "ai";
+      plan_tier: "basic" | "pro" | "max";
       staff_role: "owner" | "manager" | "kitchen" | "waiter";
       vat_code: "NOR" | "INT" | "RED" | "ISE";
       waiter_call_status: "open" | "ack" | "resolved";

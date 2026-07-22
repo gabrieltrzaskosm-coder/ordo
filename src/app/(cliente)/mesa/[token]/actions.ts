@@ -41,14 +41,35 @@ export async function placeOrder(input: unknown): Promise<ActionResult> {
   const ids = [...new Set(items.map((i) => i.menuItemId))];
   const { data: dbItems } = await supabase
     .from("menu_items")
-    .select("id, name, price_cents, available")
+    .select("id, name, price_cents, available, track_stock, stock_qty")
     .eq("establishment_id", session.establishmentId)
     .in("id", ids);
 
   const byId = new Map((dbItems ?? []).map((i) => [i.id, i]));
+
+  // Quantidade total pedida por artigo (várias linhas podem repetir o item com
+  // opções diferentes) — para validar stock e depois dar baixa.
+  const qtyByItem = new Map<string, number>();
+  for (const line of items) {
+    qtyByItem.set(
+      line.menuItemId,
+      (qtyByItem.get(line.menuItemId) ?? 0) + line.qty,
+    );
+  }
+
   for (const line of items) {
     const it = byId.get(line.menuItemId);
-    if (!it || !it.available) return { ok: false, error: "Item indisponível." };
+    // Disponibilidade efetiva: manual E (não segue stock OU tem stock).
+    const avail = it && it.available && (!it.track_stock || it.stock_qty > 0);
+    if (!it || !avail) return { ok: false, error: "Item indisponível." };
+  }
+
+  // Stock suficiente para o total pedido de cada artigo seguido.
+  for (const [itemId, qty] of qtyByItem) {
+    const it = byId.get(itemId)!;
+    if (it.track_stock && it.stock_qty < qty) {
+      return { ok: false, error: `Sem stock suficiente de ${it.name}.` };
+    }
   }
 
   // Grupos e opções destes itens — para validar as escolhas e obter os preços
@@ -168,6 +189,14 @@ export async function placeOrder(input: unknown): Promise<ActionResult> {
       }));
       await supabase.from("order_item_modifiers").insert(rows);
     }
+  }
+
+  // Baixa de stock dos artigos seguidos (função atómica; a zero, o menu passa a
+  // mostrar esgotado automaticamente). Best-effort — não reverte o pedido.
+  for (const [itemId, qty] of qtyByItem) {
+    const it = byId.get(itemId)!;
+    if (!it.track_stock) continue;
+    await supabase.rpc("decrement_stock", { p_item_id: itemId, p_amount: qty });
   }
 
   return { ok: true, orderId: order.id };

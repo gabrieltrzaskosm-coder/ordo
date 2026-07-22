@@ -178,9 +178,12 @@ export type Database = {
           establishment_id: string;
           id: string;
           image_url: string | null;
+          low_stock_threshold: number;
           name: string;
           price_cents: number;
           sort: number;
+          stock_qty: number;
+          track_stock: boolean;
           vat_code: Database["public"]["Enums"]["vat_code"];
         };
         Insert: {
@@ -191,9 +194,12 @@ export type Database = {
           establishment_id: string;
           id?: string;
           image_url?: string | null;
+          low_stock_threshold?: number;
           name: string;
           price_cents: number;
           sort?: number;
+          stock_qty?: number;
+          track_stock?: boolean;
           vat_code?: Database["public"]["Enums"]["vat_code"];
         };
         Update: {
@@ -204,9 +210,12 @@ export type Database = {
           establishment_id?: string;
           id?: string;
           image_url?: string | null;
+          low_stock_threshold?: number;
           name?: string;
           price_cents?: number;
           sort?: number;
+          stock_qty?: number;
+          track_stock?: boolean;
           vat_code?: Database["public"]["Enums"]["vat_code"];
         };
         Relationships: [
@@ -630,9 +639,15 @@ export type Database = {
       };
     };
     Views: { [_ in never]: never };
-    // Vazio de propósito: os helpers de RLS vivem no schema `private`, fora da
-    // API exposta — não são chamáveis via /rest/v1/rpc.
-    Functions: { [_ in never]: never };
+    // Os helpers de RLS vivem no schema `private`, fora da API exposta.
+    // decrement_stock é a única função pública (baixa de stock atómica), com
+    // execute revogado a anon/authenticated — só o service role a chama.
+    Functions: {
+      decrement_stock: {
+        Args: { p_item_id: string; p_amount: number };
+        Returns: undefined;
+      };
+    };
     Enums: {
       order_status:
         | "draft"

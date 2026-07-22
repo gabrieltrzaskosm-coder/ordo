@@ -45,7 +45,7 @@ export async function getMenu(establishmentId: string): Promise<MenuCategory[]> 
   const { data: items } = await supabase
     .from("menu_items")
     .select(
-      "id, name, description, price_cents, available, image_url, category_id, sort",
+      "id, name, description, price_cents, available, image_url, category_id, sort, track_stock, stock_qty",
     )
     .eq("establishment_id", establishmentId)
     .order("sort", { ascending: true });
@@ -91,7 +91,8 @@ export async function getMenu(establishmentId: string): Promise<MenuCategory[]> 
         name: i.name,
         description: i.description,
         priceCents: i.price_cents,
-        available: i.available,
+        // Disponibilidade efetiva: manual E (não segue stock OU tem stock).
+        available: i.available && (!i.track_stock || i.stock_qty > 0),
         imageUrl: i.image_url,
         groups: groupsByItem.get(i.id) ?? [],
       })),

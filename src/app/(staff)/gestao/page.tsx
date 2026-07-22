@@ -75,6 +75,7 @@ const PLAN_FEATURES: {
     title: "Gestão de stock",
     desc: "Baixa automática e alertas de rutura.",
     icon: "M3 7l9-4 9 4-9 4-9-4zM3 7v10l9 4 9-4V7",
+    href: "/gestao/stock",
   },
   {
     feature: "ia",

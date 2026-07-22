@@ -53,10 +53,13 @@ export async function generateDailySummary(): Promise<SummaryResult> {
       .join("\n")
       .trim();
 
-    if (!text) return { ok: false, reason: "error", error: "Resposta vazia." };
+    if (!text) return { ok: false, reason: "error" };
     return { ok: true, text };
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Erro desconhecido";
-    return { ok: false, reason: "error", error: msg };
+    // O detalhe (ex.: saldo/limite da conta da plataforma) fica no log do
+    // servidor; ao dono do restaurante mostramos só uma mensagem genérica —
+    // não deve ver internals da API da plataforma.
+    console.error("[ai] resumo falhou:", e instanceof Error ? e.message : e);
+    return { ok: false, reason: "error" };
   }
 }

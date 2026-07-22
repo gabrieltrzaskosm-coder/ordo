@@ -19,7 +19,7 @@ export function AssistantClient() {
           "Assistente de IA ainda não configurado nesta plataforma (falta a chave da API).",
         );
       } else {
-        setError(res.error ?? "Não foi possível gerar o resumo.");
+        setError("Não foi possível gerar o resumo agora. Tente daqui a pouco.");
       }
     });
   }

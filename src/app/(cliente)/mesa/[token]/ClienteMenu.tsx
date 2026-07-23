@@ -1,9 +1,14 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import type { MenuCategory, MenuItem } from "@/lib/menu";
 import { formatMoney } from "@/lib/money";
-import { callWaiter, payForOrder, placeOrder } from "./actions";
+import {
+  callWaiter,
+  getOrderableItems,
+  payForOrder,
+  placeOrder,
+} from "./actions";
 
 // Converte "3", "3,50" ou "3.50" em cêntimos. Inválido ou negativo → 0.
 function eurosToCents(raw: string): number {
@@ -59,9 +64,64 @@ export function ClienteMenu({
   // Modal de opções: item a configurar + escolhas por grupo (ids das opções).
   const [modalItem, setModalItem] = useState<MenuItem | null>(null);
   const [choices, setChoices] = useState<Record<string, string[]>>({});
+  // Artigos ainda pedíveis. null = ainda não consultámos; vale o que o servidor
+  // mandou (que já vem filtrado).
+  const [orderable, setOrderable] = useState<Set<string> | null>(null);
 
   const subtotal = cart.reduce((s, l) => s + lineUnit(l) * l.qty, 0);
   const count = cart.reduce((s, l) => s + l.qty, 0);
+
+  const refreshOrderable = useCallback(async () => {
+    const ids = await getOrderableItems(token);
+    setOrderable(new Set(ids));
+  }, [token]);
+
+  // O stock muda enquanto o cliente está no ecrã (outra mesa pediu o último).
+  // Sem isto, ele só via o artigo desaparecer ao recarregar a página.
+  useEffect(() => {
+    let alive = true;
+    async function poll() {
+      const ids = await getOrderableItems(token);
+      if (alive) setOrderable(new Set(ids));
+    }
+    poll();
+    const id = setInterval(poll, 5000);
+    return () => {
+      alive = false;
+      clearInterval(id);
+    };
+  }, [token]);
+
+  // Menu efetivamente mostrado: sai o que esgotou desde que a página carregou.
+  const visibleMenu = useMemo(() => {
+    if (!orderable) return menu;
+    return menu
+      .map((c) => ({ ...c, items: c.items.filter((i) => orderable.has(i.id)) }))
+      .filter((c) => c.items.length > 0);
+  }, [menu, orderable]);
+
+  // Se algo do carrinho esgotou entretanto, tira-o e avisa — mais honesto do
+  // que deixar o cliente submeter e levar com um erro.
+  useEffect(() => {
+    if (!orderable) return;
+    const gone = cart.filter((l) => !orderable.has(l.itemId));
+    if (gone.length === 0) return;
+    const names = [...new Set(gone.map((l) => l.name))];
+    setCart((c) => c.filter((l) => orderable.has(l.itemId)));
+    setStatus(
+      names.length === 1
+        ? `${names[0]} esgotou e saiu do seu pedido.`
+        : `${names.join(", ")} esgotaram e saíram do seu pedido.`,
+    );
+  }, [orderable, cart]);
+
+  // O artigo pode esgotar com o modal de opções aberto.
+  useEffect(() => {
+    if (modalItem && orderable && !orderable.has(modalItem.id)) {
+      setModalItem(null);
+      setStatus(`${modalItem.name} esgotou agora mesmo.`);
+    }
+  }, [modalItem, orderable]);
 
   function addLine(item: MenuItem, mods: ChosenModifier[]) {
     const key = lineKey(item.id, mods);
@@ -164,6 +224,9 @@ export function ClienteMenu({
         setPlacedOrder({ id: res.orderId, subtotalCents: orderSubtotal });
       } else {
         setStatus(res.error);
+        // Recusado provavelmente por stock: sincroniza já para o artigo sair do
+        // ecrã, em vez de esperar pelo próximo ciclo do polling.
+        void refreshOrderable();
       }
     });
   }
@@ -197,7 +260,7 @@ export function ClienteMenu({
         Chamar atendente
       </button>
 
-      {menu.length === 0 && (
+      {visibleMenu.length === 0 && (
         <div className="reveal rounded-2xl border border-dashed border-line py-12 text-center">
           <p className="text-sm text-muted">
             O menu ainda está a ser preparado. Volte daqui a pouco.
@@ -205,7 +268,7 @@ export function ClienteMenu({
         </div>
       )}
 
-      {menu.map((cat, ci) => (
+      {visibleMenu.map((cat, ci) => (
         <section
           key={cat.id}
           id={`cat-${cat.id}`}

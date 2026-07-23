@@ -6,6 +6,7 @@
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveTableSession } from "@/lib/session/table";
+import { getOrderableItemIds } from "@/lib/menu";
 import { createOrderCheckout } from "@/lib/stripe/checkout";
 
 const placeOrderSchema = z.object({
@@ -64,7 +65,9 @@ export async function placeOrder(input: unknown): Promise<ActionResult> {
     if (!it || !avail) return { ok: false, error: "Item indisponível." };
   }
 
-  // Stock suficiente para o total pedido de cada artigo seguido.
+  // Pré-verificação de stock: serve só para falhar cedo com uma mensagem boa.
+  // NÃO é o que garante que não se vende a mais — isso é a reserve_stock() mais
+  // abaixo, que decide com as linhas bloqueadas.
   for (const [itemId, qty] of qtyByItem) {
     const it = byId.get(itemId)!;
     if (it.track_stock && it.stock_qty < qty) {
@@ -147,6 +150,47 @@ export async function placeOrder(input: unknown): Promise<ActionResult> {
     0,
   );
 
+  // ---- Reserva de stock ANTES de criar o pedido ----
+  // É aqui que se decide quem fica com a última unidade. A reserve_stock()
+  // bloqueia as linhas, verifica e dá baixa na mesma transação, por isso dois
+  // pedidos simultâneos do último artigo não passam os dois. Reservar antes de
+  // gravar evita ter de apagar um pedido já criado.
+  const reserveItems = [...qtyByItem.entries()]
+    .filter(([itemId]) => byId.get(itemId)!.track_stock)
+    .map(([itemId, qty]) => ({ item_id: itemId, qty }));
+
+  if (reserveItems.length > 0) {
+    const { data: reserved, error: reserveErr } = await supabase.rpc(
+      "reserve_stock",
+      { p_items: reserveItems },
+    );
+    if (reserveErr) {
+      console.error("[stock] reserva falhou:", reserveErr.message);
+      return { ok: false, error: "Não foi possível confirmar o stock." };
+    }
+    const r = reserved as { ok: boolean; item?: string } | null;
+    if (!r?.ok) {
+      // Alguém levou a última unidade primeiro.
+      return {
+        ok: false,
+        error: r?.item
+          ? `${r.item} esgotou agora mesmo. Retire-o do pedido para continuar.`
+          : "Um dos artigos esgotou agora mesmo.",
+      };
+    }
+  }
+
+  // A partir daqui o stock já está reservado: se algo falhar, tem de ser devolvido.
+  const releaseReserved = async () => {
+    if (reserveItems.length === 0) return;
+    const { error } = await supabase.rpc("release_stock", {
+      p_items: reserveItems,
+    });
+    if (error) {
+      console.error("[stock] devolução falhou:", error.message, reserveItems);
+    }
+  };
+
   const { data: order, error: orderErr } = await supabase
     .from("orders")
     .insert({
@@ -160,7 +204,10 @@ export async function placeOrder(input: unknown): Promise<ActionResult> {
     .select("id")
     .single();
 
-  if (orderErr || !order) return { ok: false, error: "Falha ao criar o pedido." };
+  if (orderErr || !order) {
+    await releaseReserved();
+    return { ok: false, error: "Falha ao criar o pedido." };
+  }
 
   // Insere cada linha e as suas opções (uma a uma para obter o id do item).
   for (const l of prepared) {
@@ -177,7 +224,10 @@ export async function placeOrder(input: unknown): Promise<ActionResult> {
       })
       .select("id")
       .single();
-    if (oiErr || !oi) return { ok: false, error: "Falha ao registar os itens." };
+    if (oiErr || !oi) {
+      await releaseReserved();
+      return { ok: false, error: "Falha ao registar os itens." };
+    }
 
     if (l.modifiers.length > 0) {
       const rows = l.modifiers.map((m) => ({
@@ -191,15 +241,18 @@ export async function placeOrder(input: unknown): Promise<ActionResult> {
     }
   }
 
-  // Baixa de stock dos artigos seguidos (função atómica; a zero, o menu passa a
-  // mostrar esgotado automaticamente). Best-effort — não reverte o pedido.
-  for (const [itemId, qty] of qtyByItem) {
-    const it = byId.get(itemId)!;
-    if (!it.track_stock) continue;
-    await supabase.rpc("decrement_stock", { p_item_id: itemId, p_amount: qty });
-  }
-
+  // O stock já foi dado em baixa na reserva, acima.
   return { ok: true, orderId: order.id };
+}
+
+/**
+ * Ids dos artigos que ainda se podem pedir. O menu do cliente consulta isto em
+ * polling para fazer desaparecer o que esgotou enquanto ele estava no ecrã.
+ */
+export async function getOrderableItems(token: string): Promise<string[]> {
+  const session = await resolveTableSession(token);
+  if (!session) return [];
+  return getOrderableItemIds(session.establishmentId);
 }
 
 const paySchema = z.object({

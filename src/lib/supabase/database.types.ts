@@ -643,9 +643,13 @@ export type Database = {
     // decrement_stock é a única função pública (baixa de stock atómica), com
     // execute revogado a anon/authenticated — só o service role a chama.
     Functions: {
-      decrement_stock: {
-        Args: { p_item_id: string; p_amount: number };
+      release_stock: {
+        Args: { p_items: Json };
         Returns: undefined;
+      };
+      reserve_stock: {
+        Args: { p_items: Json };
+        Returns: Json;
       };
     };
     Enums: {

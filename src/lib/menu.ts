@@ -81,20 +81,48 @@ export async function getMenu(establishmentId: string): Promise<MenuCategory[]> 
     groupsByItem.set(g.menu_item_id, list);
   }
 
-  return categories.map((c) => ({
-    id: c.id,
-    name: c.name,
-    items: (items ?? [])
-      .filter((i) => i.category_id === c.id)
-      .map((i) => ({
-        id: i.id,
-        name: i.name,
-        description: i.description,
-        priceCents: i.price_cents,
-        // Disponibilidade efetiva: manual E (não segue stock OU tem stock).
-        available: i.available && (!i.track_stock || i.stock_qty > 0),
-        imageUrl: i.image_url,
-        groups: groupsByItem.get(i.id) ?? [],
-      })),
-  }));
+  return (
+    categories
+      .map((c) => ({
+        id: c.id,
+        name: c.name,
+        items: (items ?? [])
+          .filter((i) => i.category_id === c.id)
+          // Stock esgotado = fora do menu. O cliente nem chega a ver o artigo,
+          // em vez de o ver a cinzento e perceber tarde que não pode pedir.
+          // O "esgotado" manual (menu_items.available) continua a aparecer
+          // desativado: é uma pausa temporária, não uma ausência de produto.
+          .filter((i) => !i.track_stock || i.stock_qty > 0)
+          .map((i) => ({
+            id: i.id,
+            name: i.name,
+            description: i.description,
+            priceCents: i.price_cents,
+            available: i.available,
+            imageUrl: i.image_url,
+            groups: groupsByItem.get(i.id) ?? [],
+          })),
+      }))
+      // Categoria que ficou sem artigos não deve mostrar um cabeçalho vazio.
+      .filter((c) => c.items.length > 0)
+  );
+}
+
+/**
+ * Ids dos artigos que o cliente pode pedir agora. Usado pelo polling do menu
+ * para fazer desaparecer, sem recarregar a página, o que esgotou entretanto.
+ * Devolve apenas ids — é de propósito mais leve que getMenu().
+ */
+export async function getOrderableItemIds(
+  establishmentId: string,
+): Promise<string[]> {
+  const supabase = createAdminClient();
+  const { data } = await supabase
+    .from("menu_items")
+    .select("id, track_stock, stock_qty")
+    .eq("establishment_id", establishmentId);
+
+  return (data ?? [])
+    .filter((i) => !i.track_stock || i.stock_qty > 0)
+    .map((i) => i.id);
 }

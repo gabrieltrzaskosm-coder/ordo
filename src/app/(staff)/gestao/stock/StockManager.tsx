@@ -88,9 +88,16 @@ export function StockManager({ items }: { items: StockItem[] }) {
                     aria-pressed={it.trackStock}
                     aria-label="Seguir stock"
                   >
+                    {/*
+                      `left-0.5` é obrigatório: sem âncora horizontal o polegar
+                      cai na static position e, como o <button> tem
+                      text-align:center por omissão, essa posição é o CENTRO do
+                      track — ligado, saía 18px para fora da pílula.
+                      Track 44 − polegar 20 − 2 de folga = 20px de curso.
+                    */}
                     <span
-                      className={`absolute top-0.5 h-5 w-5 rounded-full bg-surface shadow transition-transform ${
-                        it.trackStock ? "translate-x-5" : "translate-x-0.5"
+                      className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-surface shadow transition-transform ${
+                        it.trackStock ? "translate-x-5" : "translate-x-0"
                       }`}
                     />
                   </button>

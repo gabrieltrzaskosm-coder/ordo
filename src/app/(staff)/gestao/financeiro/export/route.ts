@@ -1,21 +1,23 @@
-// Exportação CSV do mês corrente (plano Pro). Gerado no servidor sob a sessão
-// do manager (RLS restringe ao estabelecimento). Separador ';' e BOM UTF-8 para
-// abrir bem no Excel em pt-PT.
+// Exportação CSV do período selecionado (plano Pro). Gerado no servidor sob a
+// sessão do manager (RLS restringe ao estabelecimento). Separador ';' e BOM
+// UTF-8 para abrir bem no Excel em pt-PT. O período vem em `?p=` (default 30d),
+// alinhado com a página de balanço.
 import { requirePlan } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { DEFAULT_PERIOD, isPeriod, periodRange } from "@/lib/reports";
 
 function csvField(v: string | number): string {
   const s = String(v);
   return /[";\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   await requirePlan("pro");
   const supabase = await createClient();
 
-  const monthStart = new Date();
-  monthStart.setDate(1);
-  monthStart.setHours(0, 0, 0, 0);
+  const p = new URL(request.url).searchParams.get("p");
+  const period = isPeriod(p) ? p : DEFAULT_PERIOD;
+  const { from, to } = periodRange(period);
 
   const { data } = await supabase
     .from("orders")
@@ -23,7 +25,8 @@ export async function GET() {
       "created_at, status, total_cents, paid_at, customer_name, restaurant_tables(label)",
     )
     .neq("status", "cancelled")
-    .gte("created_at", monthStart.toISOString())
+    .gte("created_at", from.toISOString())
+    .lt("created_at", to.toISOString())
     .order("created_at", { ascending: true });
 
   const header = ["Data", "Mesa", "Cliente", "Estado", "Total (€)", "Pago"];
@@ -44,7 +47,7 @@ export async function GET() {
   }
 
   const csv = "﻿" + lines.join("\r\n");
-  const filename = `balanco-${monthStart.toISOString().slice(0, 7)}.csv`;
+  const filename = `balanco-${period}-${to.toISOString().slice(0, 10)}.csv`;
 
   return new Response(csv, {
     headers: {

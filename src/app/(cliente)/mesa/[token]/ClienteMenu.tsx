@@ -64,25 +64,30 @@ export function ClienteMenu({
   // Modal de opções: item a configurar + escolhas por grupo (ids das opções).
   const [modalItem, setModalItem] = useState<MenuItem | null>(null);
   const [choices, setChoices] = useState<Record<string, string[]>>({});
-  // Artigos ainda pedíveis. null = ainda não consultámos; vale o que o servidor
-  // mandou (que já vem filtrado).
-  const [orderable, setOrderable] = useState<Set<string> | null>(null);
+  // O que ainda se pode pedir: pratos e extras (um extra some quando o seu
+  // ingrediente esgota). null = ainda não consultámos; vale o que o servidor
+  // mandou, que já vem filtrado.
+  const [orderable, setOrderable] = useState<{
+    items: Set<string>;
+    modifiers: Set<string>;
+  } | null>(null);
 
   const subtotal = cart.reduce((s, l) => s + lineUnit(l) * l.qty, 0);
   const count = cart.reduce((s, l) => s + l.qty, 0);
 
   const refreshOrderable = useCallback(async () => {
-    const ids = await getOrderableItems(token);
-    setOrderable(new Set(ids));
+    const o = await getOrderableItems(token);
+    setOrderable({ items: new Set(o.items), modifiers: new Set(o.modifiers) });
   }, [token]);
 
   // O stock muda enquanto o cliente está no ecrã (outra mesa pediu o último).
-  // Sem isto, ele só via o artigo desaparecer ao recarregar a página.
+  // Sem isto, ele só via o artigo/extra desaparecer ao recarregar a página.
   useEffect(() => {
     let alive = true;
     async function poll() {
-      const ids = await getOrderableItems(token);
-      if (alive) setOrderable(new Set(ids));
+      const o = await getOrderableItems(token);
+      if (alive)
+        setOrderable({ items: new Set(o.items), modifiers: new Set(o.modifiers) });
     }
     poll();
     const id = setInterval(poll, 5000);
@@ -92,36 +97,69 @@ export function ClienteMenu({
     };
   }, [token]);
 
-  // Menu efetivamente mostrado: sai o que esgotou desde que a página carregou.
+  // Tira de um item os extras que já não dão para fazer, e larga grupos que
+  // ficaram sem opções — igual ao que o servidor faz em getMenu.
+  const pruneItem = useCallback(
+    (item: MenuItem, mods: Set<string>): MenuItem => ({
+      ...item,
+      groups: item.groups
+        .map((g) => ({ ...g, modifiers: g.modifiers.filter((m) => mods.has(m.id)) }))
+        .filter((g) => g.modifiers.length > 0),
+    }),
+    [],
+  );
+
+  // Menu efetivamente mostrado: sai o prato/extra que esgotou desde que a página
+  // carregou.
   const visibleMenu = useMemo(() => {
     if (!orderable) return menu;
     return menu
-      .map((c) => ({ ...c, items: c.items.filter((i) => orderable.has(i.id)) }))
+      .map((c) => ({
+        ...c,
+        items: c.items
+          .filter((i) => orderable.items.has(i.id))
+          .map((i) => pruneItem(i, orderable.modifiers)),
+      }))
       .filter((c) => c.items.length > 0);
-  }, [menu, orderable]);
+  }, [menu, orderable, pruneItem]);
+
+  // Uma linha do carrinho fica inválida se o prato saiu OU se um extra escolhido
+  // deixou de estar disponível.
+  const lineStillOk = useCallback(
+    (l: CartLine, o: { items: Set<string>; modifiers: Set<string> }) =>
+      o.items.has(l.itemId) && l.modifiers.every((m) => o.modifiers.has(m.id)),
+    [],
+  );
 
   // Se algo do carrinho esgotou entretanto, tira-o e avisa — mais honesto do
   // que deixar o cliente submeter e levar com um erro.
   useEffect(() => {
     if (!orderable) return;
-    const gone = cart.filter((l) => !orderable.has(l.itemId));
+    const gone = cart.filter((l) => !lineStillOk(l, orderable));
     if (gone.length === 0) return;
     const names = [...new Set(gone.map((l) => l.name))];
-    setCart((c) => c.filter((l) => orderable.has(l.itemId)));
+    setCart((c) => c.filter((l) => lineStillOk(l, orderable)));
     setStatus(
       names.length === 1
-        ? `${names[0]} esgotou e saiu do seu pedido.`
-        : `${names.join(", ")} esgotaram e saíram do seu pedido.`,
+        ? `${names[0]} deixou de estar disponível e saiu do seu pedido.`
+        : `${names.join(", ")} deixaram de estar disponíveis e saíram do seu pedido.`,
     );
-  }, [orderable, cart]);
+  }, [orderable, cart, lineStillOk]);
 
   // O artigo pode esgotar com o modal de opções aberto.
   useEffect(() => {
-    if (modalItem && orderable && !orderable.has(modalItem.id)) {
+    if (modalItem && orderable && !orderable.items.has(modalItem.id)) {
       setModalItem(null);
       setStatus(`${modalItem.name} esgotou agora mesmo.`);
     }
   }, [modalItem, orderable]);
+
+  // Opções mostradas no modal, já sem os extras que esgotaram.
+  const modalGroups = useMemo(() => {
+    if (!modalItem) return [];
+    if (!orderable) return modalItem.groups;
+    return pruneItem(modalItem, orderable.modifiers).groups;
+  }, [modalItem, orderable, pruneItem]);
 
   function addLine(item: MenuItem, mods: ChosenModifier[]) {
     const key = lineKey(item.id, mods);
@@ -164,7 +202,7 @@ export function ClienteMenu({
   function confirmModal() {
     if (!modalItem) return;
     const mods: ChosenModifier[] = [];
-    for (const g of modalItem.groups) {
+    for (const g of modalGroups) {
       const picked = choices[g.id] ?? [];
       for (const id of picked) {
         const m = g.modifiers.find((x) => x.id === id);
@@ -178,12 +216,12 @@ export function ClienteMenu({
   // Todos os grupos de escolha única precisam de exatamente uma opção.
   const modalValid =
     !modalItem ||
-    modalItem.groups.every((g) => !g.single || (choices[g.id]?.length ?? 0) === 1);
+    modalGroups.every((g) => !g.single || (choices[g.id]?.length ?? 0) === 1);
 
   // Preço corrente no modal (base + extras escolhidos).
   const modalUnit = modalItem
     ? modalItem.priceCents +
-      modalItem.groups.reduce((s, g) => {
+      modalGroups.reduce((s, g) => {
         const picked = choices[g.id] ?? [];
         return (
           s +
@@ -357,7 +395,7 @@ export function ClienteMenu({
                 {formatMoney(modalItem.priceCents, currency)}
               </p>
 
-              {modalItem.groups.map((g) => (
+              {modalGroups.map((g) => (
                 <div key={g.id} className="mt-5">
                   <div className="mb-2 flex items-center gap-2">
                     <p className="text-sm font-semibold text-ink">{g.name}</p>

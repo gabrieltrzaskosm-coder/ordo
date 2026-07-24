@@ -51,6 +51,22 @@ export default async function StockPage() {
         volta a aparecer ao repor.
       </p>
 
+      <Link
+        href="/gestao/ingredientes"
+        className="mt-4 flex items-center justify-between rounded-2xl border border-line bg-surface px-4 py-3 shadow-[var(--shadow-card)] transition hover:border-brand/40"
+      >
+        <span className="min-w-0">
+          <span className="block text-sm font-medium text-ink">
+            Stock por ingrediente
+          </span>
+          <span className="block text-xs text-muted">
+            Para pratos compostos: um ingrediente partilhado (ex.: pão) esgota e
+            sai de todos os pratos que o usam.
+          </span>
+        </span>
+        <span className="ml-3 shrink-0 text-muted">→</span>
+      </Link>
+
       {(out > 0 || low > 0) && (
         <div className="mt-4 flex flex-wrap gap-2 text-sm">
           {out > 0 && (

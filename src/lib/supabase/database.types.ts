@@ -145,6 +145,97 @@ export type Database = {
           },
         ];
       };
+      ingredients: {
+        Row: {
+          created_at: string;
+          establishment_id: string;
+          id: string;
+          low_stock_threshold: number;
+          name: string;
+          stock_qty: number;
+        };
+        Insert: {
+          created_at?: string;
+          establishment_id: string;
+          id?: string;
+          low_stock_threshold?: number;
+          name: string;
+          stock_qty?: number;
+        };
+        Update: {
+          created_at?: string;
+          establishment_id?: string;
+          id?: string;
+          low_stock_threshold?: number;
+          name?: string;
+          stock_qty?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "ingredients_establishment_id_fkey";
+            columns: ["establishment_id"];
+            isOneToOne: false;
+            referencedRelation: "establishments";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      recipe_items: {
+        Row: {
+          establishment_id: string;
+          id: string;
+          ingredient_id: string;
+          menu_item_id: string | null;
+          modifier_id: string | null;
+          qty: number;
+        };
+        Insert: {
+          establishment_id: string;
+          id?: string;
+          ingredient_id: string;
+          menu_item_id?: string | null;
+          modifier_id?: string | null;
+          qty?: number;
+        };
+        Update: {
+          establishment_id?: string;
+          id?: string;
+          ingredient_id?: string;
+          menu_item_id?: string | null;
+          modifier_id?: string | null;
+          qty?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "recipe_items_establishment_id_fkey";
+            columns: ["establishment_id"];
+            isOneToOne: false;
+            referencedRelation: "establishments";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "recipe_items_ingredient_id_fkey";
+            columns: ["ingredient_id"];
+            isOneToOne: false;
+            referencedRelation: "ingredients";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "recipe_items_menu_item_id_fkey";
+            columns: ["menu_item_id"];
+            isOneToOne: false;
+            referencedRelation: "menu_items";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "recipe_items_modifier_id_fkey";
+            columns: ["modifier_id"];
+            isOneToOne: false;
+            referencedRelation: "modifiers";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       menu_categories: {
         Row: {
           created_at: string;
@@ -640,15 +731,16 @@ export type Database = {
     };
     Views: { [_ in never]: never };
     // Os helpers de RLS vivem no schema `private`, fora da API exposta.
-    // decrement_stock é a única função pública (baixa de stock atómica), com
-    // execute revogado a anon/authenticated — só o service role a chama.
+    // reserve_stock/release_stock são as únicas funções públicas (baixa/devolução
+    // atómica de stock de pratos + ingredientes), com execute revogado a
+    // anon/authenticated — só o service role as chama.
     Functions: {
       release_stock: {
-        Args: { p_items: Json };
+        Args: { p_items: Json; p_ingredients: Json };
         Returns: undefined;
       };
       reserve_stock: {
-        Args: { p_items: Json };
+        Args: { p_items: Json; p_ingredients: Json };
         Returns: Json;
       };
     };

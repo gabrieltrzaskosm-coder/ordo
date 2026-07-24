@@ -9,13 +9,25 @@ import {
   deleteGroup,
   deleteModifier,
   removeItemImage,
+  removeRecipeItem,
+  setItemIngredient,
+  setModifierIngredient,
   uploadItemImage,
 } from "./actions";
+import { RecipeEditor } from "./RecipeEditor";
+
+export type RecipeLine = {
+  recipeId: string;
+  ingredientId: string;
+  name: string;
+  qty: number;
+};
 
 export type EditableModifier = {
   id: string;
   name: string;
   priceDeltaCents: number;
+  recipe: RecipeLine[];
 };
 
 export type EditableGroup = {
@@ -25,16 +37,22 @@ export type EditableGroup = {
   modifiers: EditableModifier[];
 };
 
+export type IngredientOption = { id: string; name: string };
+
 export function ItemEditor({
   itemId,
   name,
   imageUrl,
   groups,
+  ingredients,
+  itemRecipe,
 }: {
   itemId: string;
   name: string;
   imageUrl: string | null;
   groups: EditableGroup[];
+  ingredients: IngredientOption[];
+  itemRecipe: RecipeLine[];
 }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -114,6 +132,26 @@ export function ItemEditor({
         </div>
       </section>
 
+      {/* ---------- Receita (ingredientes do prato) ---------- */}
+      <section className="mb-8">
+        <h2 className="mb-1 text-sm font-medium text-muted">Receita</h2>
+        <p className="mb-3 text-xs text-muted">
+          Ingredientes que este prato gasta (em unidades). Quando um deles esgota,
+          o prato sai do menu.
+        </p>
+        <div className="rounded-lg border border-line p-3">
+          <RecipeEditor
+            lines={itemRecipe}
+            ingredients={ingredients}
+            disabled={pending}
+            onAdd={(ingId, qty) =>
+              run(() => setItemIngredient(itemId, ingId, qty))
+            }
+            onRemove={(rid) => run(() => removeRecipeItem(itemId, rid))}
+          />
+        </div>
+      </section>
+
       {/* ---------- Grupos de opções ---------- */}
       <section>
         <h2 className="mb-2 text-sm font-medium text-muted">Opções</h2>
@@ -143,28 +181,49 @@ export function ItemEditor({
               </button>
             </div>
 
-            <ul className="mb-2 space-y-1">
+            <ul className="mb-2 space-y-2">
               {g.modifiers.map((m) => (
-                <li
-                  key={m.id}
-                  className="flex items-center justify-between text-sm"
-                >
-                  <span>
-                    {m.name}
-                    {m.priceDeltaCents > 0 && (
-                      <span className="text-muted">
-                        {" "}
-                        +{formatMoney(m.priceDeltaCents)}
-                      </span>
-                    )}
-                  </span>
-                  <button
-                    disabled={pending}
-                    onClick={() => run(() => deleteModifier(itemId, m.id))}
-                    className="text-xs text-muted hover:text-red-700"
-                  >
-                    Remover
-                  </button>
+                <li key={m.id} className="rounded-lg bg-surface-2/50 p-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span>
+                      {m.name}
+                      {m.priceDeltaCents > 0 && (
+                        <span className="text-muted">
+                          {" "}
+                          +{formatMoney(m.priceDeltaCents)}
+                        </span>
+                      )}
+                    </span>
+                    <button
+                      disabled={pending}
+                      onClick={() => run(() => deleteModifier(itemId, m.id))}
+                      className="text-xs text-muted hover:text-red-700"
+                    >
+                      Remover
+                    </button>
+                  </div>
+                  {/*
+                    Ingredientes que este extra gasta (ex.: Bacon → 1 bacon).
+                    Só em grupos opcionais: numa escolha obrigatória (ponto da
+                    carne) não se conta stock — são formas de preparar o mesmo
+                    prato, não coisas que se juntam.
+                  */}
+                  {!g.single && (
+                    <div className="mt-2 border-t border-line pt-2">
+                      <RecipeEditor
+                        compact
+                        lines={m.recipe}
+                        ingredients={ingredients}
+                        disabled={pending}
+                        onAdd={(ingId, qty) =>
+                          run(() =>
+                            setModifierIngredient(itemId, m.id, ingId, qty),
+                          )
+                        }
+                        onRemove={(rid) => run(() => removeRecipeItem(itemId, rid))}
+                      />
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>

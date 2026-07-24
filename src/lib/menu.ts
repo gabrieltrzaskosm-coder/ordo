@@ -1,6 +1,7 @@
 // Leitura do menu público de um estabelecimento (usado no fluxo do cliente).
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { loadStockContext, canMake } from "@/lib/recipes";
 
 export type MenuModifier = {
   id: string;
@@ -63,23 +64,48 @@ export async function getMenu(establishmentId: string): Promise<MenuCategory[]> 
     .eq("available", true)
     .order("sort", { ascending: true });
 
+  // Stock de ingredientes + receitas: decide o que dá para fazer agora.
+  const { ingredientStock, itemNeeds, modifierNeeds } =
+    await loadStockContext(establishmentId);
+
   const groupsByItem = new Map<string, MenuModifierGroup[]>();
   for (const g of groups ?? []) {
     const list = groupsByItem.get(g.menu_item_id) ?? [];
+    const single = g.min_select === 1 && g.max_select === 1;
+    const groupMods = (modifiers ?? [])
+      .filter((m) => m.group_id === g.id)
+      // Extra cujo ingrediente esgotou desaparece (ex.: acabou o bacon). Só em
+      // grupos opcionais: uma escolha obrigatória (ponto da carne) não leva
+      // stock, e nunca pode ficar sem opções — deixaria o prato impossível de
+      // configurar.
+      .filter((m) => single || canMake(modifierNeeds.get(m.id), ingredientStock))
+      .map((m) => ({
+        id: m.id,
+        name: m.name,
+        priceDeltaCents: m.price_delta_cents,
+      }));
+    // Grupo que ficou sem opções não deve mostrar um cabeçalho vazio.
+    if (groupMods.length === 0) continue;
     list.push({
       id: g.id,
       name: g.name,
-      single: g.min_select === 1 && g.max_select === 1,
-      modifiers: (modifiers ?? [])
-        .filter((m) => m.group_id === g.id)
-        .map((m) => ({
-          id: m.id,
-          name: m.name,
-          priceDeltaCents: m.price_delta_cents,
-        })),
+      single,
+      modifiers: groupMods,
     });
     groupsByItem.set(g.menu_item_id, list);
   }
+
+  // Disponível = manual E stock próprio (se seguido) E dá para fazer com os
+  // ingredientes atuais. Esgotado = fora do menu (nem chega a ser visto), em vez
+  // de aparecer a cinzento e o cliente perceber tarde. O "esgotado" manual
+  // (available=false) continua a aparecer desativado: é pausa, não ausência.
+  const itemOrderable = (i: {
+    id: string;
+    track_stock: boolean;
+    stock_qty: number;
+  }) =>
+    (!i.track_stock || i.stock_qty > 0) &&
+    canMake(itemNeeds.get(i.id), ingredientStock);
 
   return (
     categories
@@ -88,11 +114,7 @@ export async function getMenu(establishmentId: string): Promise<MenuCategory[]> 
         name: c.name,
         items: (items ?? [])
           .filter((i) => i.category_id === c.id)
-          // Stock esgotado = fora do menu. O cliente nem chega a ver o artigo,
-          // em vez de o ver a cinzento e perceber tarde que não pode pedir.
-          // O "esgotado" manual (menu_items.available) continua a aparecer
-          // desativado: é uma pausa temporária, não uma ausência de produto.
-          .filter((i) => !i.track_stock || i.stock_qty > 0)
+          .filter(itemOrderable)
           .map((i) => ({
             id: i.id,
             name: i.name,
@@ -108,21 +130,58 @@ export async function getMenu(establishmentId: string): Promise<MenuCategory[]> 
   );
 }
 
+export type OrderableIds = { items: string[]; modifiers: string[] };
+
 /**
- * Ids dos artigos que o cliente pode pedir agora. Usado pelo polling do menu
- * para fazer desaparecer, sem recarregar a página, o que esgotou entretanto.
- * Devolve apenas ids — é de propósito mais leve que getMenu().
+ * Ids dos artigos E extras que o cliente pode pedir agora. Usado pelo polling do
+ * menu para fazer desaparecer, sem recarregar a página, o que esgotou entretanto
+ * — seja o prato ou um ingrediente que um extra usa. De propósito mais leve que
+ * getMenu(): só ids.
  */
 export async function getOrderableItemIds(
   establishmentId: string,
-): Promise<string[]> {
+): Promise<OrderableIds> {
   const supabase = createAdminClient();
-  const { data } = await supabase
-    .from("menu_items")
-    .select("id, track_stock, stock_qty")
-    .eq("establishment_id", establishmentId);
+  const [{ data: items }, { data: mods }, { data: groups }, stock] =
+    await Promise.all([
+      supabase
+        .from("menu_items")
+        .select("id, track_stock, stock_qty")
+        .eq("establishment_id", establishmentId),
+      supabase
+        .from("modifiers")
+        .select("id, available, group_id")
+        .eq("establishment_id", establishmentId)
+        .eq("available", true),
+      supabase
+        .from("modifier_groups")
+        .select("id, min_select, max_select")
+        .eq("establishment_id", establishmentId),
+      loadStockContext(establishmentId),
+    ]);
 
-  return (data ?? [])
-    .filter((i) => !i.track_stock || i.stock_qty > 0)
-    .map((i) => i.id);
+  // Grupos de escolha obrigatória: as suas opções nunca são escondidas por
+  // stock (ver getMenu — não levam ingredientes).
+  const singleGroups = new Set(
+    (groups ?? [])
+      .filter((g) => g.min_select === 1 && g.max_select === 1)
+      .map((g) => g.id),
+  );
+
+  return {
+    items: (items ?? [])
+      .filter(
+        (i) =>
+          (!i.track_stock || i.stock_qty > 0) &&
+          canMake(stock.itemNeeds.get(i.id), stock.ingredientStock),
+      )
+      .map((i) => i.id),
+    modifiers: (mods ?? [])
+      .filter(
+        (m) =>
+          singleGroups.has(m.group_id) ||
+          canMake(stock.modifierNeeds.get(m.id), stock.ingredientStock),
+      )
+      .map((m) => m.id),
+  };
 }

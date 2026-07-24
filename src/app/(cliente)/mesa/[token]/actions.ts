@@ -6,7 +6,8 @@
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveTableSession } from "@/lib/session/table";
-import { getOrderableItemIds } from "@/lib/menu";
+import { getOrderableItemIds, type OrderableIds } from "@/lib/menu";
+import { loadStockContext } from "@/lib/recipes";
 import { createOrderCheckout } from "@/lib/stripe/checkout";
 
 const placeOrderSchema = z.object({
@@ -159,10 +160,35 @@ export async function placeOrder(input: unknown): Promise<ActionResult> {
     .filter(([itemId]) => byId.get(itemId)!.track_stock)
     .map(([itemId, qty]) => ({ item_id: itemId, qty }));
 
-  if (reserveItems.length > 0) {
+  // Ingredientes gastos pelo pedido: receita do prato + receita de cada extra
+  // escolhido, tudo multiplicado pela quantidade da linha e agregado por
+  // ingrediente (o mesmo ingrediente pode vir de vários pratos/extras).
+  const { itemNeeds, modifierNeeds } = await loadStockContext(
+    session.establishmentId,
+  );
+  const ingredientNeed = new Map<string, number>();
+  const addNeed = (needs: { ingredientId: string; qty: number }[] | undefined, times: number) => {
+    for (const n of needs ?? []) {
+      ingredientNeed.set(
+        n.ingredientId,
+        (ingredientNeed.get(n.ingredientId) ?? 0) + n.qty * times,
+      );
+    }
+  };
+  for (const l of prepared) {
+    addNeed(itemNeeds.get(l.itemId), l.qty);
+    for (const m of l.modifiers) addNeed(modifierNeeds.get(m.id), l.qty);
+  }
+  const reserveIngredients = [...ingredientNeed.entries()].map(
+    ([ingredient_id, qty]) => ({ ingredient_id, qty }),
+  );
+
+  const needsReserve = reserveItems.length > 0 || reserveIngredients.length > 0;
+
+  if (needsReserve) {
     const { data: reserved, error: reserveErr } = await supabase.rpc(
       "reserve_stock",
-      { p_items: reserveItems },
+      { p_items: reserveItems, p_ingredients: reserveIngredients },
     );
     if (reserveErr) {
       console.error("[stock] reserva falhou:", reserveErr.message);
@@ -170,11 +196,12 @@ export async function placeOrder(input: unknown): Promise<ActionResult> {
     }
     const r = reserved as { ok: boolean; item?: string } | null;
     if (!r?.ok) {
-      // Alguém levou a última unidade primeiro.
+      // Alguém levou a última unidade primeiro — pode ser o prato ou um
+      // ingrediente (ex.: acabou o pão que este hambúrguer usa).
       return {
         ok: false,
         error: r?.item
-          ? `${r.item} esgotou agora mesmo. Retire-o do pedido para continuar.`
+          ? `Sem stock de ${r.item} neste momento. Ajuste o pedido para continuar.`
           : "Um dos artigos esgotou agora mesmo.",
       };
     }
@@ -182,12 +209,18 @@ export async function placeOrder(input: unknown): Promise<ActionResult> {
 
   // A partir daqui o stock já está reservado: se algo falhar, tem de ser devolvido.
   const releaseReserved = async () => {
-    if (reserveItems.length === 0) return;
+    if (!needsReserve) return;
     const { error } = await supabase.rpc("release_stock", {
       p_items: reserveItems,
+      p_ingredients: reserveIngredients,
     });
     if (error) {
-      console.error("[stock] devolução falhou:", error.message, reserveItems);
+      console.error(
+        "[stock] devolução falhou:",
+        error.message,
+        reserveItems,
+        reserveIngredients,
+      );
     }
   };
 
@@ -246,12 +279,13 @@ export async function placeOrder(input: unknown): Promise<ActionResult> {
 }
 
 /**
- * Ids dos artigos que ainda se podem pedir. O menu do cliente consulta isto em
- * polling para fazer desaparecer o que esgotou enquanto ele estava no ecrã.
+ * Ids dos artigos E extras que ainda se podem pedir. O menu do cliente consulta
+ * isto em polling para fazer desaparecer o que esgotou enquanto ele estava no
+ * ecrã — seja o prato ou um ingrediente que um extra usa.
  */
-export async function getOrderableItems(token: string): Promise<string[]> {
+export async function getOrderableItems(token: string): Promise<OrderableIds> {
   const session = await resolveTableSession(token);
-  if (!session) return [];
+  if (!session) return { items: [], modifiers: [] };
   return getOrderableItemIds(session.establishmentId);
 }
 

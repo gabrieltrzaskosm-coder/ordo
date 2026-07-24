@@ -199,3 +199,136 @@ export async function deleteModifier(
   revalidatePath(`/gestao/menu/${itemId}`);
   return { ok: true };
 }
+
+// ---------- Receita (ingredientes que o prato / extra gasta) ----------
+const recipeQtySchema = z.number().int().min(1).max(1000);
+
+async function assertIngredient(id: string, establishmentId: string) {
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("ingredients")
+    .select("id, establishment_id")
+    .eq("id", id)
+    .maybeSingle();
+  return data && data.establishment_id === establishmentId ? data : null;
+}
+
+/**
+ * Liga um ingrediente ao prato (ou atualiza a quantidade, se já estiver ligado).
+ * Contagem simples: `qty` são unidades do ingrediente por prato vendido.
+ */
+export async function setItemIngredient(
+  itemId: string,
+  ingredientId: string,
+  qty: number,
+): Promise<ActionResult> {
+  const session = await requireManager();
+  const item = await assertItem(itemId, session.establishmentId);
+  if (!item) return { ok: false, error: "Prato não encontrado." };
+  const q = recipeQtySchema.safeParse(qty);
+  if (!q.success) return { ok: false, error: "Quantidade inválida." };
+  if (!(await assertIngredient(ingredientId, session.establishmentId))) {
+    return { ok: false, error: "Ingrediente não encontrado." };
+  }
+
+  const admin = createAdminClient();
+  const { data: existing } = await admin
+    .from("recipe_items")
+    .select("id")
+    .eq("menu_item_id", itemId)
+    .eq("ingredient_id", ingredientId)
+    .maybeSingle();
+
+  const { error } = existing
+    ? await admin.from("recipe_items").update({ qty: q.data }).eq("id", existing.id)
+    : await admin.from("recipe_items").insert({
+        establishment_id: session.establishmentId,
+        ingredient_id: ingredientId,
+        menu_item_id: itemId,
+        qty: q.data,
+      });
+  if (error) return { ok: false, error: "Falha ao gravar a receita." };
+  revalidatePath(`/gestao/menu/${itemId}`);
+  return { ok: true };
+}
+
+/** Liga um ingrediente a um extra (ou atualiza a quantidade). */
+export async function setModifierIngredient(
+  itemId: string,
+  modifierId: string,
+  ingredientId: string,
+  qty: number,
+): Promise<ActionResult> {
+  const session = await requireManager();
+  const q = recipeQtySchema.safeParse(qty);
+  if (!q.success) return { ok: false, error: "Quantidade inválida." };
+  if (!(await assertIngredient(ingredientId, session.establishmentId))) {
+    return { ok: false, error: "Ingrediente não encontrado." };
+  }
+
+  const admin = createAdminClient();
+  const { data: mod } = await admin
+    .from("modifiers")
+    .select("id, establishment_id, group_id")
+    .eq("id", modifierId)
+    .maybeSingle();
+  if (!mod || mod.establishment_id !== session.establishmentId) {
+    return { ok: false, error: "Extra não encontrado." };
+  }
+
+  // Só extras OPCIONAIS levam ingredientes. Numa escolha obrigatória (ex.: ponto
+  // da carne) não faz sentido contar stock: são formas de preparar o mesmo
+  // prato, não coisas que se juntam. Além disso, se todas as opções de um grupo
+  // obrigatório esgotassem, o grupo ficava vazio e o prato impossível de
+  // configurar. Bloqueado aqui no servidor, não só escondido na UI.
+  const { data: grp } = await admin
+    .from("modifier_groups")
+    .select("min_select, max_select")
+    .eq("id", mod.group_id)
+    .maybeSingle();
+  if (grp && grp.min_select === 1 && grp.max_select === 1) {
+    return {
+      ok: false,
+      error: "Opções de escolha obrigatória não levam stock de ingrediente.",
+    };
+  }
+
+  const { data: existing } = await admin
+    .from("recipe_items")
+    .select("id")
+    .eq("modifier_id", modifierId)
+    .eq("ingredient_id", ingredientId)
+    .maybeSingle();
+
+  const { error } = existing
+    ? await admin.from("recipe_items").update({ qty: q.data }).eq("id", existing.id)
+    : await admin.from("recipe_items").insert({
+        establishment_id: session.establishmentId,
+        ingredient_id: ingredientId,
+        modifier_id: modifierId,
+        qty: q.data,
+      });
+  if (error) return { ok: false, error: "Falha ao gravar a receita." };
+  revalidatePath(`/gestao/menu/${itemId}`);
+  return { ok: true };
+}
+
+/** Remove uma linha de receita (de prato ou de extra). */
+export async function removeRecipeItem(
+  itemId: string,
+  recipeId: string,
+): Promise<ActionResult> {
+  const session = await requireManager();
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("recipe_items")
+    .select("id, establishment_id")
+    .eq("id", recipeId)
+    .maybeSingle();
+  if (!data || data.establishment_id !== session.establishmentId) {
+    return { ok: false, error: "Linha não encontrada." };
+  }
+  await admin.from("recipe_items").delete().eq("id", recipeId);
+  revalidatePath(`/gestao/menu/${itemId}`);
+  return { ok: true };
+}

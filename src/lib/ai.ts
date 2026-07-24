@@ -36,7 +36,10 @@ export async function generateDailySummary(): Promise<SummaryResult> {
 
   try {
     const response = await client.messages.create({
-      model: "claude-opus-4-8",
+      // Haiku chega bem para resumir 3 a 5 frases sobre números já agregados, e
+      // custa uma fração do Opus — o que conta quando é um resumo por
+      // restaurante por dia. Trocar de volta é só mudar esta linha.
+      model: "claude-haiku-4-5-20251001",
       max_tokens: 1024,
       system:
         "És um analista de restauração. Escreves em português de Portugal, " +

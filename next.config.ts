@@ -1,6 +1,67 @@
 import type { NextConfig } from "next";
 
+// Origem do Supabase, para a CSP deixar passar as chamadas de dados, as imagens
+// do menu (bucket público) e o websocket do Realtime (cozinha). Derivada da env
+// pública; fallback para o wildcard do Supabase se faltar no build.
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+const supabaseHost = supabaseUrl ? new URL(supabaseUrl).host : "*.supabase.co";
+
+const isDev = process.env.NODE_ENV === "development";
+
+// Content-Security-Policy. Sem nonce (não obriga a render dinâmico em todas as
+// páginas, que era caro e frágil): a proteção vem de fechar tudo por omissão e
+// abrir só o necessário.
+//  - script/style 'unsafe-inline': o Next injeta scripts e estilos inline; sem
+//    nonce é o preço a pagar. Ainda assim melhor que sem CSP, e combinado com os
+//    outros headers fecha clickjacking, base-uri e object.
+//  - connect-src: só o próprio site e o Supabase (https + wss do Realtime).
+//  - img-src: menu vem do Storage do Supabase; data:/blob: para os QR codes.
+//  - frame-ancestors 'none': ninguém pode embutir o site num iframe.
+//  - dev precisa de 'unsafe-eval' (o React usa eval para debug) e não força
+//    upgrade-insecure-requests (senão parte o localhost em http).
+const csp = [
+  `default-src 'self'`,
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  `style-src 'self' 'unsafe-inline'`,
+  `img-src 'self' data: blob: https://${supabaseHost}`,
+  `font-src 'self' data:`,
+  `connect-src 'self' https://${supabaseHost} wss://${supabaseHost}`,
+  `form-action 'self'`,
+  `frame-ancestors 'none'`,
+  `object-src 'none'`,
+  `base-uri 'self'`,
+  ...(isDev ? [] : ["upgrade-insecure-requests"]),
+].join("; ");
+
+const securityHeaders = [
+  { key: "Content-Security-Policy", value: csp },
+  // Clickjacking (reforça o frame-ancestors da CSP, para browsers antigos).
+  { key: "X-Frame-Options", value: "DENY" },
+  // Impede o browser de "adivinhar" o tipo de um ficheiro (ataques de upload).
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  // Não vazar o URL completo (com o qr_token da mesa!) para sites externos.
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  // Desliga APIs que a app não usa (câmara, micro, localização).
+  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+  // Força HTTPS por 2 anos, incluindo subdomínios. Só em produção.
+  ...(isDev
+    ? []
+    : [
+        {
+          key: "Strict-Transport-Security",
+          value: "max-age=63072000; includeSubDomains; preload",
+        },
+      ]),
+];
+
 const nextConfig: NextConfig = {
+  // Não anunciar "X-Powered-By: Next.js" — não dar pistas do stack de graça.
+  poweredByHeader: false,
+
+  async headers() {
+    return [{ source: "/:path*", headers: securityHeaders }];
+  },
+
   // Permite testar no telemóvel pelo IP da rede local: sem isto o Next bloqueia
   // os recursos de dev (/_next/*) vindos de outra origem, a página não hidrata
   // e os botões ficam sem reação. Só afeta desenvolvimento.

@@ -10,6 +10,7 @@ import { getOrderableItemIds, type OrderableIds } from "@/lib/menu";
 import { loadStockContext } from "@/lib/recipes";
 import { prepareOrderLines } from "@/lib/pricing";
 import { aggregateIngredientNeeds } from "@/lib/availability";
+import { rateLimit } from "@/lib/rate-limit";
 import { createOrderCheckout } from "@/lib/stripe/checkout";
 
 const placeOrderSchema = z.object({
@@ -38,6 +39,16 @@ export async function placeOrder(input: unknown): Promise<ActionResult> {
 
   const session = await resolveTableSession(token);
   if (!session) return { ok: false, error: "Mesa não encontrada." };
+
+  // Trava o abuso: uma mesa real não faz dezenas de pedidos por minuto. Generoso
+  // para o uso normal (várias pessoas na mesma mesa), apertado para um script.
+  const limited = rateLimit(`order:${session.tableId}`, 15, 60);
+  if (!limited.ok) {
+    return {
+      ok: false,
+      error: "Demasiados pedidos seguidos. Aguarde um momento e tente de novo.",
+    };
+  }
 
   const supabase = createAdminClient();
 
@@ -304,6 +315,13 @@ export async function getTableStatus(token: string): Promise<TrackedOrder[]> {
 export async function callWaiter(token: string): Promise<ActionResult> {
   const session = await resolveTableSession(token);
   if (!session) return { ok: false, error: "Mesa não encontrada." };
+
+  // Chamar o atendente é um clique; um humano não o faz 5x por minuto. Aperta
+  // para não deixar spammar a fila de chamadas da cozinha.
+  const limited = rateLimit(`waiter:${session.tableId}`, 5, 60);
+  if (!limited.ok) {
+    return { ok: false, error: "Atendente já chamado. Aguarde um momento." };
+  }
 
   const supabase = createAdminClient();
   const { error } = await supabase.from("waiter_calls").insert({

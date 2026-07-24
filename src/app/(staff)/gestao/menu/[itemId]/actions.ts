@@ -269,29 +269,17 @@ export async function setModifierIngredient(
   const admin = createAdminClient();
   const { data: mod } = await admin
     .from("modifiers")
-    .select("id, establishment_id, group_id")
+    .select("id, establishment_id")
     .eq("id", modifierId)
     .maybeSingle();
   if (!mod || mod.establishment_id !== session.establishmentId) {
     return { ok: false, error: "Extra não encontrado." };
   }
 
-  // Só extras OPCIONAIS levam ingredientes. Numa escolha obrigatória (ex.: ponto
-  // da carne) não faz sentido contar stock: são formas de preparar o mesmo
-  // prato, não coisas que se juntam. Além disso, se todas as opções de um grupo
-  // obrigatório esgotassem, o grupo ficava vazio e o prato impossível de
-  // configurar. Bloqueado aqui no servidor, não só escondido na UI.
-  const { data: grp } = await admin
-    .from("modifier_groups")
-    .select("min_select, max_select")
-    .eq("id", mod.group_id)
-    .maybeSingle();
-  if (grp && grp.min_select === 1 && grp.max_select === 1) {
-    return {
-      ok: false,
-      error: "Opções de escolha obrigatória não levam stock de ingrediente.",
-    };
-  }
+  // Qualquer opção pode levar ingredientes, obrigatória ou não: o que decide é
+  // se consome algo físico (a bebida de um combo sim; o ponto da carne não —
+  // mas isso é escolha de quem configura, não uma regra a impor aqui). Se um
+  // grupo obrigatório ficar sem opções por stock, o getMenu esconde o prato.
 
   const { data: existing } = await admin
     .from("recipe_items")

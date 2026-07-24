@@ -68,44 +68,52 @@ export async function getMenu(establishmentId: string): Promise<MenuCategory[]> 
   const { ingredientStock, itemNeeds, modifierNeeds } =
     await loadStockContext(establishmentId);
 
+  // Qualquer opção pode gastar ingredientes — tanto um extra opcional ("Bacon")
+  // como uma escolha obrigatória que é mesmo um produto (a bebida de um combo).
+  // O que interessa não é o tipo de grupo, é se a opção consome algo.
+  //
+  // Se um grupo OBRIGATÓRIO ficar sem opções porque esgotaram todas, o prato
+  // deixa de ser configurável e sai do menu: sem bebida nenhuma não há combo.
+  // Um grupo opcional vazio só desaparece a si próprio.
   const groupsByItem = new Map<string, MenuModifierGroup[]>();
+  const itemsWithoutRequiredOption = new Set<string>();
+
   for (const g of groups ?? []) {
-    const list = groupsByItem.get(g.menu_item_id) ?? [];
     const single = g.min_select === 1 && g.max_select === 1;
-    const groupMods = (modifiers ?? [])
-      .filter((m) => m.group_id === g.id)
-      // Extra cujo ingrediente esgotou desaparece (ex.: acabou o bacon). Só em
-      // grupos opcionais: uma escolha obrigatória (ponto da carne) não leva
-      // stock, e nunca pode ficar sem opções — deixaria o prato impossível de
-      // configurar.
-      .filter((m) => single || canMake(modifierNeeds.get(m.id), ingredientStock))
+    const all = (modifiers ?? []).filter((m) => m.group_id === g.id);
+    const groupMods = all
+      .filter((m) => canMake(modifierNeeds.get(m.id), ingredientStock))
       .map((m) => ({
         id: m.id,
         name: m.name,
         priceDeltaCents: m.price_delta_cents,
       }));
-    // Grupo que ficou sem opções não deve mostrar um cabeçalho vazio.
-    if (groupMods.length === 0) continue;
-    list.push({
-      id: g.id,
-      name: g.name,
-      single,
-      modifiers: groupMods,
-    });
+
+    if (groupMods.length === 0) {
+      // Só bloqueia o prato se HAVIA opções e o stock as levou a todas. Um grupo
+      // ainda sem opções é o dono a meio da configuração — não se esconde nada.
+      if (single && all.length > 0) itemsWithoutRequiredOption.add(g.menu_item_id);
+      continue;
+    }
+
+    const list = groupsByItem.get(g.menu_item_id) ?? [];
+    list.push({ id: g.id, name: g.name, single, modifiers: groupMods });
     groupsByItem.set(g.menu_item_id, list);
   }
 
   // Disponível = manual E stock próprio (se seguido) E dá para fazer com os
-  // ingredientes atuais. Esgotado = fora do menu (nem chega a ser visto), em vez
-  // de aparecer a cinzento e o cliente perceber tarde. O "esgotado" manual
-  // (available=false) continua a aparecer desativado: é pausa, não ausência.
+  // ingredientes atuais E não ficou sem uma escolha obrigatória. Esgotado = fora
+  // do menu (nem chega a ser visto), em vez de aparecer a cinzento e o cliente
+  // perceber tarde. O "esgotado" manual (available=false) continua a aparecer
+  // desativado: é pausa, não ausência.
   const itemOrderable = (i: {
     id: string;
     track_stock: boolean;
     stock_qty: number;
   }) =>
     (!i.track_stock || i.stock_qty > 0) &&
-    canMake(itemNeeds.get(i.id), ingredientStock);
+    canMake(itemNeeds.get(i.id), ingredientStock) &&
+    !itemsWithoutRequiredOption.has(i.id);
 
   return (
     categories
@@ -155,33 +163,39 @@ export async function getOrderableItemIds(
         .eq("available", true),
       supabase
         .from("modifier_groups")
-        .select("id, min_select, max_select")
+        .select("id, menu_item_id, min_select, max_select")
         .eq("establishment_id", establishmentId),
       loadStockContext(establishmentId),
     ]);
 
-  // Grupos de escolha obrigatória: as suas opções nunca são escondidas por
-  // stock (ver getMenu — não levam ingredientes).
-  const singleGroups = new Set(
-    (groups ?? [])
-      .filter((g) => g.min_select === 1 && g.max_select === 1)
-      .map((g) => g.id),
-  );
+  const canUse = (modifierId: string) =>
+    canMake(stock.modifierNeeds.get(modifierId), stock.ingredientStock);
+
+  // Mesma regra do getMenu: se um grupo obrigatório ficou sem opções por stock,
+  // o prato deixa de ser configurável e sai do menu.
+  const modsByGroup = new Map<string, { id: string }[]>();
+  for (const m of mods ?? []) {
+    modsByGroup.set(m.group_id, [...(modsByGroup.get(m.group_id) ?? []), m]);
+  }
+  const itemsWithoutRequiredOption = new Set<string>();
+  for (const g of groups ?? []) {
+    if (!(g.min_select === 1 && g.max_select === 1)) continue;
+    const all = modsByGroup.get(g.id) ?? [];
+    if (all.length === 0) continue; // grupo por configurar, não bloqueia
+    if (!all.some((m) => canUse(m.id))) {
+      itemsWithoutRequiredOption.add(g.menu_item_id);
+    }
+  }
 
   return {
     items: (items ?? [])
       .filter(
         (i) =>
           (!i.track_stock || i.stock_qty > 0) &&
-          canMake(stock.itemNeeds.get(i.id), stock.ingredientStock),
+          canMake(stock.itemNeeds.get(i.id), stock.ingredientStock) &&
+          !itemsWithoutRequiredOption.has(i.id),
       )
       .map((i) => i.id),
-    modifiers: (mods ?? [])
-      .filter(
-        (m) =>
-          singleGroups.has(m.group_id) ||
-          canMake(stock.modifierNeeds.get(m.id), stock.ingredientStock),
-      )
-      .map((m) => m.id),
+    modifiers: (mods ?? []).filter((m) => canUse(m.id)).map((m) => m.id),
   };
 }

@@ -203,27 +203,23 @@ export function ItemEditor({
                     </button>
                   </div>
                   {/*
-                    Ingredientes que este extra gasta (ex.: Bacon → 1 bacon).
-                    Só em grupos opcionais: numa escolha obrigatória (ponto da
-                    carne) não se conta stock — são formas de preparar o mesmo
-                    prato, não coisas que se juntam.
+                    Ingredientes que esta opção gasta (ex.: Bacon → 1 bacon, ou
+                    a bebida de um combo → 1 refrigerante). Deixa-se em todas as
+                    opções: quem configura é que sabe se a opção consome algo.
+                    Num "ponto da carne" simplesmente não se liga nada.
                   */}
-                  {!g.single && (
-                    <div className="mt-2 border-t border-line pt-2">
-                      <RecipeEditor
-                        compact
-                        lines={m.recipe}
-                        ingredients={ingredients}
-                        disabled={pending}
-                        onAdd={(ingId, qty) =>
-                          run(() =>
-                            setModifierIngredient(itemId, m.id, ingId, qty),
-                          )
-                        }
-                        onRemove={(rid) => run(() => removeRecipeItem(itemId, rid))}
-                      />
-                    </div>
-                  )}
+                  <div className="mt-2 border-t border-line pt-2">
+                    <RecipeEditor
+                      compact
+                      lines={m.recipe}
+                      ingredients={ingredients}
+                      disabled={pending}
+                      onAdd={(ingId, qty) =>
+                        run(() => setModifierIngredient(itemId, m.id, ingId, qty))
+                      }
+                      onRemove={(rid) => run(() => removeRecipeItem(itemId, rid))}
+                    />
+                  </div>
                 </li>
               ))}
             </ul>

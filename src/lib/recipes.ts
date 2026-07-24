@@ -6,8 +6,12 @@
 // extra) está disponível se DÁ para fazer pelo menos um com o stock atual.
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { canMake, type IngredientNeed } from "@/lib/availability";
 
-export type IngredientNeed = { ingredientId: string; qty: number };
+// As regras puras (canMake, disponibilidade) vivem em `availability.ts`, que é
+// testável por não tocar em I/O. Reexporta-se por conveniência de quem já
+// importava daqui.
+export { canMake, type IngredientNeed };
 
 export type StockContext = {
   ingredientStock: Map<string, number>; // ingredient_id -> stock atual
@@ -50,16 +54,4 @@ export async function loadStockContext(
   }
 
   return { ingredientStock, itemNeeds, modifierNeeds };
-}
-
-/** Dá para fazer pelo menos um, dado o stock atual? Sem receita = sim. */
-export function canMake(
-  needs: IngredientNeed[] | undefined,
-  stock: Map<string, number>,
-): boolean {
-  if (!needs || needs.length === 0) return true;
-  for (const n of needs) {
-    if ((stock.get(n.ingredientId) ?? 0) < n.qty) return false;
-  }
-  return true;
 }

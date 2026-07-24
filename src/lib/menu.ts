@@ -1,7 +1,13 @@
 // Leitura do menu público de um estabelecimento (usado no fluxo do cliente).
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { loadStockContext, canMake } from "@/lib/recipes";
+import { loadStockContext } from "@/lib/recipes";
+import {
+  resolveGroups,
+  isItemOrderable,
+  type GroupRow,
+  type ModifierRow,
+} from "@/lib/availability";
 
 export type MenuModifier = {
   id: string;
@@ -68,52 +74,13 @@ export async function getMenu(establishmentId: string): Promise<MenuCategory[]> 
   const { ingredientStock, itemNeeds, modifierNeeds } =
     await loadStockContext(establishmentId);
 
-  // Qualquer opção pode gastar ingredientes — tanto um extra opcional ("Bacon")
-  // como uma escolha obrigatória que é mesmo um produto (a bebida de um combo).
-  // O que interessa não é o tipo de grupo, é se a opção consome algo.
-  //
-  // Se um grupo OBRIGATÓRIO ficar sem opções porque esgotaram todas, o prato
-  // deixa de ser configurável e sai do menu: sem bebida nenhuma não há combo.
-  // Um grupo opcional vazio só desaparece a si próprio.
-  const groupsByItem = new Map<string, MenuModifierGroup[]>();
-  const itemsWithoutRequiredOption = new Set<string>();
-
-  for (const g of groups ?? []) {
-    const single = g.min_select === 1 && g.max_select === 1;
-    const all = (modifiers ?? []).filter((m) => m.group_id === g.id);
-    const groupMods = all
-      .filter((m) => canMake(modifierNeeds.get(m.id), ingredientStock))
-      .map((m) => ({
-        id: m.id,
-        name: m.name,
-        priceDeltaCents: m.price_delta_cents,
-      }));
-
-    if (groupMods.length === 0) {
-      // Só bloqueia o prato se HAVIA opções e o stock as levou a todas. Um grupo
-      // ainda sem opções é o dono a meio da configuração — não se esconde nada.
-      if (single && all.length > 0) itemsWithoutRequiredOption.add(g.menu_item_id);
-      continue;
-    }
-
-    const list = groupsByItem.get(g.menu_item_id) ?? [];
-    list.push({ id: g.id, name: g.name, single, modifiers: groupMods });
-    groupsByItem.set(g.menu_item_id, list);
-  }
-
-  // Disponível = manual E stock próprio (se seguido) E dá para fazer com os
-  // ingredientes atuais E não ficou sem uma escolha obrigatória. Esgotado = fora
-  // do menu (nem chega a ser visto), em vez de aparecer a cinzento e o cliente
-  // perceber tarde. O "esgotado" manual (available=false) continua a aparecer
-  // desativado: é pausa, não ausência.
-  const itemOrderable = (i: {
-    id: string;
-    track_stock: boolean;
-    stock_qty: number;
-  }) =>
-    (!i.track_stock || i.stock_qty > 0) &&
-    canMake(itemNeeds.get(i.id), ingredientStock) &&
-    !itemsWithoutRequiredOption.has(i.id);
+  // Toda a regra de disponibilidade vive em `availability.ts` (pura, testada).
+  const { groupsByItem, itemsWithoutRequiredOption } = resolveGroups(
+    (groups ?? []).map(toGroupRow),
+    (modifiers ?? []).map(toModifierRow),
+    modifierNeeds,
+    ingredientStock,
+  );
 
   return (
     categories
@@ -122,7 +89,18 @@ export async function getMenu(establishmentId: string): Promise<MenuCategory[]> 
         name: c.name,
         items: (items ?? [])
           .filter((i) => i.category_id === c.id)
-          .filter(itemOrderable)
+          // Esgotado = fora do menu (nem chega a ser visto), em vez de aparecer
+          // a cinzento e o cliente perceber tarde. O "esgotado" manual
+          // (available=false) continua a mostrar-se desativado: é pausa, não
+          // ausência — por isso não entra na regra de disponibilidade.
+          .filter((i) =>
+            isItemOrderable(
+              { id: i.id, trackStock: i.track_stock, stockQty: i.stock_qty },
+              itemNeeds,
+              ingredientStock,
+              itemsWithoutRequiredOption,
+            ),
+          )
           .map((i) => ({
             id: i.id,
             name: i.name,
@@ -136,6 +114,38 @@ export async function getMenu(establishmentId: string): Promise<MenuCategory[]> 
       // Categoria que ficou sem artigos não deve mostrar um cabeçalho vazio.
       .filter((c) => c.items.length > 0)
   );
+}
+
+// ---- Adaptadores das linhas da BD para o formato do módulo puro ----
+type DbGroup = {
+  id: string;
+  menu_item_id: string;
+  name: string;
+  min_select: number;
+  max_select: number;
+};
+type DbModifier = {
+  id: string;
+  group_id: string;
+  name: string;
+  price_delta_cents: number;
+};
+function toGroupRow(g: DbGroup): GroupRow {
+  return {
+    id: g.id,
+    menuItemId: g.menu_item_id,
+    name: g.name,
+    minSelect: g.min_select,
+    maxSelect: g.max_select,
+  };
+}
+function toModifierRow(m: DbModifier): ModifierRow {
+  return {
+    id: m.id,
+    groupId: m.group_id,
+    name: m.name,
+    priceDeltaCents: m.price_delta_cents,
+  };
 }
 
 export type OrderableIds = { items: string[]; modifiers: string[] };
@@ -158,44 +168,36 @@ export async function getOrderableItemIds(
         .eq("establishment_id", establishmentId),
       supabase
         .from("modifiers")
-        .select("id, available, group_id")
+        .select("id, group_id, name, price_delta_cents, available")
         .eq("establishment_id", establishmentId)
         .eq("available", true),
       supabase
         .from("modifier_groups")
-        .select("id, menu_item_id, min_select, max_select")
+        .select("id, menu_item_id, name, min_select, max_select")
         .eq("establishment_id", establishmentId),
       loadStockContext(establishmentId),
     ]);
 
-  const canUse = (modifierId: string) =>
-    canMake(stock.modifierNeeds.get(modifierId), stock.ingredientStock);
-
-  // Mesma regra do getMenu: se um grupo obrigatório ficou sem opções por stock,
-  // o prato deixa de ser configurável e sai do menu.
-  const modsByGroup = new Map<string, { id: string }[]>();
-  for (const m of mods ?? []) {
-    modsByGroup.set(m.group_id, [...(modsByGroup.get(m.group_id) ?? []), m]);
-  }
-  const itemsWithoutRequiredOption = new Set<string>();
-  for (const g of groups ?? []) {
-    if (!(g.min_select === 1 && g.max_select === 1)) continue;
-    const all = modsByGroup.get(g.id) ?? [];
-    if (all.length === 0) continue; // grupo por configurar, não bloqueia
-    if (!all.some((m) => canUse(m.id))) {
-      itemsWithoutRequiredOption.add(g.menu_item_id);
-    }
-  }
+  // Exatamente a mesma resolução do getMenu, para as duas superfícies nunca
+  // divergirem: o que sai do menu no carregamento sai também no polling.
+  const { itemsWithoutRequiredOption, orderableModifierIds } = resolveGroups(
+    (groups ?? []).map(toGroupRow),
+    (mods ?? []).map(toModifierRow),
+    stock.modifierNeeds,
+    stock.ingredientStock,
+  );
 
   return {
     items: (items ?? [])
-      .filter(
-        (i) =>
-          (!i.track_stock || i.stock_qty > 0) &&
-          canMake(stock.itemNeeds.get(i.id), stock.ingredientStock) &&
-          !itemsWithoutRequiredOption.has(i.id),
+      .filter((i) =>
+        isItemOrderable(
+          { id: i.id, trackStock: i.track_stock, stockQty: i.stock_qty },
+          stock.itemNeeds,
+          stock.ingredientStock,
+          itemsWithoutRequiredOption,
+        ),
       )
       .map((i) => i.id),
-    modifiers: (mods ?? []).filter((m) => canUse(m.id)).map((m) => m.id),
+    modifiers: [...orderableModifierIds],
   };
 }

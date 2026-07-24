@@ -8,6 +8,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveTableSession } from "@/lib/session/table";
 import { getOrderableItemIds, type OrderableIds } from "@/lib/menu";
 import { loadStockContext } from "@/lib/recipes";
+import { prepareOrderLines } from "@/lib/pricing";
+import { aggregateIngredientNeeds } from "@/lib/availability";
 import { createOrderCheckout } from "@/lib/stripe/checkout";
 
 const placeOrderSchema = z.object({
@@ -39,146 +41,104 @@ export async function placeOrder(input: unknown): Promise<ActionResult> {
 
   const supabase = createAdminClient();
 
-  // Recalcula tudo a partir da BD, só itens deste estabelecimento e disponíveis.
+  // Lê da BD tudo o que é preciso para validar e recalcular preços — só deste
+  // estabelecimento. O cliente só disse "que artigo" e "que opções"; os valores
+  // vêm todos daqui, nunca do browser.
   const ids = [...new Set(items.map((i) => i.menuItemId))];
-  const { data: dbItems } = await supabase
-    .from("menu_items")
-    .select("id, name, price_cents, available, track_stock, stock_qty")
-    .eq("establishment_id", session.establishmentId)
-    .in("id", ids);
+  const [{ data: dbItems }, { data: dbGroups }, { data: dbMods }] =
+    await Promise.all([
+      supabase
+        .from("menu_items")
+        .select("id, name, price_cents, available, track_stock, stock_qty")
+        .eq("establishment_id", session.establishmentId)
+        .in("id", ids),
+      supabase
+        .from("modifier_groups")
+        .select("id, menu_item_id, min_select, max_select")
+        .eq("establishment_id", session.establishmentId)
+        .in("menu_item_id", ids),
+      supabase
+        .from("modifiers")
+        .select("id, group_id, name, price_delta_cents, available")
+        .eq("establishment_id", session.establishmentId),
+    ]);
 
-  const byId = new Map((dbItems ?? []).map((i) => [i.id, i]));
-
-  // Quantidade total pedida por artigo (várias linhas podem repetir o item com
-  // opções diferentes) — para validar stock e depois dar baixa.
-  const qtyByItem = new Map<string, number>();
-  for (const line of items) {
-    qtyByItem.set(
-      line.menuItemId,
-      (qtyByItem.get(line.menuItemId) ?? 0) + line.qty,
-    );
-  }
-
-  for (const line of items) {
-    const it = byId.get(line.menuItemId);
-    // Disponibilidade efetiva: manual E (não segue stock OU tem stock).
-    const avail = it && it.available && (!it.track_stock || it.stock_qty > 0);
-    if (!it || !avail) return { ok: false, error: "Item indisponível." };
-  }
-
-  // Pré-verificação de stock: serve só para falhar cedo com uma mensagem boa.
-  // NÃO é o que garante que não se vende a mais — isso é a reserve_stock() mais
-  // abaixo, que decide com as linhas bloqueadas.
-  for (const [itemId, qty] of qtyByItem) {
-    const it = byId.get(itemId)!;
-    if (it.track_stock && it.stock_qty < qty) {
-      return { ok: false, error: `Sem stock suficiente de ${it.name}.` };
-    }
-  }
-
-  // Grupos e opções destes itens — para validar as escolhas e obter os preços
-  // extra a partir da BD (nunca do browser).
-  const { data: dbGroups } = await supabase
-    .from("modifier_groups")
-    .select("id, menu_item_id, min_select, max_select")
-    .eq("establishment_id", session.establishmentId)
-    .in("menu_item_id", ids);
-  const { data: dbMods } = await supabase
-    .from("modifiers")
-    .select("id, group_id, name, price_delta_cents, available")
-    .eq("establishment_id", session.establishmentId);
-
-  const modById = new Map((dbMods ?? []).map((m) => [m.id, m]));
-  const groupById = new Map((dbGroups ?? []).map((g) => [g.id, g]));
-  const groupsOfItem = new Map<string, string[]>();
-  for (const g of dbGroups ?? []) {
-    const l = groupsOfItem.get(g.menu_item_id) ?? [];
-    l.push(g.id);
-    groupsOfItem.set(g.menu_item_id, l);
-  }
-
-  // Valida cada linha e calcula o preço unitário (base + extras das opções).
-  type PreparedLine = {
-    itemId: string;
-    name: string;
-    unitPriceCents: number;
-    qty: number;
-    notes: string | null;
-    modifiers: { id: string; name: string; delta: number }[];
-  };
-  const prepared: PreparedLine[] = [];
-
-  for (const line of items) {
-    const it = byId.get(line.menuItemId)!;
-    const chosen = line.modifierIds ?? [];
-
-    // Todas as opções escolhidas têm de existir, estar disponíveis e pertencer a
-    // um grupo deste item.
-    const itemGroupIds = new Set(groupsOfItem.get(line.menuItemId) ?? []);
-    const chosenByGroup = new Map<string, number>();
-    const lineMods: { id: string; name: string; delta: number }[] = [];
-    for (const modId of chosen) {
-      const m = modById.get(modId);
-      if (!m || !m.available || !itemGroupIds.has(m.group_id)) {
-        return { ok: false, error: "Opção inválida." };
-      }
-      chosenByGroup.set(m.group_id, (chosenByGroup.get(m.group_id) ?? 0) + 1);
-      lineMods.push({ id: m.id, name: m.name, delta: m.price_delta_cents });
-    }
-
-    // Respeita min/max de cada grupo do item (ex.: ponto da carne obrigatório).
-    for (const gid of itemGroupIds) {
-      const g = groupById.get(gid)!;
-      const n = chosenByGroup.get(gid) ?? 0;
-      if (n < g.min_select || n > g.max_select) {
-        return { ok: false, error: "Faltam opções obrigatórias." };
-      }
-    }
-
-    const extra = lineMods.reduce((s, m) => s + m.delta, 0);
-    prepared.push({
-      itemId: it.id,
-      name: it.name,
-      unitPriceCents: it.price_cents + extra,
-      qty: line.qty,
-      notes: line.notes ?? null,
-      modifiers: lineMods,
-    });
-  }
-
-  const subtotal = prepared.reduce(
-    (sum, l) => sum + l.unitPriceCents * l.qty,
-    0,
+  // Validação + preço: regra pura, testada em isolamento (ver lib/pricing.ts).
+  const priced = prepareOrderLines(
+    items,
+    new Map(
+      (dbItems ?? []).map((i) => [
+        i.id,
+        {
+          id: i.id,
+          name: i.name,
+          priceCents: i.price_cents,
+          available: i.available,
+          trackStock: i.track_stock,
+          stockQty: i.stock_qty,
+        },
+      ]),
+    ),
+    (dbGroups ?? []).map((g) => ({
+      id: g.id,
+      menuItemId: g.menu_item_id,
+      minSelect: g.min_select,
+      maxSelect: g.max_select,
+    })),
+    new Map(
+      (dbMods ?? []).map((m) => [
+        m.id,
+        {
+          id: m.id,
+          groupId: m.group_id,
+          name: m.name,
+          priceDeltaCents: m.price_delta_cents,
+          available: m.available,
+        },
+      ]),
+    ),
   );
+  if (!priced.ok) return { ok: false, error: priced.error };
+  const prepared = priced.lines;
+  const subtotal = priced.subtotalCents;
+
+  // Total pedido por artigo seguido — para a reserva do stock por prato.
+  const byTrackedItem = new Map<string, number>();
+  for (const line of items) {
+    const it = (dbItems ?? []).find((d) => d.id === line.menuItemId);
+    if (it?.track_stock) {
+      byTrackedItem.set(
+        line.menuItemId,
+        (byTrackedItem.get(line.menuItemId) ?? 0) + line.qty,
+      );
+    }
+  }
 
   // ---- Reserva de stock ANTES de criar o pedido ----
   // É aqui que se decide quem fica com a última unidade. A reserve_stock()
   // bloqueia as linhas, verifica e dá baixa na mesma transação, por isso dois
   // pedidos simultâneos do último artigo não passam os dois. Reservar antes de
   // gravar evita ter de apagar um pedido já criado.
-  const reserveItems = [...qtyByItem.entries()]
-    .filter(([itemId]) => byId.get(itemId)!.track_stock)
-    .map(([itemId, qty]) => ({ item_id: itemId, qty }));
+  const reserveItems = [...byTrackedItem.entries()].map(([item_id, qty]) => ({
+    item_id,
+    qty,
+  }));
 
   // Ingredientes gastos pelo pedido: receita do prato + receita de cada extra
-  // escolhido, tudo multiplicado pela quantidade da linha e agregado por
-  // ingrediente (o mesmo ingrediente pode vir de vários pratos/extras).
+  // escolhido, tudo × quantidade da linha e agregado por ingrediente (regra pura
+  // — a mesma que o alerta de consumo do plano Max usa do outro lado).
   const { itemNeeds, modifierNeeds } = await loadStockContext(
     session.establishmentId,
   );
-  const ingredientNeed = new Map<string, number>();
-  const addNeed = (needs: { ingredientId: string; qty: number }[] | undefined, times: number) => {
-    for (const n of needs ?? []) {
-      ingredientNeed.set(
-        n.ingredientId,
-        (ingredientNeed.get(n.ingredientId) ?? 0) + n.qty * times,
-      );
-    }
-  };
-  for (const l of prepared) {
-    addNeed(itemNeeds.get(l.itemId), l.qty);
-    for (const m of l.modifiers) addNeed(modifierNeeds.get(m.id), l.qty);
-  }
+  const ingredientNeed = aggregateIngredientNeeds(
+    prepared.map((l) => ({
+      itemId: l.itemId,
+      qty: l.qty,
+      modifierIds: l.modifiers.map((m) => m.id),
+    })),
+    itemNeeds,
+    modifierNeeds,
+  );
   const reserveIngredients = [...ingredientNeed.entries()].map(
     ([ingredient_id, qty]) => ({ ingredient_id, qty }),
   );

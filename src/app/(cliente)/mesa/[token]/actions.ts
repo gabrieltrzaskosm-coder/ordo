@@ -22,7 +22,8 @@ const placeOrderSchema = z.object({
         menuItemId: z.string().uuid(),
         qty: z.number().int().min(1).max(50),
         notes: z.string().max(280).optional(),
-        modifierIds: z.array(z.string().uuid()).max(30).optional(),
+        // Ids repetidos = quantidade do extra ("2× bacon" = [bacon, bacon]).
+        modifierIds: z.array(z.string().uuid()).max(60).optional(),
       }),
     )
     .min(1),

@@ -38,6 +38,7 @@ export type ResolvedGroup = {
   id: string;
   name: string;
   single: boolean;
+  maxSelect: number; // teto de unidades no grupo (conta a quantidade por extra)
   modifiers: { id: string; name: string; priceDeltaCents: number }[];
 };
 
@@ -91,6 +92,7 @@ export function resolveGroups(
       id: g.id,
       name: g.name,
       single,
+      maxSelect: g.maxSelect,
       modifiers: available.map((m) => ({
         id: m.id,
         name: m.name,

@@ -17,7 +17,7 @@ function eurosToCents(raw: string): number {
   return Math.round(n * 100);
 }
 
-type ChosenModifier = { id: string; name: string; delta: number };
+type ChosenModifier = { id: string; name: string; delta: number; qty: number };
 
 type CartLine = {
   key: string;
@@ -28,13 +28,29 @@ type CartLine = {
   modifiers: ChosenModifier[];
 };
 
-// Chave determinística: mesmo item + mesmas opções = mesma linha (agrupa qty).
+// Chave determinística: mesmo item + mesmas opções (incl. quantidade de cada
+// extra) = mesma linha (agrupa qty). "2× bacon" é linha distinta de "1× bacon".
 function lineKey(itemId: string, mods: ChosenModifier[]) {
-  return itemId + "|" + mods.map((m) => m.id).sort().join(",");
+  return (
+    itemId +
+    "|" +
+    mods
+      .map((m) => `${m.id}x${m.qty}`)
+      .sort()
+      .join(",")
+  );
 }
 
 function lineUnit(line: CartLine) {
-  return line.basePriceCents + line.modifiers.reduce((s, m) => s + m.delta, 0);
+  return (
+    line.basePriceCents +
+    line.modifiers.reduce((s, m) => s + m.delta * m.qty, 0)
+  );
+}
+
+// Rótulo de um extra no carrinho/cozinha: "2× Bacon" ou só "Bacon".
+function modLabel(m: { name: string; qty: number }) {
+  return m.qty > 1 ? `${m.qty}× ${m.name}` : m.name;
 }
 
 const safeBottom = "pb-[calc(1rem+env(safe-area-inset-bottom))]";
@@ -61,9 +77,11 @@ export function ClienteMenu({
   const [tipCents, setTipCents] = useState(0);
   const [tipCustom, setTipCustom] = useState(false);
   const [tipCustomValue, setTipCustomValue] = useState("");
-  // Modal de opções: item a configurar + escolhas por grupo (ids das opções).
+  // Modal de opções: item a configurar + escolhas por grupo (ids das opções) +
+  // quantidade escolhida de cada extra (modifierId -> qty, só grupos múltiplos).
   const [modalItem, setModalItem] = useState<MenuItem | null>(null);
   const [choices, setChoices] = useState<Record<string, string[]>>({});
+  const [modQty, setModQty] = useState<Record<string, number>>({});
   // O que ainda se pode pedir: pratos e extras (um extra some quando o seu
   // ingrediente esgota). null = ainda não consultámos; vale o que o servidor
   // mandou, que já vem filtrado.
@@ -195,8 +213,24 @@ export function ClienteMenu({
       addLine(item, []);
     } else {
       setChoices({});
+      setModQty({});
       setModalItem(item);
     }
+  }
+
+  // Unidades já escolhidas num grupo (soma das quantidades dos extras marcados).
+  function groupUnits(g: MenuItem["groups"][number]): number {
+    const picked = choices[g.id] ?? [];
+    return picked.reduce((s, id) => s + (modQty[id] ?? 1), 0);
+  }
+
+  // +/- na quantidade de um extra, travado entre 1 e o teto do grupo.
+  function bumpModQty(g: MenuItem["groups"][number], id: string, delta: number) {
+    setModQty((q) => {
+      const cur = q[id] ?? 1;
+      if (delta > 0 && groupUnits(g) >= g.maxSelect) return q; // grupo cheio
+      return { ...q, [id]: Math.max(1, cur + delta) };
+    });
   }
 
   function confirmModal() {
@@ -206,7 +240,13 @@ export function ClienteMenu({
       const picked = choices[g.id] ?? [];
       for (const id of picked) {
         const m = g.modifiers.find((x) => x.id === id);
-        if (m) mods.push({ id: m.id, name: m.name, delta: m.priceDeltaCents });
+        if (m)
+          mods.push({
+            id: m.id,
+            name: m.name,
+            delta: m.priceDeltaCents,
+            qty: g.single ? 1 : modQty[id] ?? 1,
+          });
       }
     }
     addLine(modalItem, mods);
@@ -218,7 +258,7 @@ export function ClienteMenu({
     !modalItem ||
     modalGroups.every((g) => !g.single || (choices[g.id]?.length ?? 0) === 1);
 
-  // Preço corrente no modal (base + extras escolhidos).
+  // Preço corrente no modal (base + extras escolhidos, cada um × a sua quantidade).
   const modalUnit = modalItem
     ? modalItem.priceCents +
       modalGroups.reduce((s, g) => {
@@ -227,23 +267,31 @@ export function ClienteMenu({
           s +
           picked.reduce((gs, id) => {
             const m = g.modifiers.find((x) => x.id === id);
-            return gs + (m?.priceDeltaCents ?? 0);
+            const q = g.single ? 1 : modQty[id] ?? 1;
+            return gs + (m?.priceDeltaCents ?? 0) * q;
           }, 0)
         );
       }, 0)
     : 0;
 
-  function toggleChoice(groupId: string, modId: string, single: boolean) {
-    setChoices((c) => {
-      if (single) return { ...c, [groupId]: [modId] };
-      const cur = c[groupId] ?? [];
-      return {
-        ...c,
-        [groupId]: cur.includes(modId)
-          ? cur.filter((x) => x !== modId)
-          : [...cur, modId],
-      };
-    });
+  function toggleChoice(g: MenuItem["groups"][number], modId: string) {
+    if (g.single) {
+      setChoices((c) => ({ ...c, [g.id]: [modId] }));
+      return;
+    }
+    const cur = choices[g.id] ?? [];
+    if (cur.includes(modId)) {
+      setChoices((c) => ({ ...c, [g.id]: (c[g.id] ?? []).filter((x) => x !== modId) }));
+      setModQty((q) => {
+        const next = { ...q };
+        delete next[modId];
+        return next;
+      });
+    } else {
+      // Não deixa marcar mais um extra se o grupo já atingiu o teto de unidades.
+      if (groupUnits(g) >= g.maxSelect) return;
+      setChoices((c) => ({ ...c, [g.id]: [...(c[g.id] ?? []), modId] }));
+    }
   }
 
   function submit() {
@@ -251,7 +299,9 @@ export function ClienteMenu({
     const items = cart.map((l) => ({
       menuItemId: l.itemId,
       qty: l.qty,
-      modifierIds: l.modifiers.map((m) => m.id),
+      // Cada extra vai repetido pela sua quantidade: "2× bacon" = [bacon, bacon].
+      // O servidor conta ocorrências para preço e stock — sem coluna nova.
+      modifierIds: l.modifiers.flatMap((m) => Array(m.qty).fill(m.id)),
     }));
     const orderSubtotal = subtotal;
     startTransition(async () => {
@@ -412,6 +462,8 @@ export function ClienteMenu({
                   <ul className="space-y-2">
                     {g.modifiers.map((m) => {
                       const picked = (choices[g.id] ?? []).includes(m.id);
+                      const q = modQty[m.id] ?? 1;
+                      const groupFull = groupUnits(g) >= g.maxSelect;
                       return (
                         <li key={m.id}>
                           <label
@@ -425,13 +477,47 @@ export function ClienteMenu({
                               type={g.single ? "radio" : "checkbox"}
                               name={g.id}
                               checked={picked}
-                              onChange={() => toggleChoice(g.id, m.id, g.single)}
+                              onChange={() => toggleChoice(g, m.id)}
                               className="h-4 w-4 accent-brand"
                             />
                             <span className="flex-1 text-ink">{m.name}</span>
                             {m.priceDeltaCents > 0 && (
                               <span className="tnum font-medium text-muted">
                                 +{formatMoney(m.priceDeltaCents, currency)}
+                              </span>
+                            )}
+                            {picked && !g.single && g.maxSelect > 1 && (
+                              <span
+                                className="flex items-center gap-1 rounded-full border border-line p-0.5"
+                                onClick={(e) => e.preventDefault()}
+                              >
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    bumpModQty(g, m.id, -1);
+                                  }}
+                                  disabled={q <= 1}
+                                  className="flex h-6 w-6 items-center justify-center rounded-full text-ink transition active:scale-90 disabled:opacity-30"
+                                  aria-label="Menos um"
+                                >
+                                  <MinusIcon />
+                                </button>
+                                <span className="tnum w-4 text-center text-sm font-semibold text-ink">
+                                  {q}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    bumpModQty(g, m.id, 1);
+                                  }}
+                                  disabled={groupFull}
+                                  className="flex h-6 w-6 items-center justify-center rounded-full text-ink transition active:scale-90 disabled:opacity-30"
+                                  aria-label="Mais um"
+                                >
+                                  <MinusPlusIcon />
+                                </button>
                               </span>
                             )}
                           </label>
@@ -479,7 +565,7 @@ export function ClienteMenu({
                     <p className="truncate font-medium text-ink">{l.name}</p>
                     {l.modifiers.length > 0 && (
                       <p className="truncate text-xs text-muted">
-                        {l.modifiers.map((m) => m.name).join(", ")}
+                        {l.modifiers.map(modLabel).join(", ")}
                       </p>
                     )}
                   </div>

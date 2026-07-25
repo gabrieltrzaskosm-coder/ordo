@@ -5,6 +5,13 @@ import { KitchenBoard, type KitchenOrder, type WaiterCall } from "./KitchenBoard
 // Sempre fresco: é um painel operacional, não pode servir cache.
 export const dynamic = "force-dynamic";
 
+// Junta extras repetidos numa etiqueta: ["Bacon","Bacon","Ovo"] → ["2× Bacon","Ovo"].
+function groupModifierNames(names: string[]): string[] {
+  const counts = new Map<string, number>();
+  for (const n of names) counts.set(n, (counts.get(n) ?? 0) + 1);
+  return [...counts.entries()].map(([n, c]) => (c > 1 ? `${c}× ${n}` : n));
+}
+
 export default async function CozinhaPage() {
   const session = await requireStaff();
   const supabase = await createClient();
@@ -41,9 +48,12 @@ export default async function CozinhaPage() {
         name: i.name_snapshot,
         qty: i.qty,
         notes: i.notes,
-        modifiers: (
-          (i.order_item_modifiers ?? []) as { name_snapshot: string }[]
-        ).map((m) => m.name_snapshot),
+        // Extras repetidos (ex.: dois "Bacon") são agrupados em "2× Bacon".
+        modifiers: groupModifierNames(
+          ((i.order_item_modifiers ?? []) as { name_snapshot: string }[]).map(
+            (m) => m.name_snapshot,
+          ),
+        ),
       })),
     };
   });

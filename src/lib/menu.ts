@@ -19,6 +19,7 @@ export type MenuModifierGroup = {
   id: string;
   name: string;
   single: boolean; // escolha única obrigatória vs múltipla opcional
+  maxSelect: number; // teto de unidades no grupo (conta a quantidade por extra)
   modifiers: MenuModifier[];
 };
 

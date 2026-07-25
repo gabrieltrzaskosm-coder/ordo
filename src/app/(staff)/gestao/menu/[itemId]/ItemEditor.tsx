@@ -4,10 +4,11 @@ import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { formatMoney } from "@/lib/money";
 import {
+  attachGroup,
   createGroup,
   createModifier,
-  deleteGroup,
   deleteModifier,
+  detachGroup,
   removeItemImage,
   removeRecipeItem,
   setItemIngredient,
@@ -34,8 +35,11 @@ export type EditableGroup = {
   id: string;
   name: string;
   single: boolean;
+  usedIn: number; // em quantos pratos este grupo é usado (>1 = partilhado)
   modifiers: EditableModifier[];
 };
+
+export type LibraryGroup = { id: string; name: string; single: boolean };
 
 export type IngredientOption = { id: string; name: string };
 
@@ -44,6 +48,7 @@ export function ItemEditor({
   name,
   imageUrl,
   groups,
+  libraryGroups,
   ingredients,
   itemRecipe,
 }: {
@@ -51,11 +56,13 @@ export function ItemEditor({
   name: string;
   imageUrl: string | null;
   groups: EditableGroup[];
+  libraryGroups: LibraryGroup[];
   ingredients: IngredientOption[];
   itemRecipe: RecipeLine[];
 }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [attachId, setAttachId] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
 
   function run(fn: () => Promise<{ ok: boolean; error?: string }>) {
@@ -171,15 +178,25 @@ export function ItemEditor({
                 <span className="ml-2 text-xs text-muted">
                   {g.single ? "escolha única" : "múltipla"}
                 </span>
+                {g.usedIn > 1 && (
+                  <span className="ml-2 rounded-full bg-surface-2 px-2 py-0.5 text-xs text-muted">
+                    partilhado · usado em {g.usedIn} pratos
+                  </span>
+                )}
               </div>
               <button
                 disabled={pending}
-                onClick={() => run(() => deleteGroup(itemId, g.id))}
+                onClick={() => run(() => detachGroup(itemId, g.id))}
                 className="text-xs text-muted hover:text-red-700"
               >
-                Remover grupo
+                Remover deste prato
               </button>
             </div>
+            {g.usedIn > 1 && (
+              <p className="mb-2 text-xs text-muted">
+                Editar as opções deste grupo afeta os {g.usedIn} pratos que o usam.
+              </p>
+            )}
 
             <ul className="mb-2 space-y-2">
               {g.modifiers.map((m) => (
@@ -250,6 +267,38 @@ export function ItemEditor({
           </div>
         ))}
 
+        {libraryGroups.length > 0 && (
+          <div className="mb-3 flex flex-wrap items-center gap-2 rounded-lg border border-dashed border-line p-3">
+            <span className="text-sm text-muted">
+              Reutilizar um grupo já criado:
+            </span>
+            <select
+              value={attachId}
+              onChange={(e) => setAttachId(e.target.value)}
+              className="rounded-lg border border-line px-3 py-1.5 text-sm"
+            >
+              <option value="">Escolher grupo…</option>
+              {libraryGroups.map((g) => (
+                <option key={g.id} value={g.id}>
+                  {g.name} ({g.single ? "escolha única" : "múltipla"})
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              disabled={pending || !attachId}
+              onClick={() => {
+                const id = attachId;
+                setAttachId("");
+                if (id) run(() => attachGroup(itemId, id));
+              }}
+              className="rounded-lg border border-line px-3 py-1.5 text-sm disabled:opacity-40"
+            >
+              Adicionar ao prato
+            </button>
+          </div>
+        )}
+
         <form
           action={(fd) => run(() => createGroup(itemId, fd))}
           className="flex flex-wrap gap-2"
@@ -257,7 +306,7 @@ export function ItemEditor({
           <input
             name="name"
             required
-            placeholder="Novo grupo (ex.: Ponto da carne)"
+            placeholder="Ou criar um grupo novo (ex.: Ponto da carne)"
             className="flex-1 rounded-lg border border-line px-3 py-2 text-sm"
           />
           <select

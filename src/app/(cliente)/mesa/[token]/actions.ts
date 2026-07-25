@@ -57,7 +57,7 @@ export async function placeOrder(input: unknown): Promise<ActionResult> {
   // estabelecimento. O cliente só disse "que artigo" e "que opções"; os valores
   // vêm todos daqui, nunca do browser.
   const ids = [...new Set(items.map((i) => i.menuItemId))];
-  const [{ data: dbItems }, { data: dbGroups }, { data: dbMods }] =
+  const [{ data: dbItems }, { data: dbLinks }, { data: dbGroups }, { data: dbMods }] =
     await Promise.all([
       supabase
         .from("menu_items")
@@ -65,15 +65,36 @@ export async function placeOrder(input: unknown): Promise<ActionResult> {
         .eq("establishment_id", session.establishmentId)
         .in("id", ids),
       supabase
-        .from("modifier_groups")
-        .select("id, menu_item_id, min_select, max_select")
+        .from("item_modifier_groups")
+        .select("menu_item_id, group_id")
         .eq("establishment_id", session.establishmentId)
         .in("menu_item_id", ids),
+      supabase
+        .from("modifier_groups")
+        .select("id, min_select, max_select")
+        .eq("establishment_id", session.establishmentId),
       supabase
         .from("modifiers")
         .select("id, group_id, name, price_delta_cents, available")
         .eq("establishment_id", session.establishmentId),
     ]);
+
+  // Grupos ligados a estes pratos: um PricedGroup por ligação (prato × grupo),
+  // para um grupo reutilizado valer em cada prato onde está.
+  const groupMeta = new Map((dbGroups ?? []).map((g) => [g.id, g]));
+  const pricedGroups = (dbLinks ?? []).flatMap((l) => {
+    const g = groupMeta.get(l.group_id);
+    return g
+      ? [
+          {
+            id: g.id,
+            menuItemId: l.menu_item_id,
+            minSelect: g.min_select,
+            maxSelect: g.max_select,
+          },
+        ]
+      : [];
+  });
 
   // Validação + preço: regra pura, testada em isolamento (ver lib/pricing.ts).
   const priced = prepareOrderLines(
@@ -91,12 +112,7 @@ export async function placeOrder(input: unknown): Promise<ActionResult> {
         },
       ]),
     ),
-    (dbGroups ?? []).map((g) => ({
-      id: g.id,
-      menuItemId: g.menu_item_id,
-      minSelect: g.min_select,
-      maxSelect: g.max_select,
-    })),
+    pricedGroups,
     new Map(
       (dbMods ?? []).map((m) => [
         m.id,

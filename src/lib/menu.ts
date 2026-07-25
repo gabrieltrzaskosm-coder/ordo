@@ -58,11 +58,7 @@ export async function getMenu(establishmentId: string): Promise<MenuCategory[]> 
     .eq("establishment_id", establishmentId)
     .order("sort", { ascending: true });
 
-  const { data: groups } = await supabase
-    .from("modifier_groups")
-    .select("id, menu_item_id, name, min_select, max_select, sort")
-    .eq("establishment_id", establishmentId)
-    .order("sort", { ascending: true });
+  const groupRows = await loadGroupRows(establishmentId);
 
   const { data: modifiers } = await supabase
     .from("modifiers")
@@ -77,7 +73,7 @@ export async function getMenu(establishmentId: string): Promise<MenuCategory[]> 
 
   // Toda a regra de disponibilidade vive em `availability.ts` (pura, testada).
   const { groupsByItem, itemsWithoutRequiredOption } = resolveGroups(
-    (groups ?? []).map(toGroupRow),
+    groupRows,
     (modifiers ?? []).map(toModifierRow),
     modifierNeeds,
     ingredientStock,
@@ -117,29 +113,49 @@ export async function getMenu(establishmentId: string): Promise<MenuCategory[]> 
   );
 }
 
+/**
+ * Grupos ligados aos pratos, um GroupRow por ligação (prato × grupo). Um grupo
+ * reutilizado aparece uma vez por cada prato onde está — é o que resolveGroups
+ * espera. A ligação vem de item_modifier_groups; o grupo dá o nome e min/max.
+ */
+async function loadGroupRows(establishmentId: string): Promise<GroupRow[]> {
+  const supabase = createAdminClient();
+  const [{ data: links }, { data: groups }] = await Promise.all([
+    supabase
+      .from("item_modifier_groups")
+      .select("menu_item_id, group_id, sort")
+      .eq("establishment_id", establishmentId)
+      .order("sort", { ascending: true }),
+    supabase
+      .from("modifier_groups")
+      .select("id, name, min_select, max_select")
+      .eq("establishment_id", establishmentId),
+  ]);
+
+  const byId = new Map((groups ?? []).map((g) => [g.id, g]));
+  const rows: GroupRow[] = [];
+  for (const l of links ?? []) {
+    const g = byId.get(l.group_id);
+    if (g) {
+      rows.push({
+        id: g.id,
+        menuItemId: l.menu_item_id,
+        name: g.name,
+        minSelect: g.min_select,
+        maxSelect: g.max_select,
+      });
+    }
+  }
+  return rows;
+}
+
 // ---- Adaptadores das linhas da BD para o formato do módulo puro ----
-type DbGroup = {
-  id: string;
-  menu_item_id: string;
-  name: string;
-  min_select: number;
-  max_select: number;
-};
 type DbModifier = {
   id: string;
   group_id: string;
   name: string;
   price_delta_cents: number;
 };
-function toGroupRow(g: DbGroup): GroupRow {
-  return {
-    id: g.id,
-    menuItemId: g.menu_item_id,
-    name: g.name,
-    minSelect: g.min_select,
-    maxSelect: g.max_select,
-  };
-}
 function toModifierRow(m: DbModifier): ModifierRow {
   return {
     id: m.id,
@@ -161,7 +177,7 @@ export async function getOrderableItemIds(
   establishmentId: string,
 ): Promise<OrderableIds> {
   const supabase = createAdminClient();
-  const [{ data: items }, { data: mods }, { data: groups }, stock] =
+  const [{ data: items }, { data: mods }, groupRows, stock] =
     await Promise.all([
       supabase
         .from("menu_items")
@@ -172,17 +188,14 @@ export async function getOrderableItemIds(
         .select("id, group_id, name, price_delta_cents, available")
         .eq("establishment_id", establishmentId)
         .eq("available", true),
-      supabase
-        .from("modifier_groups")
-        .select("id, menu_item_id, name, min_select, max_select")
-        .eq("establishment_id", establishmentId),
+      loadGroupRows(establishmentId),
       loadStockContext(establishmentId),
     ]);
 
   // Exatamente a mesma resolução do getMenu, para as duas superfícies nunca
   // divergirem: o que sai do menu no carregamento sai também no polling.
   const { itemsWithoutRequiredOption, orderableModifierIds } = resolveGroups(
-    (groups ?? []).map(toGroupRow),
+    groupRows,
     (mods ?? []).map(toModifierRow),
     stock.modifierNeeds,
     stock.ingredientStock,

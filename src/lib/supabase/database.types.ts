@@ -326,12 +326,36 @@ export type Database = {
           },
         ];
       };
+      item_modifier_groups: {
+        Row: {
+          establishment_id: string;
+          group_id: string;
+          id: string;
+          menu_item_id: string;
+          sort: number;
+        };
+        Insert: {
+          establishment_id: string;
+          group_id: string;
+          id?: string;
+          menu_item_id: string;
+          sort?: number;
+        };
+        Update: {
+          establishment_id?: string;
+          group_id?: string;
+          id?: string;
+          menu_item_id?: string;
+          sort?: number;
+        };
+        Relationships: [];
+      };
       modifier_groups: {
         Row: {
           establishment_id: string;
           id: string;
           max_select: number;
-          menu_item_id: string;
+          menu_item_id: string | null;
           min_select: number;
           name: string;
           sort: number;
@@ -340,7 +364,7 @@ export type Database = {
           establishment_id: string;
           id?: string;
           max_select?: number;
-          menu_item_id: string;
+          menu_item_id?: string | null;
           min_select?: number;
           name: string;
           sort?: number;
@@ -349,7 +373,7 @@ export type Database = {
           establishment_id?: string;
           id?: string;
           max_select?: number;
-          menu_item_id?: string;
+          menu_item_id?: string | null;
           min_select?: number;
           name?: string;
           sort?: number;

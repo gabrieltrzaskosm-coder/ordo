@@ -95,28 +95,66 @@ export async function createGroup(
   if (!parsed.success) return { ok: false, error: "Dados inválidos." };
 
   // single = escolha única obrigatória (1..1); multi = várias opcionais (0..N).
+  // O grupo nasce na biblioteca do estabelecimento (menu_item_id null) e liga-se
+  // a este prato; depois pode ser reutilizado noutros pratos.
   const single = parsed.data.type === "single";
   const admin = createAdminClient();
-  const { error } = await admin.from("modifier_groups").insert({
-    establishment_id: session.establishmentId,
-    menu_item_id: itemId,
-    name: parsed.data.name,
-    min_select: single ? 1 : 0,
-    max_select: single ? 1 : 99,
-  });
-  if (error) return { ok: false, error: "Falha ao criar o grupo." };
+  const { data: group, error } = await admin
+    .from("modifier_groups")
+    .insert({
+      establishment_id: session.establishmentId,
+      menu_item_id: null,
+      name: parsed.data.name,
+      min_select: single ? 1 : 0,
+      max_select: single ? 1 : 99,
+    })
+    .select("id")
+    .single();
+  if (error || !group) return { ok: false, error: "Falha ao criar o grupo." };
+
+  const link = await linkGroupToItem(admin, session.establishmentId, itemId, group.id);
+  if (!link.ok) return link;
 
   revalidatePath(`/gestao/menu/${itemId}`);
   return { ok: true };
 }
 
-export async function deleteGroup(
+// Liga um grupo a um prato, no fim da ordem atual. Assume que ambos já foram
+// confirmados como do estabelecimento.
+async function linkGroupToItem(
+  admin: ReturnType<typeof createAdminClient>,
+  establishmentId: string,
+  itemId: string,
+  groupId: string,
+): Promise<ActionResult> {
+  const { data: last } = await admin
+    .from("item_modifier_groups")
+    .select("sort")
+    .eq("menu_item_id", itemId)
+    .order("sort", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const sort = (last?.sort ?? -1) + 1;
+  const { error } = await admin.from("item_modifier_groups").insert({
+    establishment_id: establishmentId,
+    menu_item_id: itemId,
+    group_id: groupId,
+    sort,
+  });
+  if (error) return { ok: false, error: "Este grupo já está neste prato." };
+  return { ok: true };
+}
+
+/** Liga um grupo já existente (da biblioteca) a este prato. */
+export async function attachGroup(
   itemId: string,
   groupId: string,
 ): Promise<ActionResult> {
   const session = await requireManager();
+  const item = await assertItem(itemId, session.establishmentId);
+  if (!item) return { ok: false, error: "Prato não encontrado." };
+
   const admin = createAdminClient();
-  // Confirma que o grupo é do estabelecimento antes de apagar (cascata p/ modifiers).
   const { data: g } = await admin
     .from("modifier_groups")
     .select("id, establishment_id")
@@ -125,7 +163,33 @@ export async function deleteGroup(
   if (!g || g.establishment_id !== session.establishmentId) {
     return { ok: false, error: "Grupo não encontrado." };
   }
-  await admin.from("modifier_groups").delete().eq("id", groupId);
+
+  const link = await linkGroupToItem(admin, session.establishmentId, itemId, groupId);
+  if (!link.ok) return link;
+
+  revalidatePath(`/gestao/menu/${itemId}`);
+  return { ok: true };
+}
+
+/**
+ * Tira o grupo DESTE prato (não o apaga: continua na biblioteca para outros
+ * pratos). Só remove a ligação.
+ */
+export async function detachGroup(
+  itemId: string,
+  groupId: string,
+): Promise<ActionResult> {
+  const session = await requireManager();
+  const item = await assertItem(itemId, session.establishmentId);
+  if (!item) return { ok: false, error: "Prato não encontrado." };
+
+  const admin = createAdminClient();
+  await admin
+    .from("item_modifier_groups")
+    .delete()
+    .eq("establishment_id", session.establishmentId)
+    .eq("menu_item_id", itemId)
+    .eq("group_id", groupId);
   revalidatePath(`/gestao/menu/${itemId}`);
   return { ok: true };
 }

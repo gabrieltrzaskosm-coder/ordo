@@ -5,6 +5,7 @@ import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { serverEnv } from "@/lib/env";
 import { getFinanceReport, getInsights } from "@/lib/reports";
+import { getStockAlerts } from "@/lib/predictions";
 import { formatMoney } from "@/lib/money";
 
 export type SummaryResult =
@@ -15,9 +16,10 @@ export async function generateDailySummary(): Promise<SummaryResult> {
   const apiKey = serverEnv.anthropicApiKey();
   if (!apiKey) return { ok: false, reason: "no_key" };
 
-  const [finance, insights] = await Promise.all([
+  const [finance, insights, stockAlerts] = await Promise.all([
     getFinanceReport(),
     getInsights(),
+    getStockAlerts(),
   ]);
 
   // Números agregados, em texto compacto, para o modelo resumir.
@@ -25,11 +27,19 @@ export async function generateDailySummary(): Promise<SummaryResult> {
     .slice(0, 5)
     .map((i) => `${i.name} (${i.qty})`)
     .join(", ");
+  // Alertas de rutura já vêm ordenados pelo que esgota primeiro.
+  const stock = stockAlerts.length
+    ? stockAlerts
+        .slice(0, 5)
+        .map((a) => a.message)
+        .join(" ")
+    : "sem alertas de rutura.";
   const dados = [
     `Hoje: ${finance.today.orders} pedidos, ${formatMoney(finance.today.paidCents)} faturado, ${formatMoney(finance.today.tipsCents)} em gorjetas, ${formatMoney(finance.today.openCents)} por cobrar.`,
     `Mês: ${finance.month.orders} pedidos, ${formatMoney(finance.month.paidCents)} faturado, ticket médio ${formatMoney(finance.month.ticketCents)}.`,
     `Semana: ${insights.thisWeek.orders} pedidos (${formatMoney(insights.thisWeek.paidCents)}) vs ${insights.lastWeek.orders} (${formatMoney(insights.lastWeek.paidCents)}) na anterior.`,
     `Mais vendidos (30 dias): ${top || "sem dados"}.`,
+    `Stock: ${stock}`,
   ].join("\n");
 
   const client = new Anthropic({ apiKey });
@@ -45,8 +55,9 @@ export async function generateDailySummary(): Promise<SummaryResult> {
         "És um analista de restauração. Escreves em português de Portugal, " +
         "claro e direto, para o dono de um restaurante. Resume o dia em 3 a 5 " +
         "frases: o que correu bem, o que merece atenção e uma sugestão prática. " +
-        "Sem preâmbulo, sem markdown, sem títulos — só o texto do resumo. Não " +
-        "inventes números além dos fornecidos.",
+        "Se houver alertas de rutura de stock, menciona os mais urgentes (o que " +
+        "esgota primeiro) como aviso acionável. Sem preâmbulo, sem markdown, sem " +
+        "títulos — só o texto do resumo. Não inventes números além dos fornecidos.",
       messages: [{ role: "user", content: dados }],
     });
 

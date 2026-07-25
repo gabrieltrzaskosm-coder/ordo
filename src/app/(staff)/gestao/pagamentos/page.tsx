@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function PagamentosPage({
   searchParams,
 }: {
-  searchParams: Promise<{ done?: string; refresh?: string }>;
+  searchParams: Promise<{ done?: string; refresh?: string; erro?: string }>;
 }) {
   const session = await requireManager();
   const sp = await searchParams;
@@ -16,6 +16,7 @@ export default async function PagamentosPage({
   // Ao voltar do onboarding (?done) ou refresh, sincroniza o estado real na Stripe.
   const status = await refreshConnectStatus(session.establishmentId);
   const justReturned = sp.done === "1";
+  const erro = sp.erro?.trim();
 
   return (
     <main className="mx-auto max-w-2xl p-6">
@@ -29,6 +30,23 @@ export default async function PagamentosPage({
         Ligue a conta Stripe do restaurante. O dinheiro dos clientes vai direto
         para si — a plataforma nunca o retém.
       </p>
+
+      {erro ? (
+        <div className="mb-4 rounded-lg border border-red-300 bg-red-50 p-4">
+          <p className="font-medium text-red-900">
+            Não foi possível ligar os pagamentos
+          </p>
+          <p className="mt-1 text-sm text-red-800">
+            A Stripe recusou o pedido com a seguinte mensagem:
+          </p>
+          <p className="mt-2 rounded bg-red-100 p-2 text-sm text-red-900">
+            {erro}
+          </p>
+          <p className="mt-2 text-sm text-red-800">
+            Resolva o ponto indicado no painel da Stripe e tente novamente.
+          </p>
+        </div>
+      ) : null}
 
       {status.chargesEnabled ? (
         <div className="rounded-lg border border-green-300 bg-green-50 p-4">

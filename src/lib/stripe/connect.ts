@@ -69,8 +69,17 @@ export async function refreshConnectStatus(
     return { connected: false, chargesEnabled: false, detailsSubmitted: false };
   }
 
-  const acct = await getStripe().accounts.retrieve(est.stripe_account_id);
-  const chargesEnabled = acct.charges_enabled ?? false;
+  // Se a conta guardada for inacessível (ex.: id de teste com chave live, ou
+  // acesso revogado), não rebentar a página — tratar como "a precisar de config".
+  let chargesEnabled = false;
+  let detailsSubmitted = false;
+  try {
+    const acct = await getStripe().accounts.retrieve(est.stripe_account_id);
+    chargesEnabled = acct.charges_enabled ?? false;
+    detailsSubmitted = acct.details_submitted ?? false;
+  } catch {
+    return { connected: true, chargesEnabled: false, detailsSubmitted: false };
+  }
 
   await admin
     .from("establishments")
@@ -80,6 +89,6 @@ export async function refreshConnectStatus(
   return {
     connected: true,
     chargesEnabled,
-    detailsSubmitted: acct.details_submitted ?? false,
+    detailsSubmitted,
   };
 }

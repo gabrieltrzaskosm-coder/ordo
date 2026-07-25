@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { SiteFooter } from "@/components/SiteFooter";
 
 export default function Home() {
   return (
-    <main className="mx-auto max-w-2xl p-8">
+    <>
+      <main className="mx-auto max-w-2xl flex-1 p-8">
       <h1 className="text-2xl font-medium">App Pedidos</h1>
       <p className="mt-2 text-neutral-500">
         Pedidos e pagamento por QR code para restauração. Fundação do MVP
@@ -34,6 +36,8 @@ export default function Home() {
           <p className="text-sm text-neutral-500">Menu, mesas e financeiro.</p>
         </Link>
       </div>
-    </main>
+      </main>
+      <SiteFooter />
+    </>
   );
 }

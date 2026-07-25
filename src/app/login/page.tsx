@@ -38,6 +38,15 @@ export default async function LoginPage({
           Criar conta
         </Link>
       </p>
+      <p className="mt-6 text-xs text-neutral-400">
+        <Link href="/termos" className="underline hover:text-neutral-600">
+          Termos
+        </Link>{" "}
+        ·{" "}
+        <Link href="/privacidade" className="underline hover:text-neutral-600">
+          Privacidade e RGPD
+        </Link>
+      </p>
     </main>
   );
 }

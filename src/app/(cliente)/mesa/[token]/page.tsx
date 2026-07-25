@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { resolveTableSession, getBestSellerItemId } from "@/lib/session/table";
 import { getMenu } from "@/lib/menu";
@@ -62,6 +63,15 @@ export default async function MesaPage({
           currency={session.currency}
           bestSellerId={bestSellerId}
         />
+
+        <footer className="mt-8 text-center">
+          <Link
+            href="/privacidade"
+            className="text-xs text-muted underline hover:text-ink"
+          >
+            Privacidade e RGPD
+          </Link>
+        </footer>
       </main>
     </div>
   );

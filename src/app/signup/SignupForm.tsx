@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { signUp, type SignupState } from "./actions";
 
@@ -45,6 +46,17 @@ export function SignupForm() {
       >
         {pending ? "A criar…" : "Criar conta e restaurante"}
       </button>
+      <p className="text-xs leading-relaxed text-neutral-500">
+        Ao criar a conta, declara que leu e aceita os{" "}
+        <Link href="/termos" className="underline hover:text-neutral-700">
+          Termos de Utilização
+        </Link>{" "}
+        e a{" "}
+        <Link href="/privacidade" className="underline hover:text-neutral-700">
+          Política de Privacidade
+        </Link>
+        .
+      </p>
     </form>
   );
 }

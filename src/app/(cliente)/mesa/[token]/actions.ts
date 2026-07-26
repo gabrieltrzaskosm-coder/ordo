@@ -10,7 +10,7 @@ import { getOrderableItemIds, type OrderableIds } from "@/lib/menu";
 import { loadStockContext } from "@/lib/recipes";
 import { prepareOrderLines } from "@/lib/pricing";
 import { aggregateIngredientNeeds } from "@/lib/availability";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { createOrderCheckout } from "@/lib/stripe/checkout";
 
 const placeOrderSchema = z.object({
@@ -43,7 +43,7 @@ export async function placeOrder(input: unknown): Promise<ActionResult> {
 
   // Trava o abuso: uma mesa real não faz dezenas de pedidos por minuto. Generoso
   // para o uso normal (várias pessoas na mesma mesa), apertado para um script.
-  const limited = rateLimit(`order:${session.tableId}`, 15, 60);
+  const limited = await checkRateLimit(`order:${session.tableId}`, 15, 60);
   if (!limited.ok) {
     return {
       ok: false,
@@ -335,7 +335,7 @@ export async function callWaiter(token: string): Promise<ActionResult> {
 
   // Chamar o atendente é um clique; um humano não o faz 5x por minuto. Aperta
   // para não deixar spammar a fila de chamadas da cozinha.
-  const limited = rateLimit(`waiter:${session.tableId}`, 5, 60);
+  const limited = await checkRateLimit(`waiter:${session.tableId}`, 5, 60);
   if (!limited.ok) {
     return { ok: false, error: "Atendente já chamado. Aguarde um momento." };
   }

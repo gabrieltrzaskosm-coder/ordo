@@ -8,6 +8,12 @@ const supabaseHost = supabaseUrl ? new URL(supabaseUrl).host : "*.supabase.co";
 
 const isDev = process.env.NODE_ENV === "development";
 
+// Só abre a CSP para o Sentry quando ele está mesmo configurado (DSN pública
+// presente no build). Sem Sentry, a CSP fica tão apertada como antes.
+const sentryConnect = process.env.NEXT_PUBLIC_SENTRY_DSN
+  ? " https://*.sentry.io"
+  : "";
+
 // Content-Security-Policy. Sem nonce (não obriga a render dinâmico em todas as
 // páginas, que era caro e frágil): a proteção vem de fechar tudo por omissão e
 // abrir só o necessário.
@@ -25,7 +31,7 @@ const csp = [
   `style-src 'self' 'unsafe-inline'`,
   `img-src 'self' data: blob: https://${supabaseHost}`,
   `font-src 'self' data:`,
-  `connect-src 'self' https://${supabaseHost} wss://${supabaseHost}`,
+  `connect-src 'self' https://${supabaseHost} wss://${supabaseHost}${sentryConnect}`,
   `form-action 'self'`,
   `frame-ancestors 'none'`,
   `object-src 'none'`,

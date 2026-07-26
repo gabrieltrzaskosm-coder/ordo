@@ -4,6 +4,8 @@
 // chega. Substitui o layout, por isso tem de trazer <html> e <body> próprios —
 // e não pode depender de nada dele (fontes, providers). Estilos inline de
 // propósito: se o CSS falhar, este ecrã ainda tem de ser legível.
+import { useEffect } from "react";
+
 export default function GlobalError({
   error,
   unstable_retry,
@@ -11,6 +13,12 @@ export default function GlobalError({
   error: Error & { digest?: string };
   unstable_retry: () => void;
 }) {
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+      import("@sentry/nextjs").then((Sentry) => Sentry.captureException(error));
+    }
+  }, [error]);
+
   return (
     <html lang="pt">
       <body

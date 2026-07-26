@@ -20,6 +20,11 @@ export default function ErrorPage({
     // Vai para os logs do servidor (Vercel). O `digest` é o identificador que
     // permite cruzar este ecrã com a entrada do log.
     console.error("[erro]", error.digest ?? "(sem digest)", error.message);
+    // E para o Sentry, para os alertas. Só carrega o SDK se houver DSN no build
+    // (senão é removido do bundle — nada de peso quando o Sentry está desligado).
+    if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+      import("@sentry/nextjs").then((Sentry) => Sentry.captureException(error));
+    }
   }, [error]);
 
   return (

@@ -37,6 +37,7 @@ export async function advanceOrder(orderId: string, current: OrderStatus) {
   if (data && next === "served") await maybeCloseTable(data.table_id);
 
   revalidatePath("/cozinha");
+  revalidatePath("/atendimento");
 }
 
 export async function cancelOrder(orderId: string) {
@@ -53,6 +54,7 @@ export async function cancelOrder(orderId: string) {
   if (data) await maybeCloseTable(data.table_id);
 
   revalidatePath("/cozinha");
+  revalidatePath("/atendimento");
 }
 
 /** Pagamento pelo garçom (dinheiro/mesa): marca pago sem passar pela Stripe. */
@@ -101,6 +103,7 @@ export async function markPaid(orderId: string) {
   }
 
   revalidatePath("/cozinha");
+  revalidatePath("/atendimento");
 }
 
 export async function resolveWaiterCall(callId: string) {
@@ -112,4 +115,5 @@ export async function resolveWaiterCall(callId: string) {
     .eq("id", callId);
 
   revalidatePath("/cozinha");
+  revalidatePath("/atendimento");
 }

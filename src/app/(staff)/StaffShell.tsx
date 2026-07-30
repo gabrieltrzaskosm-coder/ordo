@@ -24,7 +24,9 @@ export function StaffShell({
 }: Props) {
   const pathname = usePathname();
   const inKitchen = pathname.startsWith("/cozinha");
-  const theme = inKitchen ? "theme-kitchen" : "theme-manager";
+  const inAtendimento = pathname.startsWith("/atendimento");
+  // Cozinha e atendimento são operacionais (azul); gestão é vermelho.
+  const theme = inKitchen || inAtendimento ? "theme-kitchen" : "theme-manager";
 
   return (
     <div className={`${theme} min-h-screen bg-canvas`}>
@@ -36,11 +38,14 @@ export function StaffShell({
               {establishmentName}
             </span>
             <nav className="flex gap-1 text-sm">
+              <NavLink href="/atendimento" active={inAtendimento}>
+                Atendimento
+              </NavLink>
               <NavLink href="/cozinha" active={inKitchen}>
                 Cozinha
               </NavLink>
               {isManager && (
-                <NavLink href="/gestao" active={!inKitchen}>
+                <NavLink href="/gestao" active={!inKitchen && !inAtendimento}>
                   Gestão
                 </NavLink>
               )}

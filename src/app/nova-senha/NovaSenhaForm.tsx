@@ -13,7 +13,7 @@ export function NovaSenhaForm() {
     return (
       <div className="space-y-4">
         <p className="rounded-lg bg-green-50 p-3 text-sm text-green-900">
-          Palavra-passe definida.
+          Senha definida.
         </p>
         <Link
           href="/cozinha"
@@ -33,7 +33,7 @@ export function NovaSenhaForm() {
         autoComplete="new-password"
         required
         minLength={8}
-        placeholder="Nova palavra-passe (mín. 8)"
+        placeholder="Nova senha (mín. 8)"
         className="w-full rounded-lg border border-neutral-300 px-3 py-2"
       />
       <input
@@ -42,7 +42,7 @@ export function NovaSenhaForm() {
         autoComplete="new-password"
         required
         minLength={8}
-        placeholder="Confirmar nova palavra-passe"
+        placeholder="Confirmar nova senha"
         className="w-full rounded-lg border border-neutral-300 px-3 py-2"
       />
       {state.error && (
@@ -55,7 +55,7 @@ export function NovaSenhaForm() {
         disabled={pending}
         className="w-full rounded-lg bg-black py-3 text-white disabled:opacity-40"
       >
-        {pending ? "A guardar…" : "Definir palavra-passe"}
+        {pending ? "A guardar…" : "Definir senha"}
       </button>
     </form>
   );

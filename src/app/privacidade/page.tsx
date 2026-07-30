@@ -2,171 +2,172 @@ import type { Metadata } from "next";
 import { LegalLayout, H2, P, UL } from "@/components/LegalLayout";
 
 export const metadata: Metadata = {
-  title: "Política de Privacidade e RGPD — App Pedidos",
+  title: "Política de Privacidade e LGPD — App Pedidos",
 };
 
-// NOTA: dados do responsável preenchidos. Documento-modelo — recomenda-se
-// revisão jurídica (repartição controlador/subcontratante e transferências).
+// NOTA: dados do responsável preenchidos. Documento-modelo (Brasil/LGPD) —
+// recomenda-se revisão jurídica (papel controlador/operador e transferências).
 export default function PrivacidadePage() {
   return (
     <LegalLayout
-      title="Política de Privacidade e Proteção de Dados (RGPD)"
+      title="Política de Privacidade e Proteção de Dados (LGPD)"
       updated="25 de julho de 2026"
     >
       <P>
         A presente Política explica como a plataforma App Pedidos trata dados
-        pessoais, em conformidade com o Regulamento (UE) 2016/679 (RGPD) e demais
-        legislação de proteção de dados aplicável em Portugal.
+        pessoais, em conformidade com a Lei n.º 13.709/2018 (Lei Geral de Proteção
+        de Dados — LGPD) e demais legislação aplicável no Brasil.
       </P>
 
-      <H2>1. Responsável pelo tratamento</H2>
+      <H2>1. Controlador dos dados</H2>
       <P>
-        O responsável pelo tratamento dos dados relativos às contas e ao
-        funcionamento da Plataforma é Gabriel Marques Trzaskos (Otium),
-        contribuinte n.º 336349106, com domicílio em Rua Nogueira 409, Vila Nova,
-        93520-320 — Novo Hamburgo, Brasil, contactável em otium.sap@gmail.com.
+        O controlador dos dados relativos às contas e ao funcionamento da
+        Plataforma é Gabriel Marques Trzaskos (Otium), CNPJ/CPF conforme cadastro,
+        com endereço em Rua Nogueira 409, Vila Nova, 93520-320 — Novo Hamburgo/RS,
+        contato em otium.sap@gmail.com.
       </P>
       <P>
-        Relativamente aos dados operacionais de cada Restaurante e dos seus
-        Comensais, o Restaurante é o responsável pelo tratamento e a Plataforma
-        atua como <strong>subcontratante</strong> (processador), tratando esses
-        dados apenas segundo as instruções do Restaurante e para prestar o Serviço.
+        Em relação aos dados operacionais de cada Restaurante e de seus Clientes, o
+        Restaurante é o controlador e a Plataforma atua como{" "}
+        <strong>operador</strong>, tratando esses dados apenas conforme as
+        instruções do Restaurante e para prestar o Serviço.
       </P>
 
-      <H2>2. Que dados tratamos</H2>
+      <H2>2. Quais dados tratamos</H2>
       <UL>
         <li>
-          <strong>Contas de dono e equipa:</strong> nome, endereço de email, função
-          (dono/gestão/cozinha/atendimento) e dados de autenticação.
+          <strong>Contas de dono e equipe:</strong> nome, e-mail, função
+          (dono/gestão/cozinha/garçom) e dados de autenticação.
         </li>
         <li>
           <strong>Dados do Restaurante:</strong> nome do estabelecimento,
-          configuração de menu, mesas, plano subscrito e identificadores de
-          integração (por exemplo, o identificador da conta Stripe).
+          configuração de cardápio, mesas, plano contratado e identificadores de
+          integração (por exemplo, o identificador de recebedor no meio de
+          pagamento).
         </li>
         <li>
-          <strong>Pedidos dos Comensais:</strong> os pedidos são{" "}
-          <strong>anónimos</strong> — não pedimos nome, contacto nem registo do
-          Comensal. Guardamos os itens pedidos, a mesa e a hora, para efeitos de
-          preparação e faturação.
+          <strong>Pedidos dos Clientes:</strong> os pedidos são{" "}
+          <strong>anônimos</strong> — não pedimos nome, contato nem cadastro do
+          Cliente. Guardamos os itens pedidos, a mesa e o horário, para preparo e
+          faturamento.
         </li>
         <li>
-          <strong>Dados de pagamento:</strong> processados diretamente pela Stripe.
-          A Plataforma <strong>não recolhe nem acede a dados de cartão</strong>;
-          apenas recebe a confirmação do estado do pagamento.
+          <strong>Dados de pagamento:</strong> processados diretamente pelo meio de
+          pagamento (Pix/cartão). A Plataforma{" "}
+          <strong>não coleta nem acessa dados de cartão</strong>; apenas recebe a
+          confirmação do status do pagamento.
         </li>
         <li>
-          <strong>Dados técnicos:</strong> registos de utilização e de segurança
-          (por exemplo, endereços IP e eventos de erro) gerados pela infraestrutura,
+          <strong>Dados técnicos:</strong> registros de uso e de segurança (por
+          exemplo, endereços IP e eventos de erro) gerados pela infraestrutura,
           para garantir o funcionamento e a segurança do Serviço.
         </li>
       </UL>
 
-      <H2>3. Finalidades e fundamentos de licitude</H2>
+      <H2>3. Finalidades e bases legais</H2>
       <UL>
         <li>
-          <strong>Prestação do Serviço</strong> (gestão de contas, menus, pedidos e
-          pagamentos) — execução de contrato [art. 6.º, n.º 1, al. b) do RGPD].
+          <strong>Prestação do Serviço</strong> (gestão de contas, cardápios,
+          pedidos e pagamentos) — execução de contrato [art. 7.º, V, da LGPD].
         </li>
         <li>
-          <strong>Cumprimento de obrigações legais</strong> (nomeadamente fiscais e
-          contabilísticas) — obrigação jurídica [al. c)].
+          <strong>Cumprimento de obrigações legais</strong> (inclusive fiscais e
+          contábeis) — obrigação legal [art. 7.º, II].
         </li>
         <li>
-          <strong>Segurança, prevenção de fraude e melhoria do Serviço</strong> —
-          interesse legítimo [al. f)].
+          <strong>Segurança, prevenção à fraude e melhoria do Serviço</strong> —
+          legítimo interesse [art. 7.º, IX].
         </li>
         <li>
           <strong>Comunicações e funcionalidades opcionais</strong> — consentimento
-          [al. a)], quando aplicável, podendo ser retirado a qualquer momento.
+          [art. 7.º, I], quando aplicável, podendo ser revogado a qualquer momento.
         </li>
       </UL>
 
-      <H2>4. Subcontratantes e entidades que acedem aos dados</H2>
+      <H2>4. Operadores e terceiros que acessam os dados</H2>
       <P>
-        Para prestar o Serviço, recorremos a fornecedores que tratam dados por nossa
+        Para prestar o Serviço, contamos com fornecedores que tratam dados por nossa
         conta, sujeitos a acordos de proteção de dados:
       </P>
       <UL>
         <li>
-          <strong>Supabase</strong> — base de dados e autenticação (alojamento na
-          União Europeia).
+          <strong>Supabase</strong> — banco de dados e autenticação.
         </li>
         <li>
-          <strong>Vercel</strong> — alojamento e execução da aplicação.
+          <strong>Vercel</strong> — hospedagem e execução do aplicativo.
         </li>
         <li>
-          <strong>Stripe</strong> — processamento de pagamentos.
+          <strong>Pagar.me</strong> — processamento de pagamentos (Pix e cartão).
         </li>
         <li>
-          <strong>Resend</strong> — envio de emails transacionais (por exemplo,
-          confirmação de conta e recuperação de palavra-passe).
+          <strong>Resend</strong> — envio de e-mails transacionais (por exemplo,
+          confirmação de conta e recuperação de senha).
         </li>
         <li>
           <strong>Anthropic</strong> — geração de resumos por inteligência
           artificial, exclusivamente sobre <strong>dados agregados e sem dados
-          pessoais</strong> dos Comensais.
+          pessoais</strong> dos Clientes.
         </li>
       </UL>
       <P>
-        Sempre que ocorram transferências de dados para fora do Espaço Económico
-        Europeu, estas são feitas ao abrigo de salvaguardas adequadas nos termos do
-        RGPD (por exemplo, cláusulas contratuais-tipo).
+        Quando houver transferência internacional de dados, ela é feita com as
+        garantias exigidas pela LGPD (art. 33).
       </P>
 
       <H2>5. Prazos de conservação</H2>
       <P>
-        Conservamos os dados apenas pelo tempo necessário às finalidades para que
-        foram recolhidos e ao cumprimento de obrigações legais (designadamente
-        prazos fiscais e contabilísticos). Terminada a relação, os dados são
-        eliminados ou anonimizados, salvo obrigação legal de conservação.
+        Conservamos os dados apenas pelo tempo necessário às finalidades para as
+        quais foram coletados e ao cumprimento de obrigações legais (inclusive
+        prazos fiscais e contábeis). Encerrada a relação, os dados são eliminados ou
+        anonimizados, salvo obrigação legal de guarda.
       </P>
 
-      <H2>6. Os seus direitos (RGPD)</H2>
+      <H2>6. Seus direitos (LGPD)</H2>
       <P>
-        Enquanto titular dos dados, tem direito a, nos termos da lei:
+        Como titular dos dados, você tem direito, nos termos da lei, a:
       </P>
       <UL>
-        <li>Aceder aos seus dados e obter informação sobre o seu tratamento;</li>
-        <li>Solicitar a retificação de dados inexatos ou incompletos;</li>
+        <li>Confirmar a existência de tratamento e acessar seus dados;</li>
+        <li>Corrigir dados incompletos, inexatos ou desatualizados;</li>
         <li>
-          Solicitar o apagamento (&quot;direito a ser esquecido&quot;), quando
-          aplicável;
+          Solicitar anonimização, bloqueio ou eliminação de dados desnecessários ou
+          tratados em desconformidade com a lei;
         </li>
-        <li>Solicitar a limitação do tratamento;</li>
-        <li>Opor-se ao tratamento fundado em interesse legítimo;</li>
-        <li>Solicitar a portabilidade dos dados que forneceu;</li>
-        <li>Retirar o consentimento, sem afetar a licitude do tratamento anterior.</li>
+        <li>Solicitar a portabilidade dos dados;</li>
+        <li>
+          Ser informado sobre com quem compartilhamos os dados e sobre a
+          possibilidade de não fornecer consentimento;
+        </li>
+        <li>Revogar o consentimento, quando esta for a base do tratamento.</li>
       </UL>
       <P>
-        Para exercer estes direitos, contacte otium.sap@gmail.com. Tem ainda o direito de
-        apresentar reclamação à autoridade de controlo — em Portugal, a Comissão
-        Nacional de Proteção de Dados (CNPD, www.cnpd.pt).
+        Para exercer esses direitos, contate otium.sap@gmail.com. Você também pode
+        apresentar reclamação à autoridade de controle — no Brasil, a Autoridade
+        Nacional de Proteção de Dados (ANPD, gov.br/anpd).
       </P>
 
       <H2>7. Segurança</H2>
       <P>
-        Adotamos medidas técnicas e organizativas adequadas para proteger os dados,
-        incluindo o isolamento de dados entre Restaurantes (cada Restaurante só
-        acede aos seus próprios dados), controlo de acessos e comunicação cifrada.
-        Nenhum sistema é totalmente imune a riscos; em caso de violação de dados que
-        implique risco para os titulares, cumpriremos os deveres de comunicação
-        previstos no RGPD.
+        Adotamos medidas técnicas e organizacionais adequadas para proteger os
+        dados, incluindo o isolamento de dados entre Restaurantes (cada Restaurante
+        só acessa os próprios dados), controle de acesso e comunicação criptografada.
+        Nenhum sistema é totalmente imune a riscos; em caso de incidente de segurança
+        que possa acarretar risco relevante aos titulares, cumpriremos os deveres de
+        comunicação previstos na LGPD.
       </P>
 
       <H2>8. Cookies</H2>
       <P>
         A Plataforma utiliza apenas cookies estritamente necessários ao
-        funcionamento (por exemplo, para manter a sessão de utilizadores
-        autenticados). Não utilizamos cookies de publicidade nem de rastreio para
-        fins de marketing.
+        funcionamento (por exemplo, para manter a sessão de usuários autenticados).
+        Não utilizamos cookies de publicidade nem de rastreamento para marketing.
       </P>
 
       <H2>9. Menores</H2>
       <P>
-        O Serviço destina-se a profissionais da restauração e não se dirige a
-        menores. Os pedidos dos Comensais são anónimos e não implicam a recolha de
-        dados de identificação.
+        O Serviço destina-se a profissionais de restaurante e não é dirigido a
+        menores. Os pedidos dos Clientes são anônimos e não implicam coleta de dados
+        de identificação.
       </P>
 
       <H2>10. Alterações a esta Política</H2>
@@ -175,9 +176,9 @@ export default function PrivacidadePage() {
         página, com indicação da data da última atualização.
       </P>
 
-      <H2>11. Contacto</H2>
+      <H2>11. Contato</H2>
       <P>
-        Para questões sobre proteção de dados, contacte otium.sap@gmail.com.
+        Para questões sobre proteção de dados, contate otium.sap@gmail.com.
       </P>
     </LegalLayout>
   );

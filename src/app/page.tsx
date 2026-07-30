@@ -18,7 +18,7 @@ export default function Home() {
         >
           <p className="font-medium">Cliente — Mesa 1 (demo)</p>
           <p className="text-sm text-neutral-500">
-            Fluxo do comensal: menu, pedido, chamar atendente.
+            Fluxo do comensal: menu, pedido, chamar garçom.
           </p>
         </Link>
         <Link

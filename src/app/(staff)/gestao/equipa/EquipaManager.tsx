@@ -18,7 +18,7 @@ const ROLE_LABEL: Record<Role, string> = {
   owner: "Dono",
   manager: "Gerente",
   kitchen: "Cozinha",
-  waiter: "Atendente",
+  waiter: "Garçom",
 };
 
 export function EquipaManager({ staff }: { staff: StaffMember[] }) {
@@ -43,7 +43,7 @@ export function EquipaManager({ staff }: { staff: StaffMember[] }) {
       </div>
       <p className="mb-6 text-sm text-muted">
         Crie contas para a cozinha e o atendimento. Cada pessoa entra em{" "}
-        <code>/login</code> com o email e a palavra-passe que definir.
+        <code>/login</code> com o email e a senha que definir.
       </p>
 
       {error && (
@@ -95,7 +95,7 @@ export function EquipaManager({ staff }: { staff: StaffMember[] }) {
           className="rounded-lg border border-line px-3 py-2"
         >
           <option value="kitchen">Cozinha</option>
-          <option value="waiter">Atendente</option>
+          <option value="waiter">Garçom</option>
           <option value="manager">Gerente</option>
         </select>
         <input
@@ -110,7 +110,7 @@ export function EquipaManager({ staff }: { staff: StaffMember[] }) {
           type="text"
           required
           minLength={8}
-          placeholder="Palavra-passe (mín. 8)"
+          placeholder="Senha (mín. 8)"
           className="rounded-lg border border-line px-3 py-2"
         />
         <button
@@ -121,7 +121,7 @@ export function EquipaManager({ staff }: { staff: StaffMember[] }) {
         </button>
       </form>
       <p className="mt-2 text-xs text-muted">
-        A palavra-passe é visível para a definir e comunicar à pessoa. Peça que a
+        A senha é visível para a definir e comunicar à pessoa. Peça que a
         troque no primeiro acesso, em <code>/conta</code>.
       </p>
     </main>

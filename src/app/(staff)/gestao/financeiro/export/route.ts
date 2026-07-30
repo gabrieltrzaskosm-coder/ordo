@@ -29,7 +29,7 @@ export async function GET(request: Request) {
     .lt("created_at", to.toISOString())
     .order("created_at", { ascending: true });
 
-  const header = ["Data", "Mesa", "Cliente", "Estado", "Total (€)", "Pago"];
+  const header = ["Data", "Mesa", "Cliente", "Estado", "Total (R$)", "Pago"];
   const lines = [header.join(";")];
 
   for (const o of data ?? []) {

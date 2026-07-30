@@ -12,7 +12,7 @@ export function SiteFooter() {
           Termos
         </Link>
         <Link href="/privacidade" className="underline hover:text-neutral-700">
-          Privacidade e RGPD
+          Privacidade e LGPD
         </Link>
       </div>
     </footer>

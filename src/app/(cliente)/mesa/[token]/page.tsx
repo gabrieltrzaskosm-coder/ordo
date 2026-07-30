@@ -69,7 +69,7 @@ export default async function MesaPage({
             href="/privacidade"
             className="text-xs text-muted underline hover:text-ink"
           >
-            Privacidade e RGPD
+            Privacidade e LGPD
           </Link>
         </footer>
       </main>

@@ -34,7 +34,7 @@ export type KitchenOrder = {
 export type WaiterCall = { id: string; createdAt: string; tableLabel: string };
 
 // cta vazio = estado terminal na cozinha (Entregue). Aí só falta o pagamento
-// (pela app ou pelo atendente); quando pago, a mesa zera-se e o cartão sai.
+// (pela app ou pelo garçom); quando pago, a mesa zera-se e o cartão sai.
 const COLUMNS: { status: OrderStatus; title: string; cta: string }[] = [
   { status: "placed", title: "Novos", cta: "Iniciar preparo" },
   { status: "in_prep", title: "Em preparo", cta: "Marcar pronto" },
@@ -124,7 +124,7 @@ export function KitchenBoard({
       {calls.length > 0 && (
         <section className="mb-6 rounded-2xl border border-warn/30 bg-warn-weak p-4">
           <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-warn">
-            <BellIcon /> Atendente chamado
+            <BellIcon /> Garçom chamado
           </h2>
           <ul className="space-y-2">
             {calls.map((c) => (

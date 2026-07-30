@@ -333,11 +333,11 @@ export async function callWaiter(token: string): Promise<ActionResult> {
   const session = await resolveTableSession(token);
   if (!session) return { ok: false, error: "Mesa não encontrada." };
 
-  // Chamar o atendente é um clique; um humano não o faz 5x por minuto. Aperta
+  // Chamar o garçom é um clique; um humano não o faz 5x por minuto. Aperta
   // para não deixar spammar a fila de chamadas da cozinha.
   const limited = await checkRateLimit(`waiter:${session.tableId}`, 5, 60);
   if (!limited.ok) {
-    return { ok: false, error: "Atendente já chamado. Aguarde um momento." };
+    return { ok: false, error: "Garçom já chamado. Aguarde um momento." };
   }
 
   const supabase = createAdminClient();
@@ -346,6 +346,6 @@ export async function callWaiter(token: string): Promise<ActionResult> {
     table_id: session.tableId,
     status: "open",
   });
-  if (error) return { ok: false, error: "Falha ao chamar o atendente." };
+  if (error) return { ok: false, error: "Falha ao chamar o garçom." };
   return { ok: true, orderId: "" };
 }

@@ -1,6 +1,6 @@
 // Rate limiting simples, em memória. Trava o abuso óbvio dos endpoints anónimos
-// (criar pedido, chamar atendente) — alguém que fotografe um QR e dispare um
-// script para inundar a cozinha ou spammar o atendente.
+// (criar pedido, chamar garçom) — alguém que fotografe um QR e dispare um
+// script para inundar a cozinha ou spammar o garçom.
 //
 // Duas camadas atrás da mesma função `checkRateLimit`:
 //  - Upstash Redis (contador PARTILHADO entre instâncias), quando

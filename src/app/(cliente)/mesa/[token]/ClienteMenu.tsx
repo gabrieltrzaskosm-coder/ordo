@@ -333,7 +333,7 @@ export function ClienteMenu({
     setStatus(null);
     startTransition(async () => {
       const res = await callWaiter(token);
-      setStatus(res.ok ? "Atendente a caminho." : res.error);
+      setStatus(res.ok ? "Garçom a caminho." : res.error);
     });
   }
 
@@ -345,7 +345,7 @@ export function ClienteMenu({
         className="reveal mb-6 flex w-full items-center justify-center gap-2 rounded-full border border-line bg-surface py-2.5 text-sm font-medium text-ink transition hover:border-brand/40 active:scale-[0.99] disabled:opacity-50"
       >
         <BellIcon />
-        Chamar atendente
+        Chamar garçom
       </button>
 
       {visibleMenu.length === 0 && (
@@ -634,9 +634,9 @@ export function ClienteMenu({
               <div className="flex flex-wrap gap-2">
                 {[
                   { label: "Sem", cents: 0 },
-                  { label: "1 €", cents: 100 },
-                  { label: "5 €", cents: 500 },
-                  { label: "10 €", cents: 1000 },
+                  { label: "R$ 2", cents: 200 },
+                  { label: "R$ 5", cents: 500 },
+                  { label: "R$ 10", cents: 1000 },
                 ].map((opt) => {
                   const selected = !tipCustom && tipCents === opt.cents;
                   return (
@@ -679,7 +679,7 @@ export function ClienteMenu({
                     setTipCustomValue(e.target.value);
                     setTipCents(eurosToCents(e.target.value));
                   }}
-                  placeholder="Valor da gorjeta em €"
+                  placeholder="Valor da gorjeta em R$"
                   className="mt-2 w-full rounded-full border border-line bg-canvas px-4 py-2.5 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none"
                 />
               )}

@@ -1,6 +1,6 @@
 "use server";
 
-// Troca da própria palavra-passe (qualquer papel de staff).
+// Troca da própria senha (qualquer papel de staff).
 //
 // A senha atual é reconfirmada com signInWithPassword antes de mudar: a sessão
 // vive num cookie, e sem esta reautenticação bastaria um dispositivo deixado
@@ -19,10 +19,10 @@ const schema = z
     confirmPassword: z.string(),
   })
   .refine((d) => d.newPassword === d.confirmPassword, {
-    message: "A confirmação não coincide com a nova palavra-passe.",
+    message: "A confirmação não coincide com a nova senha.",
   })
   .refine((d) => d.newPassword !== d.currentPassword, {
-    message: "A nova palavra-passe tem de ser diferente da atual.",
+    message: "A nova senha tem de ser diferente da atual.",
   });
 
 export async function changePassword(
@@ -44,7 +44,7 @@ export async function changePassword(
       error:
         issue && !issue.startsWith("String must")
           ? issue
-          : "A nova palavra-passe tem de ter pelo menos 8 caracteres.",
+          : "A nova senha tem de ter pelo menos 8 caracteres.",
     };
   }
   const { currentPassword, newPassword } = parsed.data;
@@ -61,14 +61,14 @@ export async function changePassword(
     password: currentPassword,
   });
   if (reauthErr) {
-    return { ok: false, error: "A palavra-passe atual está incorreta." };
+    return { ok: false, error: "A senha atual está incorreta." };
   }
 
   const { error: updateErr } = await supabase.auth.updateUser({
     password: newPassword,
   });
   if (updateErr) {
-    return { ok: false, error: "Não foi possível alterar a palavra-passe." };
+    return { ok: false, error: "Não foi possível alterar a senha." };
   }
 
   return { ok: true, error: null };

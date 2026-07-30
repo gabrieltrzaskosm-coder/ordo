@@ -2,192 +2,186 @@ import type { Metadata } from "next";
 import { LegalLayout, H2, P, UL } from "@/components/LegalLayout";
 
 export const metadata: Metadata = {
-  title: "Termos de Utilização — App Pedidos",
+  title: "Termos de Uso — App Pedidos",
 };
 
-// NOTA: dados do prestador preenchidos. Documento-modelo — recomenda-se revisão
-// jurídica, sobretudo a lei/foro aplicável (prestador no Brasil, serviço em PT).
+// NOTA: dados do prestador preenchidos. Documento-modelo (Brasil) — recomenda-se
+// revisão jurídica, sobretudo a parte fiscal (NFC-e) e o foro aplicável.
 export default function TermosPage() {
   return (
-    <LegalLayout title="Termos de Utilização" updated="25 de julho de 2026">
+    <LegalLayout title="Termos de Uso" updated="25 de julho de 2026">
       <P>
-        Os presentes Termos de Utilização (&quot;Termos&quot;) regulam o acesso e
-        a utilização da plataforma App Pedidos (&quot;Plataforma&quot; ou
-        &quot;Serviço&quot;), disponibilizada por Gabriel Marques Trzaskos
-        (Otium), contribuinte n.º 336349106, com domicílio em Rua Nogueira 409,
-        Vila Nova, 93520-320 — Novo Hamburgo, Brasil (&quot;nós&quot;,
-        &quot;Prestador&quot;). Ao criar uma conta ou utilizar o Serviço, o
-        utilizador declara ter lido, compreendido e aceite estes Termos.
+        Estes Termos de Uso (&quot;Termos&quot;) regulam o acesso e o uso da
+        plataforma App Pedidos (&quot;Plataforma&quot; ou &quot;Serviço&quot;),
+        disponibilizada por Gabriel Marques Trzaskos (Otium), com endereço em Rua
+        Nogueira 409, Vila Nova, 93520-320 — Novo Hamburgo/RS (&quot;nós&quot;,
+        &quot;Prestador&quot;). Ao criar uma conta ou usar o Serviço, o usuário
+        declara ter lido, compreendido e aceitado estes Termos.
       </P>
 
       <H2>1. Definições</H2>
       <UL>
         <li>
-          <strong>Plataforma:</strong> a aplicação web de pedidos e pagamento por
-          código QR para restauração.
+          <strong>Plataforma:</strong> o aplicativo web de pedidos e pagamento por
+          QR code para restaurantes.
         </li>
         <li>
-          <strong>Restaurante:</strong> o estabelecimento que subscreve o Serviço
-          e o utiliza para receber pedidos e pagamentos.
+          <strong>Restaurante:</strong> o estabelecimento que contrata o Serviço e
+          o utiliza para receber pedidos e pagamentos.
         </li>
         <li>
-          <strong>Comensal:</strong> o cliente final do Restaurante que consulta
-          o menu, faz pedidos e paga através da Plataforma.
+          <strong>Cliente:</strong> o consumidor final do Restaurante que consulta o
+          cardápio, faz pedidos e paga pela Plataforma.
         </li>
         <li>
-          <strong>Conta:</strong> o registo de acesso do Restaurante e da sua
-          equipa (dono, gestão, cozinha, atendimento).
+          <strong>Conta:</strong> o cadastro de acesso do Restaurante e de sua
+          equipe (dono, gestão, cozinha, garçom).
         </li>
       </UL>
 
-      <H2>2. Objeto e âmbito</H2>
+      <H2>2. Objeto</H2>
       <P>
         A Plataforma é uma ferramenta de software que permite ao Restaurante
-        publicar um menu, receber pedidos das mesas por código QR e disponibilizar
-        pagamento eletrónico aos Comensais. O Prestador fornece o software; não é
-        parte na relação de compra e venda entre o Restaurante e o Comensal, nem
-        vendedor dos bens alimentares.
+        publicar um cardápio, receber pedidos das mesas por QR code e disponibilizar
+        pagamento eletrônico aos Clientes. O Prestador fornece o software; não é
+        parte na relação de compra e venda entre o Restaurante e o Cliente, nem
+        vendedor dos alimentos.
       </P>
 
-      <H2>3. Registo e conta</H2>
+      <H2>3. Cadastro e conta</H2>
       <UL>
         <li>
-          O utilizador que cria a conta declara ter capacidade legal e poderes
-          para vincular o Restaurante.
+          Quem cria a conta declara ter capacidade legal e poderes para representar
+          o Restaurante.
         </li>
         <li>
-          As credenciais de acesso são pessoais e confidenciais. O Restaurante é
-          responsável por toda a atividade realizada na sua Conta e pela gestão
-          dos acessos da sua equipa.
+          As credenciais de acesso são pessoais e sigilosas. O Restaurante é
+          responsável por toda atividade em sua Conta e pela gestão dos acessos de
+          sua equipe.
         </li>
         <li>
-          O utilizador compromete-se a fornecer informação verdadeira, atual e
-          completa, e a mantê-la atualizada.
+          O usuário se compromete a fornecer informações verdadeiras, atuais e
+          completas, e a mantê-las atualizadas.
         </li>
       </UL>
 
       <H2>4. Planos e mensalidade</H2>
       <P>
-        O Serviço é disponibilizado em planos (Basic, Pro e Max) com
-        funcionalidades distintas. Os preços, condições e método de cobrança da
-        mensalidade são os comunicados ao Restaurante no momento da adesão. O
-        Prestador pode atribuir, alterar ou suspender o plano de um Restaurante nos
-        termos acordados. A cobrança da mensalidade é independente dos pagamentos
-        efetuados pelos Comensais.
+        O Serviço é oferecido em planos (Basic, Pro e Max) com funcionalidades
+        distintas. Os preços, condições e forma de cobrança da mensalidade são os
+        informados ao Restaurante no momento da adesão. O Prestador pode atribuir,
+        alterar ou suspender o plano de um Restaurante nos termos acordados. A
+        cobrança da mensalidade é independente dos pagamentos feitos pelos Clientes.
       </P>
 
-      <H2>5. Pagamentos dos comensais</H2>
+      <H2>5. Pagamentos dos clientes</H2>
       <UL>
         <li>
-          Os pagamentos dos Comensais são processados através da Stripe, ao abrigo
-          do modelo Stripe Connect. O valor é transferido{" "}
-          <strong>diretamente para a conta do Restaurante</strong>; o Prestador
-          não retém nem detém os fundos dos Comensais.
+          Os pagamentos dos Clientes são processados por meio de instituição de
+          pagamento (Pix e cartão), com repasse{" "}
+          <strong>diretamente à conta do Restaurante</strong>; o Prestador não
+          retém nem detém os valores dos Clientes.
         </li>
         <li>
-          O Restaurante é o vendedor e o responsável fiscal pela transação,
-          incluindo a emissão de fatura/documento fiscal exigível e a aplicação
-          correta do IVA.
+          O Restaurante é o vendedor e o responsável tributário pela operação,
+          inclusive pela emissão do documento fiscal exigível (por exemplo, NFC-e) e
+          pelo recolhimento dos tributos aplicáveis.
         </li>
         <li>
           A disponibilização de pagamentos depende da aceitação, pelo Restaurante,
-          dos termos da Stripe e da conclusão da verificação da respetiva conta.
+          dos termos da instituição de pagamento e da conclusão do respectivo
+          cadastro.
         </li>
       </UL>
 
       <H2>6. Obrigações do Restaurante</H2>
       <UL>
         <li>
-          Cumprir toda a legislação aplicável à sua atividade (fiscal, alimentar,
-          defesa do consumidor, rotulagem de alergénios, entre outras).
+          Cumprir toda a legislação aplicável à sua atividade (tributária,
+          sanitária, defesa do consumidor, informação de alérgenos, entre outras).
         </li>
         <li>
-          Assegurar a exatidão do menu, preços, impostos e informação apresentada
-          aos Comensais.
+          Garantir a exatidão do cardápio, preços, tributos e informações
+          apresentadas aos Clientes.
         </li>
         <li>
-          Cumprir as suas obrigações de faturação certificada perante a
-          Autoridade Tributária, quando aplicáveis.
+          Cumprir suas obrigações fiscais perante os órgãos competentes, quando
+          aplicáveis.
         </li>
         <li>
-          Tratar os dados dos seus Comensais em conformidade com a lei de proteção
-          de dados (ver Política de Privacidade).
+          Tratar os dados de seus Clientes conforme a legislação de proteção de
+          dados (ver Política de Privacidade).
         </li>
       </UL>
 
-      <H2>7. Utilização aceitável</H2>
-      <P>É proibido utilizar o Serviço para:</P>
+      <H2>7. Uso aceitável</H2>
+      <P>É proibido usar o Serviço para:</P>
       <UL>
+        <li>Fins ilícitos, fraudulentos ou que violem direitos de terceiros;</li>
+        <li>Tentar acessar indevidamente contas, dados ou sistemas de terceiros;</li>
         <li>
-          Fins ilícitos, fraudulentos ou que violem direitos de terceiros;
+          Interferir no funcionamento, na segurança ou na integridade da Plataforma;
         </li>
         <li>
-          Tentar aceder indevidamente a contas, dados ou sistemas de outrem;
-        </li>
-        <li>
-          Interferir com o funcionamento, a segurança ou a integridade da
-          Plataforma;
-        </li>
-        <li>
-          Introduzir código malicioso ou realizar engenharia inversa não
-          autorizada.
+          Introduzir código malicioso ou fazer engenharia reversa não autorizada.
         </li>
       </UL>
 
       <H2>8. Propriedade intelectual</H2>
       <P>
-        O software, a marca, o design e demais elementos da Plataforma são
-        propriedade do Prestador ou dos seus licenciadores. Estes Termos não
-        conferem qualquer direito de propriedade sobre a Plataforma, apenas um
-        direito de utilização limitado, não exclusivo e revogável durante a
-        vigência da subscrição. O conteúdo carregado pelo Restaurante (menu,
-        imagens) permanece propriedade do Restaurante, que concede ao Prestador
-        uma licença para o alojar e apresentar no âmbito do Serviço.
+        O software, a marca, o design e demais elementos da Plataforma são de
+        propriedade do Prestador ou de seus licenciadores. Estes Termos não conferem
+        qualquer direito de propriedade sobre a Plataforma, apenas um direito de uso
+        limitado, não exclusivo e revogável durante a vigência da assinatura. O
+        conteúdo enviado pelo Restaurante (cardápio, imagens) permanece de sua
+        propriedade, que concede ao Prestador uma licença para hospedá-lo e exibi-lo
+        no âmbito do Serviço.
       </P>
 
       <H2>9. Disponibilidade e ausência de garantias</H2>
       <P>
-        O Prestador envida esforços razoáveis para manter o Serviço disponível,
-        mas não garante funcionamento ininterrupto ou isento de erros. O Serviço é
-        fornecido &quot;tal como está&quot;. Poderão ocorrer interrupções para
-        manutenção, atualizações ou por causas alheias ao Prestador.
+        O Prestador envida esforços razoáveis para manter o Serviço disponível, mas
+        não garante funcionamento ininterrupto ou isento de erros. O Serviço é
+        fornecido &quot;no estado em que se encontra&quot;. Poderão ocorrer
+        interrupções para manutenção, atualizações ou por causas alheias ao
+        Prestador.
       </P>
 
       <H2>10. Limitação de responsabilidade</H2>
       <P>
-        Na medida máxima permitida por lei, o Prestador não é responsável por
-        lucros cessantes, perda de dados, danos indiretos ou consequenciais
-        decorrentes da utilização ou impossibilidade de utilização do Serviço. Nada
-        nestes Termos exclui responsabilidades que não possam ser legalmente
-        excluídas.
+        Na máxima extensão permitida em lei, o Prestador não responde por lucros
+        cessantes, perda de dados, danos indiretos ou consequenciais decorrentes do
+        uso ou da impossibilidade de uso do Serviço. Nada nestes Termos exclui
+        responsabilidades que não possam ser legalmente afastadas, inclusive as
+        previstas no Código de Defesa do Consumidor.
       </P>
 
-      <H2>11. Suspensão e cessação</H2>
+      <H2>11. Suspensão e rescisão</H2>
       <P>
-        O Restaurante pode cessar a utilização a qualquer momento. O Prestador pode
-        suspender ou cessar o acesso em caso de incumprimento destes Termos, de
-        falta de pagamento ou de uso indevido. A cessação não afeta as obrigações
-        vencidas até essa data.
+        O Restaurante pode encerrar o uso a qualquer momento. O Prestador pode
+        suspender ou encerrar o acesso em caso de descumprimento destes Termos, falta
+        de pagamento ou uso indevido. A rescisão não afeta as obrigações vencidas até
+        a data.
       </P>
 
-      <H2>12. Alterações aos Termos</H2>
+      <H2>12. Alterações dos Termos</H2>
       <P>
-        O Prestador pode alterar estes Termos, informando os utilizadores por meios
-        razoáveis. A continuação da utilização após a entrada em vigor das
-        alterações implica a sua aceitação.
+        O Prestador pode alterar estes Termos, informando os usuários por meios
+        razoáveis. O uso continuado após a entrada em vigor das alterações implica a
+        sua aceitação.
       </P>
 
       <H2>13. Lei aplicável e foro</H2>
       <P>
-        Estes Termos regem-se pela lei portuguesa, por o Serviço se destinar a
-        estabelecimentos em Portugal. Para a resolução de litígios são competentes
-        os tribunais portugueses, sem prejuízo dos direitos imperativos do
-        consumidor e do recurso a mecanismos de resolução alternativa de litígios.
+        Estes Termos são regidos pela lei brasileira. Fica eleito o foro da comarca
+        de Novo Hamburgo/RS para dirimir controvérsias, sem prejuízo dos direitos do
+        consumidor previstos no Código de Defesa do Consumidor, inclusive quanto ao
+        foro de seu domicílio.
       </P>
 
-      <H2>14. Contactos</H2>
+      <H2>14. Contato</H2>
       <P>
-        Para qualquer questão relativa a estes Termos, contacte-nos através de
+        Para qualquer questão relativa a estes Termos, fale conosco pelo e-mail
         otium.sap@gmail.com.
       </P>
     </LegalLayout>

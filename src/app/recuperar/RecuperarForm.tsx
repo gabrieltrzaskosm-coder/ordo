@@ -12,7 +12,7 @@ export function RecuperarForm() {
     return (
       <p className="rounded-lg bg-green-50 p-3 text-sm text-green-900">
         Se existir uma conta com esse email, enviámos um link para definir uma
-        nova palavra-passe.
+        nova senha.
       </p>
     );
   }

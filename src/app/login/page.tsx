@@ -29,7 +29,7 @@ export default async function LoginPage({
       <LoginForm />
       <p className="mt-4 text-sm text-neutral-500">
         <Link href="/recuperar" className="underline">
-          Esqueci-me da palavra-passe
+          Esqueci-me da senha
         </Link>
       </p>
       <p className="mt-2 text-sm text-neutral-500">
@@ -44,7 +44,7 @@ export default async function LoginPage({
         </Link>{" "}
         ·{" "}
         <Link href="/privacidade" className="underline hover:text-neutral-600">
-          Privacidade e RGPD
+          Privacidade e LGPD
         </Link>
       </p>
     </main>

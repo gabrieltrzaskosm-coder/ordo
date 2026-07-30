@@ -32,7 +32,7 @@ export default function ErrorPage({
       <h1 className="text-xl font-semibold text-ink">Algo correu mal</h1>
       <p className="mt-2 text-sm text-muted">
         Já registámos o problema. Tente novamente — se persistir, chame o
-        atendente.
+        garçom.
       </p>
 
       <div className="mt-6 flex flex-col gap-2">

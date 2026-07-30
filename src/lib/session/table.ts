@@ -1,6 +1,6 @@
 // Resolução da "sessão de mesa" do cliente anónimo a partir do qr_token.
 // Este é o ponto único onde um qr_token é traduzido para mesa + estabelecimento.
-// Todo o código do cliente (menu, pedido, chamar atendente) deve começar aqui e
+// Todo o código do cliente (menu, pedido, chamar garçom) deve começar aqui e
 // restringir as operações ao establishment_id/table_id devolvidos.
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";

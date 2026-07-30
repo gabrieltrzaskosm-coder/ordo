@@ -20,7 +20,7 @@ export default async function NovaSenhaPage() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center p-6">
-      <h1 className="text-xl font-medium">Nova palavra-passe</h1>
+      <h1 className="text-xl font-medium">Nova senha</h1>
       <p className="mt-1 mb-6 text-sm text-neutral-500">{user.email}</p>
       <NovaSenhaForm />
     </main>

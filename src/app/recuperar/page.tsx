@@ -7,7 +7,7 @@ export default function RecuperarPage() {
       <h1 className="text-xl font-medium">Recuperar acesso</h1>
       <p className="mt-1 mb-6 text-sm text-neutral-500">
         Indique o email da sua conta. Enviamos um link para definir uma nova
-        palavra-passe.
+        senha.
       </p>
       <RecuperarForm />
       <p className="mt-4 text-sm text-neutral-500">

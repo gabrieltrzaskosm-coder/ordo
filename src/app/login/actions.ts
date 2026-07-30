@@ -14,7 +14,7 @@ export async function signIn(
   const password = String(formData.get("password") ?? "");
 
   if (!email || !password) {
-    return { error: "Preencha o email e a palavra-passe." };
+    return { error: "Preencha o email e a senha." };
   }
 
   const supabase = await createClient();

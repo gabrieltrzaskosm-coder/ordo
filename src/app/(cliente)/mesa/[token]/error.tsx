@@ -24,7 +24,7 @@ export default function MesaError({
       </h1>
       <p className="mt-2 text-sm text-muted">
         Foi um problema nosso, não seu. Tente outra vez — se continuar, chame o
-        atendente e faça o pedido pelo balcão.
+        garçom e faça o pedido pelo balcão.
       </p>
 
       <button

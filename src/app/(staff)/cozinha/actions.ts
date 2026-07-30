@@ -55,7 +55,7 @@ export async function cancelOrder(orderId: string) {
   revalidatePath("/cozinha");
 }
 
-/** Pagamento pelo atendente (dinheiro/mesa): marca pago sem passar pela Stripe. */
+/** Pagamento pelo garçom (dinheiro/mesa): marca pago sem passar pela Stripe. */
 export async function markPaid(orderId: string) {
   const session = await requireStaff();
   const admin = createAdminClient();

@@ -1,6 +1,6 @@
 "use server";
 
-// Define a nova palavra-passe no fim do fluxo de recuperação.
+// Define a nova senha no fim do fluxo de recuperação.
 //
 // Aqui não se pede a senha antiga (quem chega esqueceu-a) — a prova é a posse
 // do email. Por isso exigimos o cookie pw-recovery que /auth/confirm põe: sem
@@ -40,7 +40,7 @@ export async function setNewPassword(
       error:
         issue === "A confirmação não coincide."
           ? issue
-          : "A palavra-passe tem de ter pelo menos 8 caracteres.",
+          : "A senha tem de ter pelo menos 8 caracteres.",
     };
   }
 
@@ -56,7 +56,7 @@ export async function setNewPassword(
     password: parsed.data.password,
   });
   if (error) {
-    return { ok: false, error: "Não foi possível definir a palavra-passe." };
+    return { ok: false, error: "Não foi possível definir a senha." };
   }
 
   jar.delete("pw-recovery");

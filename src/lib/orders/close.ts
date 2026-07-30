@@ -4,7 +4,7 @@
 // esvazia o acompanhamento do cliente.
 //
 // Chamado após qualquer evento que possa satisfazer a condição: pagamento pela
-// app (webhook), pagamento pelo atendente (markPaid), ou marcar como entregue.
+// app (webhook), pagamento pelo garçom (markPaid), ou marcar como entregue.
 // Usa o admin client (o webhook não tem sessão; a lógica é idempotente).
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";

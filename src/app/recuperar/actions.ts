@@ -1,6 +1,6 @@
 "use server";
 
-// "Esqueci-me da palavra-passe": envia o link de recuperação.
+// "Esqueci-me da senha": envia o link de recuperação.
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { publicEnv } from "@/lib/env";

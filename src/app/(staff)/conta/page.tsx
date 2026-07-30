@@ -14,7 +14,7 @@ export default async function ContaPage() {
       <p className="mb-6 text-sm text-neutral-500">{session.email}</p>
 
       <h2 className="mb-3 text-sm font-medium text-neutral-500">
-        Alterar palavra-passe
+        Alterar senha
       </h2>
       <PasswordForm />
     </main>

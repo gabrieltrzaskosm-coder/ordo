@@ -13,8 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "App Pedidos",
-  description: "Peça e pague à mesa por QR code.",
+  title: "Otium — Pedido e pagamento por QR",
+  description:
+    "O cliente pede e paga à mesa por QR code (Pix, cartão, Apple Pay). Sem comissão: o dinheiro vai direto para o restaurante.",
 };
 
 export const viewport: Viewport = {

@@ -605,7 +605,7 @@ export function ClienteMenu({
               disabled={pending || !name.trim()}
               className="tnum flex w-full items-center justify-between rounded-full bg-brand px-5 py-3.5 font-semibold text-brand-ink transition active:scale-[0.99] disabled:bg-surface-2 disabled:text-muted"
             >
-              <span>{pending ? "A enviar…" : "Enviar pedido"}</span>
+              <span>{pending ? "Enviando…" : "Enviar pedido"}</span>
               <span className="flex items-center gap-2">
                 <span className="rounded-full bg-black/15 px-2 py-0.5 text-xs">
                   {count}

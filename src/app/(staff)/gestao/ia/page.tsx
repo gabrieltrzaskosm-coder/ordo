@@ -37,12 +37,12 @@ export default async function IaPage() {
 
       {/* Alerta preditivo de stock */}
       <h2 className="mt-8 mb-3 text-sm font-semibold text-ink">
-        Alerta de stock
+        Alerta de estoque
       </h2>
       {alerts.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-line p-6 text-center text-sm text-muted">
-          Sem alertas. Ligue o stock de artigos em Gestão de stock, ou crie
-          ingredientes com receita, para receber previsões de rutura.
+          Sem alertas. Ligue o estoque de itens em Controle de estoque, ou crie
+          ingredientes com receita, para receber previsões de ruptura.
         </p>
       ) : (
         <ul className="space-y-2">
@@ -112,7 +112,7 @@ export default async function IaPage() {
                 <tr className="border-b border-line text-left text-xs text-muted">
                   <th className="px-4 py-2.5 font-medium">Ingrediente</th>
                   <th className="px-4 py-2.5 text-right font-medium">Gasta/dia</th>
-                  <th className="px-4 py-2.5 text-right font-medium">Em stock</th>
+                  <th className="px-4 py-2.5 text-right font-medium">Em estoque</th>
                   <th className="px-4 py-2.5 text-right font-medium">Comprar ~</th>
                 </tr>
               </thead>

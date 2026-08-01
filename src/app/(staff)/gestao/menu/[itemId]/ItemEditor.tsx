@@ -82,7 +82,7 @@ export function ItemEditor({
         </Link>
       </div>
       <p className="mb-6 text-sm text-muted">
-        Imagem e opções deste prato. Aparecem no menu do cliente.
+        Imagem e opções deste prato. Aparecem no cardápio do cliente.
       </p>
 
       {error && (
@@ -144,7 +144,7 @@ export function ItemEditor({
         <h2 className="mb-1 text-sm font-medium text-muted">Receita</h2>
         <p className="mb-3 text-xs text-muted">
           Ingredientes que este prato gasta (em unidades). Quando um deles esgota,
-          o prato sai do menu.
+          o prato sai do cardápio.
         </p>
         <div className="rounded-lg border border-line p-3">
           <RecipeEditor

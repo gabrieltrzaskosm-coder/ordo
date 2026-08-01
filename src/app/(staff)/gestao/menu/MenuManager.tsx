@@ -51,7 +51,7 @@ export function MenuManager({ categories }: { categories: ManagedCategory[] }) {
         </Link>
       </div>
       <p className="mb-6 text-sm text-muted">
-        Alterações aparecem de imediato no menu dos clientes.
+        Alterações aparecem de imediato no cardápio dos clientes.
       </p>
 
       {error && (
@@ -167,7 +167,7 @@ export function MenuManager({ categories }: { categories: ManagedCategory[] }) {
                   disabled={pending}
                   value={item.vatCode}
                   onChange={(e) => run(() => setItemVatCode(item.id, e.target.value))}
-                  title="Taxa de IVA na fatura"
+                  title="Taxa de imposto na nota fiscal"
                   className="rounded-lg border border-line px-1 py-1 text-xs"
                 >
                   {VAT_CODES.map((c) => (

@@ -11,8 +11,8 @@ export function RecuperarForm() {
   if (state.sent) {
     return (
       <p className="rounded-lg bg-green-50 p-3 text-sm text-green-900">
-        Se existir uma conta com esse email, enviámos um link para definir uma
-        nova senha.
+        Se existir uma conta com esse e-mail, enviamos um link para você definir
+        uma nova senha.
       </p>
     );
   }
@@ -37,7 +37,7 @@ export function RecuperarForm() {
         disabled={pending}
         className="w-full rounded-lg bg-black py-3 text-white disabled:opacity-40"
       >
-        {pending ? "A enviar…" : "Enviar link"}
+        {pending ? "Enviando…" : "Enviar link"}
       </button>
     </form>
   );

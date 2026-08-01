@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,8 +12,17 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Fonte de títulos (só a landing pública a usa, via `font-display`). Um
+// grotesco de display com carácter — tira o ar de "Geist em tudo". Auto-alojada
+// pelo next/font (servida de /_next), logo a CSP font-src 'self' já a cobre.
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-bricolage",
+  subsets: ["latin"],
+  weight: ["600", "700", "800"],
+});
+
 export const metadata: Metadata = {
-  title: "Otium — Pedido e pagamento por QR",
+  title: "Ordo — pedido e pagamento por QR, da Otium",
   description:
     "O cliente pede e paga à mesa por QR code (Pix, cartão, Apple Pay). Sem comissão: o dinheiro vai direto para o restaurante.",
 };
@@ -33,7 +42,7 @@ export default function RootLayout({
   return (
     <html
       lang="pt"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${bricolage.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

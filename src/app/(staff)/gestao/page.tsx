@@ -14,8 +14,8 @@ export const dynamic = "force-dynamic";
 const NAV = [
   {
     href: "/gestao/menu",
-    title: "Menu",
-    desc: "Categorias, pratos, preços e IVA.",
+    title: "Cardápio",
+    desc: "Categorias, pratos, preços e impostos.",
     icon: "M4 5h16M4 12h16M4 19h10",
   },
   {
@@ -26,7 +26,7 @@ const NAV = [
   },
   {
     href: "/gestao/equipa",
-    title: "Equipa",
+    title: "Equipe",
     desc: "Contas de cozinha, atendimento e gestão.",
     icon: "M17 20v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8M23 20v-2a4 4 0 0 0-3-3.87M16 2.13a4 4 0 0 1 0 7.75",
   },
@@ -38,8 +38,8 @@ const NAV = [
   },
   {
     href: "/gestao/faturacao",
-    title: "Faturação",
-    desc: "Ligar o Vendus para emitir a fatura-recibo (AT).",
+    title: "Faturamento",
+    desc: "Configurar a emissão de nota fiscal dos pagamentos.",
     icon: "M6 2h9l5 5v15H6zM14 2v6h6M9 13h6M9 17h4",
   },
 ];
@@ -72,8 +72,8 @@ const PLAN_FEATURES: {
   },
   {
     feature: "stock",
-    title: "Gestão de stock",
-    desc: "Baixa automática e alertas de rutura.",
+    title: "Controle de estoque",
+    desc: "Baixa automática e alertas de ruptura.",
     icon: "M3 7l9-4 9 4-9 4-9-4zM3 7v10l9 4 9-4V7",
     href: "/gestao/stock",
   },

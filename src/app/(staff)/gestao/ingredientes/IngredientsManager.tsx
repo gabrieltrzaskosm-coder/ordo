@@ -123,8 +123,8 @@ export function IngredientsManager({ items }: { items: Ingredient[] }) {
               it.stockQty === 0
                 ? { label: "Esgotado", cls: "bg-warn-weak text-warn" }
                 : it.stockQty <= it.threshold
-                  ? { label: "Em rutura", cls: "bg-surface-2 text-ink" }
-                  : { label: "Em stock", cls: "bg-success-weak text-success" };
+                  ? { label: "Em ruptura", cls: "bg-surface-2 text-ink" }
+                  : { label: "Em estoque", cls: "bg-success-weak text-success" };
 
             return (
               <li

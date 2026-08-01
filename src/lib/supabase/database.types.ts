@@ -58,6 +58,7 @@ export type Database = {
           currency: string;
           id: string;
           name: string;
+          phone: string | null;
           plan: Database["public"]["Enums"]["plan_tier"];
           slug: string;
           stripe_account_id: string | null;
@@ -69,6 +70,7 @@ export type Database = {
           currency?: string;
           id?: string;
           name: string;
+          phone?: string | null;
           plan?: Database["public"]["Enums"]["plan_tier"];
           slug: string;
           stripe_account_id?: string | null;
@@ -80,6 +82,7 @@ export type Database = {
           currency?: string;
           id?: string;
           name?: string;
+          phone?: string | null;
           plan?: Database["public"]["Enums"]["plan_tier"];
           slug?: string;
           stripe_account_id?: string | null;

@@ -29,14 +29,14 @@ export function EquipaManager({ staff }: { staff: StaffMember[] }) {
     setError(null);
     startTransition(async () => {
       const res = await fn();
-      if (!res.ok) setError(res.error ?? "Algo correu mal.");
+      if (!res.ok) setError(res.error ?? "Algo deu errado.");
     });
   }
 
   return (
     <main className="mx-auto max-w-2xl p-6">
       <div className="mb-1 flex items-center gap-3">
-        <h1 className="text-xl font-medium">Equipa</h1>
+        <h1 className="text-xl font-medium">Equipe</h1>
         <Link href="/gestao" className="text-sm text-muted hover:underline">
           ← Gestão
         </Link>

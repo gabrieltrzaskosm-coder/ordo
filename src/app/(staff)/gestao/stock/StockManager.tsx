@@ -51,8 +51,8 @@ export function StockManager({ items }: { items: StockItem[] }) {
             : it.stockQty === 0
               ? { label: "Esgotado", cls: "bg-warn-weak text-warn" }
               : it.stockQty <= it.threshold
-                ? { label: "Em rutura", cls: "bg-surface-2 text-ink" }
-                : { label: "Em stock", cls: "bg-success-weak text-success" };
+                ? { label: "Em ruptura", cls: "bg-surface-2 text-ink" }
+                : { label: "Em estoque", cls: "bg-success-weak text-success" };
 
           return (
             <li
@@ -86,7 +86,7 @@ export function StockManager({ items }: { items: StockItem[] }) {
                       it.trackStock ? "bg-brand" : "bg-surface-2"
                     }`}
                     aria-pressed={it.trackStock}
-                    aria-label="Seguir stock"
+                    aria-label="Seguir estoque"
                   >
                     {/*
                       `left-0.5` é obrigatório: sem âncora horizontal o polegar

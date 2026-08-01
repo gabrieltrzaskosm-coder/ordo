@@ -9,9 +9,9 @@ export default async function LoginPage({
   const { erro } = await searchParams;
 
   const AVISOS: Record<string, string> = {
-    "sem-acesso": "Esta conta não está associada a nenhum estabelecimento.",
-    "link-invalido": "Link inválido. Peça um novo email de recuperação.",
-    "link-expirado": "O link expirou. Peça um novo email de recuperação.",
+    "sem-acesso": "Esta conta não está associada a nenhum restaurante.",
+    "link-invalido": "Link inválido. Peça um novo e-mail de recuperação.",
+    "link-expirado": "O link expirou. Peça um novo e-mail de recuperação.",
   };
   const aviso = erro ? (AVISOS[erro] ?? null) : null;
 
@@ -29,7 +29,7 @@ export default async function LoginPage({
       <LoginForm />
       <p className="mt-4 text-sm text-neutral-500">
         <Link href="/recuperar" className="underline">
-          Esqueci-me da senha
+          Esqueci minha senha
         </Link>
       </p>
       <p className="mt-2 text-sm text-neutral-500">

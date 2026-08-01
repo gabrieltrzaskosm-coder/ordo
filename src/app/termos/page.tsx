@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LegalLayout, H2, P, UL } from "@/components/LegalLayout";
 
 export const metadata: Metadata = {
-  title: "Termos de Uso — App Pedidos",
+  title: "Termos de Uso — Ordo",
 };
 
 // NOTA: dados do prestador preenchidos. Documento-modelo (Brasil) — recomenda-se
@@ -12,7 +12,7 @@ export default function TermosPage() {
     <LegalLayout title="Termos de Uso" updated="25 de julho de 2026">
       <P>
         Estes Termos de Uso (&quot;Termos&quot;) regulam o acesso e o uso da
-        plataforma App Pedidos (&quot;Plataforma&quot; ou &quot;Serviço&quot;),
+        plataforma Ordo (&quot;Plataforma&quot; ou &quot;Serviço&quot;),
         disponibilizada por Gabriel Marques Trzaskos (Otium), com endereço em Rua
         Nogueira 409, Vila Nova, 93520-320 — Novo Hamburgo/RS (&quot;nós&quot;,
         &quot;Prestador&quot;). Ao criar uma conta ou usar o Serviço, o usuário

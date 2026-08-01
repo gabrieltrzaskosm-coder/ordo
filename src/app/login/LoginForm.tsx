@@ -36,7 +36,7 @@ export function LoginForm() {
         disabled={pending}
         className="w-full rounded-lg bg-black py-3 text-white disabled:opacity-40"
       >
-        {pending ? "A entrar…" : "Entrar"}
+        {pending ? "Entrando…" : "Entrar"}
       </button>
     </form>
   );

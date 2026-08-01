@@ -50,7 +50,7 @@ export default async function IngredientesPage() {
       <p className="mt-1 text-sm text-muted">
         Stock partilhado por ingrediente. Ligue cada ingrediente aos pratos e
         extras na página do prato (Menu → prato → Receita). Quando um ingrediente
-        chega a zero, sai do menu tudo o que precisa dele.
+        chega a zero, sai do cardápio tudo o que precisa dele.
       </p>
 
       {(out > 0 || low > 0) && (
@@ -62,7 +62,7 @@ export default async function IngredientesPage() {
           )}
           {low > 0 && (
             <span className="rounded-full bg-surface-2 px-3 py-1 font-medium text-ink">
-              {low} em rutura
+              {low} em ruptura
             </span>
           )}
         </div>

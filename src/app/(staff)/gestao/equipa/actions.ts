@@ -48,7 +48,7 @@ export async function createStaff(formData: FormData): Promise<ActionResult> {
   });
   if (staffErr) {
     await admin.auth.admin.deleteUser(created.user.id);
-    return { ok: false, error: "Falha ao associar a conta à equipa." };
+    return { ok: false, error: "Falha ao associar a conta à equipe." };
   }
 
   revalidatePath("/gestao/equipa");

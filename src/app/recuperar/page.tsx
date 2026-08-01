@@ -6,8 +6,8 @@ export default function RecuperarPage() {
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center p-6">
       <h1 className="text-xl font-medium">Recuperar acesso</h1>
       <p className="mt-1 mb-6 text-sm text-neutral-500">
-        Indique o email da sua conta. Enviamos um link para definir uma nova
-        senha.
+        Informe o e-mail da sua conta. Enviamos um link para você definir uma
+        nova senha.
       </p>
       <RecuperarForm />
       <p className="mt-4 text-sm text-neutral-500">

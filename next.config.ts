@@ -21,7 +21,8 @@ const sentryConnect = process.env.NEXT_PUBLIC_SENTRY_DSN
 //    nonce é o preço a pagar. Ainda assim melhor que sem CSP, e combinado com os
 //    outros headers fecha clickjacking, base-uri e object.
 //  - connect-src: só o próprio site e o Supabase (https + wss do Realtime).
-//  - img-src: menu vem do Storage do Supabase; data:/blob: para os QR codes.
+//  - img-src: menu vem do Storage do Supabase; data:/blob: para os QR codes;
+//    images.unsplash.com só serve a foto do hero da landing pública.
 //  - frame-ancestors 'none': ninguém pode embutir o site num iframe.
 //  - dev precisa de 'unsafe-eval' (o React usa eval para debug) e não força
 //    upgrade-insecure-requests (senão parte o localhost em http).
@@ -29,7 +30,7 @@ const csp = [
   `default-src 'self'`,
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   `style-src 'self' 'unsafe-inline'`,
-  `img-src 'self' data: blob: https://${supabaseHost}`,
+  `img-src 'self' data: blob: https://${supabaseHost} https://images.unsplash.com`,
   `font-src 'self' data:`,
   `connect-src 'self' https://${supabaseHost} wss://${supabaseHost}${sentryConnect}`,
   `form-action 'self'`,
@@ -66,6 +67,14 @@ const nextConfig: NextConfig = {
 
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
+  },
+
+  // Foto do hero da landing pública (Unsplash). Único domínio externo de
+  // imagem permitido; tudo o resto (cardápio) continua a vir do Supabase.
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "images.unsplash.com", pathname: "/**" },
+    ],
   },
 
   // Permite testar no telemóvel pelo IP da rede local: sem isto o Next bloqueia

@@ -148,7 +148,7 @@ export async function createOrder(
         ok: false,
         error: r?.item
           ? `Sem stock de ${r.item} neste momento. Ajuste o pedido para continuar.`
-          : "Um dos artigos esgotou agora mesmo.",
+          : "Um dos itens esgotou agora mesmo.",
       };
     }
   }

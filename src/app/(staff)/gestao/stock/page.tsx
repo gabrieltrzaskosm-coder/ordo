@@ -41,14 +41,14 @@ export default async function StockPage() {
   return (
     <main className="mx-auto max-w-2xl px-4 py-6">
       <div className="mb-1 flex items-center gap-3">
-        <h1 className="text-2xl font-semibold text-ink">Gestão de stock</h1>
+        <h1 className="text-2xl font-semibold text-ink">Controle de estoque</h1>
         <Link href="/gestao" className="text-sm text-muted hover:underline">
           ← Gestão
         </Link>
       </div>
       <p className="mt-1 text-sm text-muted">
-        Ligue o stock por artigo. A zero, fica esgotado no menu automaticamente e
-        volta a aparecer ao repor.
+        Ligue o estoque por item. A zero, fica esgotado no cardápio
+        automaticamente e volta a aparecer ao repor.
       </p>
 
       <Link
@@ -57,11 +57,11 @@ export default async function StockPage() {
       >
         <span className="min-w-0">
           <span className="block text-sm font-medium text-ink">
-            Stock por ingrediente
+            Estoque por ingrediente
           </span>
           <span className="block text-xs text-muted">
-            Para pratos compostos: um ingrediente partilhado (ex.: pão) esgota e
-            sai de todos os pratos que o usam.
+            Para pratos compostos: um ingrediente compartilhado (ex.: pão) esgota
+            e sai de todos os pratos que o usam.
           </span>
         </span>
         <span className="ml-3 shrink-0 text-muted">→</span>
@@ -76,7 +76,7 @@ export default async function StockPage() {
           )}
           {low > 0 && (
             <span className="rounded-full bg-surface-2 px-3 py-1 font-medium text-ink">
-              {low} em rutura
+              {low} em ruptura
             </span>
           )}
         </div>

@@ -20,8 +20,15 @@ import { slugify } from "@/lib/slug";
 
 export type SignupState = { error: string | null };
 
+// Cadastro do dono (pt-BR). Além da conta e do restaurante, capturamos já o
+// nome do responsável (fica no staff), o WhatsApp e o CNPJ/CPF — dados que o
+// onboarding manual usa e que a faturação vai precisar. CNPJ/CPF e nome do
+// responsável são opcionais para não travar o cadastro.
 const schema = z.object({
   establishmentName: z.string().trim().min(2).max(80),
+  ownerName: z.string().trim().max(80).optional(),
+  phone: z.string().trim().min(8).max(20),
+  taxId: z.string().trim().max(20).optional(),
   email: z.string().trim().email(),
   password: z.string().min(8).max(72),
 });
@@ -32,15 +39,20 @@ export async function signUp(
 ): Promise<SignupState> {
   const parsed = schema.safeParse({
     establishmentName: formData.get("establishmentName"),
+    ownerName: formData.get("ownerName") || undefined,
+    phone: formData.get("phone"),
+    taxId: formData.get("taxId") || undefined,
     email: formData.get("email"),
     password: formData.get("password"),
   });
   if (!parsed.success) {
     return {
-      error: "Verifique os dados: nome (mín. 2), email válido e senha (mín. 8).",
+      error:
+        "Confira os dados: nome do restaurante (mín. 2), WhatsApp, e-mail válido e senha (mín. 8).",
     };
   }
-  const { establishmentName, email, password } = parsed.data;
+  const { establishmentName, ownerName, phone, taxId, email, password } =
+    parsed.data;
 
   const supabase = await createClient();
   const { data, error: signUpErr } = await supabase.auth.signUp({
@@ -64,24 +76,29 @@ export async function signUp(
 
   const { data: est, error: estErr } = await admin
     .from("establishments")
-    .insert({ name: establishmentName, slug: slugify(establishmentName) })
+    .insert({
+      name: establishmentName,
+      slug: slugify(establishmentName),
+      phone,
+      vat_number: taxId ?? null,
+    })
     .select("id")
     .single();
   if (estErr || !est) {
     await admin.auth.admin.deleteUser(userId);
-    return { error: "Falha ao criar o estabelecimento. Tente novamente." };
+    return { error: "Falha ao criar o restaurante. Tente novamente." };
   }
 
   const { error: staffErr } = await admin.from("staff").insert({
     establishment_id: est.id,
     auth_user_id: userId,
     role: "owner",
-    display_name: null,
+    display_name: ownerName ?? null,
   });
   if (staffErr) {
     await admin.from("establishments").delete().eq("id", est.id);
     await admin.auth.admin.deleteUser(userId);
-    return { error: "Falha ao concluir o registo. Tente novamente." };
+    return { error: "Falha ao concluir o cadastro. Tente novamente." };
   }
 
   // Com "Confirm email" desligado no projeto, o signUp já devolve sessão e não

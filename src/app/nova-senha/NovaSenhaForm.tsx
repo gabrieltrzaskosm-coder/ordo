@@ -55,7 +55,7 @@ export function NovaSenhaForm() {
         disabled={pending}
         className="w-full rounded-lg bg-black py-3 text-white disabled:opacity-40"
       >
-        {pending ? "A guardar…" : "Definir senha"}
+        {pending ? "Salvando…" : "Definir senha"}
       </button>
     </form>
   );

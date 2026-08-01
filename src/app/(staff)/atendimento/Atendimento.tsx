@@ -486,7 +486,7 @@ export function Atendimento({
             >
               <span>
                 {pending
-                  ? "A enviar…"
+                  ? "Enviando…"
                   : tableId
                     ? "Enviar para a cozinha"
                     : "Escolha a mesa"}

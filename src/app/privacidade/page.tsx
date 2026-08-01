@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LegalLayout, H2, P, UL } from "@/components/LegalLayout";
 
 export const metadata: Metadata = {
-  title: "Política de Privacidade e LGPD — App Pedidos",
+  title: "Política de Privacidade e LGPD — Ordo",
 };
 
 // NOTA: dados do responsável preenchidos. Documento-modelo (Brasil/LGPD) —
@@ -14,7 +14,7 @@ export default function PrivacidadePage() {
       updated="25 de julho de 2026"
     >
       <P>
-        A presente Política explica como a plataforma App Pedidos trata dados
+        A presente Política explica como a plataforma Ordo trata dados
         pessoais, em conformidade com a Lei n.º 13.709/2018 (Lei Geral de Proteção
         de Dados — LGPD) e demais legislação aplicável no Brasil.
       </P>

@@ -7,7 +7,7 @@ import { signUp, type SignupState } from "./actions";
 const initial: SignupState = { error: null };
 
 const inputClass =
-  "w-full rounded-lg border border-neutral-300 px-3 py-2 focus:border-neutral-900 focus:outline-none";
+  "w-full rounded-lg border border-line bg-canvas px-3 py-2.5 text-ink placeholder:text-muted/70 transition focus:border-brand focus:bg-surface focus:outline-none";
 const labelClass = "block text-sm font-medium text-neutral-700";
 
 export function SignupForm() {
@@ -119,7 +119,7 @@ export function SignupForm() {
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-lg bg-black py-3 text-white disabled:opacity-40"
+        className="w-full rounded-lg bg-brand py-3 font-semibold text-brand-ink transition hover:bg-brand-strong disabled:opacity-50"
       >
         {pending ? "Criando…" : "Criar conta e restaurante"}
       </button>

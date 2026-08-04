@@ -92,6 +92,82 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* Fundo animado do login: ondas quentes (terracota + âmbar) que derivam
+   lentamente, tipo aurora. Escopado a .login-aurora — não toca no resto da app.
+   Só transform/opacity (GPU); congela com prefers-reduced-motion (abaixo). */
+.login-aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.login-aurora span {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(72px);
+  will-change: transform;
+}
+.login-aurora .wave-1 {
+  top: -34vw;
+  left: -14vw;
+  width: 78vw;
+  height: 78vw;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--color-brand) 80%, transparent),
+    transparent 68%
+  );
+  animation: wave-drift-1 19s var(--ease-out-quint) infinite alternate;
+}
+.login-aurora .wave-2 {
+  top: -22vw;
+  right: -16vw;
+  width: 62vw;
+  height: 62vw;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--color-warn) 70%, transparent),
+    transparent 68%
+  );
+  animation: wave-drift-2 23s var(--ease-out-quint) infinite alternate;
+}
+.login-aurora .wave-3 {
+  top: 2vw;
+  left: 24vw;
+  width: 66vw;
+  height: 66vw;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--color-brand-strong) 55%, transparent),
+    transparent 70%
+  );
+  animation: wave-drift-3 27s var(--ease-out-quint) infinite alternate;
+}
+
+@keyframes wave-drift-1 {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(9vw, 5vw, 0) scale(1.18);
+  }
+}
+@keyframes wave-drift-2 {
+  from {
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+  to {
+    transform: translate3d(-7vw, 7vw, 0) scale(0.92);
+  }
+}
+@keyframes wave-drift-3 {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(6vw, -5vw, 0) scale(1.12);
+  }
+}
+
 
 /* Entrada suave. fill backwards => antes/durante o delay mostra o estado
    inicial; se a animação nunca correr, o elemento fica na sua opacidade natural

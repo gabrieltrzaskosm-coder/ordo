@@ -17,7 +17,7 @@ export function NovaSenhaForm() {
         </p>
         <Link
           href="/cozinha"
-          className="block w-full rounded-lg bg-black py-3 text-center text-white"
+          className="block w-full rounded-lg bg-brand py-3 text-center font-semibold text-brand-ink transition hover:bg-brand-strong"
         >
           Continuar
         </Link>
@@ -53,7 +53,7 @@ export function NovaSenhaForm() {
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-lg bg-black py-3 text-white disabled:opacity-40"
+        className="w-full rounded-lg bg-brand py-3 font-semibold text-brand-ink transition hover:bg-brand-strong disabled:opacity-50"
       >
         {pending ? "Salvando…" : "Definir senha"}
       </button>

@@ -9,7 +9,6 @@ import { resolveTableSession } from "@/lib/session/table";
 import { getOrderableItemIds, type OrderableIds } from "@/lib/menu";
 import { createOrder } from "@/lib/orders/create";
 import { checkRateLimit } from "@/lib/rate-limit";
-import { createOrderCheckout } from "@/lib/stripe/checkout";
 
 const placeOrderSchema = z.object({
   token: z.string().min(1),
@@ -68,23 +67,6 @@ export async function getOrderableItems(token: string): Promise<OrderableIds> {
   const session = await resolveTableSession(token);
   if (!session) return { items: [], modifiers: [] };
   return getOrderableItemIds(session.establishmentId);
-}
-
-const paySchema = z.object({
-  token: z.string().min(1),
-  orderId: z.string().uuid(),
-  tipCents: z.number().int().min(0),
-});
-
-export type PayResult =
-  | { ok: true; url: string }
-  | { ok: false; error: string };
-
-export async function payForOrder(input: unknown): Promise<PayResult> {
-  const parsed = paySchema.safeParse(input);
-  if (!parsed.success) return { ok: false, error: "Pedido inválido." };
-  const { token, orderId, tipCents } = parsed.data;
-  return createOrderCheckout(token, orderId, tipCents);
 }
 
 export type TrackedOrder = {

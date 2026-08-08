@@ -1,101 +1,35 @@
-import Link from "next/link";
 import { requireManager } from "@/lib/auth";
-import { refreshConnectStatus } from "@/lib/stripe/connect";
-import { startOnboarding, refreshStatus } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-export default async function PagamentosPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ done?: string; refresh?: string; erro?: string }>;
-}) {
-  const session = await requireManager();
-  const sp = await searchParams;
-
-  // Ao voltar do onboarding (?done) ou refresh, sincroniza o estado real na Stripe.
-  const status = await refreshConnectStatus(session.establishmentId);
-  const justReturned = sp.done === "1";
-  const erro = sp.erro?.trim();
+// Placeholder: a integração de pagamento (gateway) será ligada mais à frente.
+// Por agora os pedidos são cobrados manualmente na mesa (ver Cozinha/Atendimento).
+export default async function PagamentosPage() {
+  await requireManager();
 
   return (
-    <main className="mx-auto max-w-2xl p-6">
-      <div className="mb-1 flex items-center gap-3">
-        <h1 className="text-xl font-medium">Pagamentos</h1>
-        <Link href="/gestao" className="text-sm text-muted hover:underline">
-          ← Gestão
-        </Link>
-      </div>
-      <p className="mb-6 text-sm text-muted">
-        Ligue a conta Stripe do restaurante. O dinheiro dos clientes vai direto
-        para si — a plataforma nunca o retém.
+    <div className="mx-auto max-w-2xl">
+      <h1 className="text-[28px] font-extrabold tracking-[-0.02em] text-ink">
+        Pagamentos
+      </h1>
+      <p className="mt-1.5 text-sm text-muted">
+        Como o restaurante recebe pelos pedidos.
       </p>
 
-      {erro ? (
-        <div className="mb-4 rounded-lg border border-red-300 bg-red-50 p-4">
-          <p className="font-medium text-red-900">
-            Não foi possível ligar os pagamentos
-          </p>
-          <p className="mt-1 text-sm text-red-800">
-            A Stripe recusou o pedido com a seguinte mensagem:
-          </p>
-          <p className="mt-2 rounded bg-red-100 p-2 text-sm text-red-900">
-            {erro}
-          </p>
-          <p className="mt-2 text-sm text-red-800">
-            Resolva o ponto indicado no painel da Stripe e tente novamente.
-          </p>
-        </div>
-      ) : null}
-
-      {status.chargesEnabled ? (
-        <div className="rounded-lg border border-green-300 bg-green-50 p-4">
-          <p className="font-medium text-green-900">Pagamentos ativos</p>
-          <p className="mt-1 text-sm text-green-800">
-            Os clientes já podem pagar na mesa. O valor é depositado na conta
-            Stripe do restaurante.
-          </p>
-          <form action={refreshStatus} className="mt-3">
-            <button className="rounded-lg border border-green-400 px-3 py-1 text-sm text-green-900">
-              Verificar estado
-            </button>
-          </form>
-        </div>
-      ) : status.connected ? (
-        <div className="rounded-lg border border-amber-300 bg-amber-50 p-4">
-          <p className="font-medium text-amber-900">Configuração incompleta</p>
-          <p className="mt-1 text-sm text-amber-800">
-            {justReturned
-              ? "Recebemos os dados, mas a Stripe ainda não ativou os pagamentos. Pode faltar informação — continue a configuração."
-              : "A conta foi criada mas ainda não pode receber pagamentos. Continue a configuração na Stripe."}
-          </p>
-          <div className="mt-3 flex gap-2">
-            <form action={startOnboarding}>
-              <button className="rounded-lg bg-brand px-4 py-2 text-sm text-brand-ink">
-                Continuar configuração
-              </button>
-            </form>
-            <form action={refreshStatus}>
-              <button className="rounded-lg border border-line px-4 py-2 text-sm">
-                Verificar estado
-              </button>
-            </form>
-          </div>
-        </div>
-      ) : (
-        <div className="rounded-lg border border-line p-4">
-          <p className="font-medium">Ainda não há pagamentos ligados</p>
-          <p className="mt-1 text-sm text-muted">
-            Vai ser encaminhado para a Stripe para registar os dados do
-            restaurante (NIF, IBAN). Em modo de teste, os dados são simulados.
-          </p>
-          <form action={startOnboarding} className="mt-3">
-            <button className="rounded-lg bg-brand px-4 py-2 text-sm text-brand-ink">
-              Ligar pagamentos
-            </button>
-          </form>
-        </div>
-      )}
-    </main>
+      <div className="mt-5 rounded-[22px] border border-line bg-surface p-6 shadow-[var(--shadow-card)]">
+        <span className="inline-flex items-center gap-2 rounded-full bg-brand-weak px-3 py-1 text-xs font-bold text-brand-strong">
+          <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+          Em breve
+        </span>
+        <p className="mt-3 text-[17px] font-bold text-ink">
+          Pagamento na mesa, por agora
+        </p>
+        <p className="mt-1.5 text-sm leading-relaxed text-muted">
+          Os pedidos são cobrados na mesa pelo atendente. A integração de
+          pagamento online — Pix, cartão e Apple Pay — será ligada em breve, e
+          o dinheiro cairá direto na conta do restaurante, sem comissão.
+        </p>
+      </div>
+    </div>
   );
 }

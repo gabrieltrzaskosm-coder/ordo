@@ -7,7 +7,6 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireManager } from "@/lib/auth";
-import { VAT_CODES } from "@/lib/invoicing/vat";
 
 export type ActionResult = { ok: boolean; error?: string };
 
@@ -52,7 +51,6 @@ const itemSchema = z.object({
   name: z.string().trim().min(1).max(80),
   description: z.string().trim().max(200).optional(),
   price: z.string(),
-  vatCode: z.enum(VAT_CODES).default("NOR"),
 });
 
 export async function createItem(formData: FormData): Promise<ActionResult> {
@@ -62,7 +60,6 @@ export async function createItem(formData: FormData): Promise<ActionResult> {
     name: formData.get("name"),
     description: formData.get("description") || undefined,
     price: formData.get("price"),
-    vatCode: formData.get("vatCode") || undefined,
   });
   if (!parsed.success) return { ok: false, error: "Dados inválidos." };
 
@@ -76,28 +73,8 @@ export async function createItem(formData: FormData): Promise<ActionResult> {
     name: parsed.data.name,
     description: parsed.data.description ?? null,
     price_cents: cents,
-    vat_code: parsed.data.vatCode,
   });
   if (error) return { ok: false, error: "Falha ao criar o prato." };
-
-  revalidatePath("/gestao/menu");
-  return { ok: true };
-}
-
-export async function setItemVatCode(
-  id: string,
-  vatCode: string,
-): Promise<ActionResult> {
-  await requireManager();
-  const parsed = z.enum(VAT_CODES).safeParse(vatCode);
-  if (!parsed.success) return { ok: false, error: "Taxa inválida." };
-
-  const supabase = await createClient();
-  const { error } = await supabase
-    .from("menu_items")
-    .update({ vat_code: parsed.data })
-    .eq("id", id);
-  if (error) return { ok: false, error: "Falha ao atualizar o IVA." };
 
   revalidatePath("/gestao/menu");
   return { ok: true };

@@ -1,8 +1,8 @@
 // Fonte única da verdade dos planos e do que cada um desbloqueia (entitlements).
 //
 // Gating ≠ cobrança: aqui só se decide "este plano tem acesso a X". Quem cobra
-// és tu, à mão, definindo `establishments.plan`. O billing automático (Stripe)
-// fica para uma fase futura.
+// és tu, à mão, definindo `establishments.plan`. O billing automático (via
+// gateway de pagamento) fica para uma fase futura.
 //
 // Adicionar valor a um plano = adicionar uma feature abaixo e atribuir o nível
 // mínimo. O resto (bloqueios no servidor + UI) herda daqui.

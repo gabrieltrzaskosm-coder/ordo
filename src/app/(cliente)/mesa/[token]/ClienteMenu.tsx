@@ -6,16 +6,8 @@ import { formatMoney } from "@/lib/money";
 import {
   callWaiter,
   getOrderableItems,
-  payForOrder,
   placeOrder,
 } from "./actions";
-
-// Converte "3", "3,50" ou "3.50" em centavos. Inválido ou negativo → 0.
-function amountToCents(raw: string): number {
-  const n = parseFloat(raw.replace(",", "."));
-  if (!Number.isFinite(n) || n < 0) return 0;
-  return Math.round(n * 100);
-}
 
 type ChosenModifier = { id: string; name: string; delta: number; qty: number };
 
@@ -74,9 +66,6 @@ export function ClienteMenu({
     id: string;
     subtotalCents: number;
   } | null>(null);
-  const [tipCents, setTipCents] = useState(0);
-  const [tipCustom, setTipCustom] = useState(false);
-  const [tipCustomValue, setTipCustomValue] = useState("");
   // Modal de opções: item a configurar + escolhas por grupo (ids das opções) +
   // quantidade escolhida de cada extra (modifierId -> qty, só grupos múltiplos).
   const [modalItem, setModalItem] = useState<MenuItem | null>(null);
@@ -316,16 +305,6 @@ export function ClienteMenu({
         // ecrã, em vez de esperar pelo próximo ciclo do polling.
         void refreshOrderable();
       }
-    });
-  }
-
-  function pay() {
-    if (!placedOrder) return;
-    setStatus(null);
-    startTransition(async () => {
-      const res = await payForOrder({ token, orderId: placedOrder.id, tipCents });
-      if (res.ok) window.location.href = res.url;
-      else setStatus(res.error);
     });
   }
 
@@ -622,82 +601,17 @@ export function ClienteMenu({
           className={`fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface px-4 pt-4 shadow-[var(--shadow-bar)] ${safeBottom}`}
         >
           <div className="mx-auto max-w-md space-y-3">
-            {status && (
-              <p className="rounded-xl bg-success-weak px-3 py-2 text-center text-sm font-medium text-success">
-                {status}
-              </p>
-            )}
-            <div>
-              <p className="mb-2 text-sm font-medium text-ink">
-                Adicionar gorjeta?
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { label: "Sem", cents: 0 },
-                  { label: "R$ 2", cents: 200 },
-                  { label: "R$ 5", cents: 500 },
-                  { label: "R$ 10", cents: 1000 },
-                ].map((opt) => {
-                  const selected = !tipCustom && tipCents === opt.cents;
-                  return (
-                    <button
-                      key={opt.label}
-                      onClick={() => {
-                        setTipCustom(false);
-                        setTipCents(opt.cents);
-                      }}
-                      className={`flex-1 rounded-full border py-2 text-sm font-medium transition active:scale-[0.97] ${
-                        selected
-                          ? "border-brand bg-brand text-brand-ink"
-                          : "border-line bg-surface text-ink"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  );
-                })}
-                <button
-                  onClick={() => {
-                    setTipCustom(true);
-                    setTipCents(amountToCents(tipCustomValue));
-                  }}
-                  className={`flex-1 rounded-full border py-2 text-sm font-medium transition active:scale-[0.97] ${
-                    tipCustom
-                      ? "border-brand bg-brand text-brand-ink"
-                      : "border-line bg-surface text-ink"
-                  }`}
-                >
-                  Outro
-                </button>
-              </div>
-              {tipCustom && (
-                <input
-                  inputMode="decimal"
-                  autoFocus
-                  value={tipCustomValue}
-                  onChange={(e) => {
-                    setTipCustomValue(e.target.value);
-                    setTipCents(amountToCents(e.target.value));
-                  }}
-                  placeholder="Valor da gorjeta em R$"
-                  className="mt-2 w-full rounded-full border border-line bg-canvas px-4 py-2.5 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none"
-                />
-              )}
-            </div>
-            <button
-              onClick={pay}
-              disabled={pending}
-              className="tnum w-full rounded-full bg-brand py-3.5 font-semibold text-brand-ink transition active:scale-[0.99] disabled:opacity-50"
-            >
-              {pending
-                ? "A abrir pagamento…"
-                : `Pagar ${formatMoney(placedOrder.subtotalCents + tipCents, currency)}`}
-            </button>
+            <p className="rounded-xl bg-success-weak px-3 py-2 text-center text-sm font-medium text-success">
+              {status ?? "Pedido enviado para a cozinha!"}
+            </p>
+            <p className="text-center text-sm text-muted">
+              O pagamento é feito na mesa, com o atendente.
+            </p>
             <button
               onClick={() => setPlacedOrder(null)}
-              className="w-full py-1 text-center text-sm text-muted"
+              className="w-full rounded-full bg-brand py-3 font-semibold text-brand-ink transition active:scale-[0.99]"
             >
-              Pagar depois
+              Fazer outro pedido
             </button>
           </div>
         </div>

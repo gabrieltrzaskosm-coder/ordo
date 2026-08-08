@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { requirePlan } from "@/lib/auth";
 import {
   DEFAULT_PERIOD,
@@ -102,13 +101,10 @@ export default async function FinanceiroPage({
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-6">
-      <div className="mb-1 flex items-center gap-3">
-        <h1 className="text-2xl font-semibold text-ink">Balanço financeiro</h1>
-        <Link href="/gestao" className="text-sm text-muted hover:underline">
-          ← Gestão
-        </Link>
-      </div>
-      <p className="mt-1 text-sm text-muted">
+      <h1 className="text-[28px] font-extrabold tracking-[-0.02em] text-ink">
+        Financeiro
+      </h1>
+      <p className="mt-1.5 text-sm text-muted">
         Faturado = pedidos já pagos. Em aberto = servidos mas por cobrar. A
         variação compara com o período anterior de igual duração.
       </p>
@@ -129,7 +125,9 @@ export default async function FinanceiroPage({
               <p className="text-xs text-muted">{c.label}</p>
               {c.pct !== null && <Trend pct={c.pct} />}
             </div>
-            <p className="tnum mt-1 text-lg font-semibold text-ink">{c.value}</p>
+            <p className="tnum mt-1 text-lg font-extrabold tracking-[-0.01em] text-ink">
+              {c.value}
+            </p>
           </div>
         ))}
       </section>

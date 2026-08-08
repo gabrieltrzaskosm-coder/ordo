@@ -40,13 +40,10 @@ export default async function StockPage() {
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-6">
-      <div className="mb-1 flex items-center gap-3">
-        <h1 className="text-2xl font-semibold text-ink">Controle de estoque</h1>
-        <Link href="/gestao" className="text-sm text-muted hover:underline">
-          ← Gestão
-        </Link>
-      </div>
-      <p className="mt-1 text-sm text-muted">
+      <h1 className="text-[28px] font-extrabold tracking-[-0.02em] text-ink">
+        Estoque
+      </h1>
+      <p className="mt-1.5 text-sm text-muted">
         Ligue o estoque por item. A zero, fica esgotado no cardápio
         automaticamente e volta a aparecer ao repor.
       </p>

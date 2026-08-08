@@ -25,6 +25,12 @@ export function StaffShell({
   const pathname = usePathname();
   const inKitchen = pathname.startsWith("/cozinha");
   const inAtendimento = pathname.startsWith("/atendimento");
+  const inGestao = pathname.startsWith("/gestao");
+
+  // A gestão tem a sua própria chrome (sidebar em GestaoShell); aqui não se
+  // renderiza o header do staff para não duplicar a navegação.
+  if (inGestao) return <>{children}</>;
+
   // Cozinha e atendimento são operacionais (azul); gestão é vermelho.
   const theme = inKitchen || inAtendimento ? "theme-kitchen" : "theme-manager";
 

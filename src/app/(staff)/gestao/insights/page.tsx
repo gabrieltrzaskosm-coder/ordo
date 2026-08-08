@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { requirePlan } from "@/lib/auth";
 import {
   DEFAULT_PERIOD,
@@ -77,14 +76,12 @@ export default async function InsightsPage({
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-6">
-      <div className="mb-1 flex items-center gap-3">
-        <h1 className="text-2xl font-semibold text-ink">Insights de negócio</h1>
-        <Link href="/gestao" className="text-sm text-muted hover:underline">
-          ← Gestão
-        </Link>
-      </div>
-      <p className="mt-1 text-sm text-muted">
-        A variação compara com o período anterior de igual duração.
+      <h1 className="text-[28px] font-extrabold tracking-[-0.02em] text-ink">
+        Insights
+      </h1>
+      <p className="mt-1.5 text-sm text-muted">
+        Padrões de venda · a variação compara com o período anterior de igual
+        duração.
       </p>
 
       {/* Seletor de período */}
@@ -103,7 +100,9 @@ export default async function InsightsPage({
               <p className="text-xs text-muted">{c.label}</p>
               {c.pct !== null && <Trend pct={c.pct} />}
             </div>
-            <p className="tnum mt-1 text-xl font-semibold text-ink">{c.value}</p>
+            <p className="tnum mt-1 text-2xl font-extrabold tracking-[-0.02em] text-ink">
+              {c.value}
+            </p>
           </div>
         ))}
       </section>
@@ -135,8 +134,11 @@ export default async function InsightsPage({
                   </div>
                   <div className="h-1.5 overflow-hidden rounded-full bg-surface-2">
                     <div
-                      className="h-full rounded-full bg-brand"
-                      style={{ width: `${(it.qty / maxQty) * 100}%` }}
+                      className="h-full rounded-full"
+                      style={{
+                        width: `${(it.qty / maxQty) * 100}%`,
+                        background: "linear-gradient(90deg,#d41d0d,#f0787c)",
+                      }}
                     />
                   </div>
                 </div>
@@ -161,10 +163,11 @@ export default async function InsightsPage({
                   title={`${h}h — ${count} pedido(s)`}
                 >
                   <div
-                    className="w-full rounded-t bg-brand/80"
+                    className="w-full rounded-t"
                     style={{
                       height: `${(count / maxHour) * 100}%`,
                       minHeight: count > 0 ? "3px" : "0",
+                      background: "linear-gradient(180deg,#d41d0d,#f0787c)",
                     }}
                   />
                 </div>

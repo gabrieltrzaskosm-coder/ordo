@@ -25,10 +25,10 @@ export function AssistantClient() {
   }
 
   return (
-    <div className="rounded-2xl border border-line bg-surface p-4 shadow-[var(--shadow-card)]">
-      <div className="flex items-center justify-between gap-3">
+    <div>
+      <div className="flex items-center justify-between gap-3 rounded-[20px] border border-line bg-surface p-4 shadow-[var(--shadow-card)]">
         <div>
-          <p className="font-semibold text-ink">Resumo inteligente do dia</p>
+          <p className="font-bold text-ink">Resumo inteligente do dia</p>
           <p className="text-sm text-muted">
             Uma leitura do dia em linguagem natural, a partir dos seus números.
           </p>
@@ -48,9 +48,19 @@ export function AssistantClient() {
         </p>
       )}
       {text && (
-        <p className="mt-4 whitespace-pre-line rounded-xl bg-surface-2 p-4 text-sm leading-relaxed text-ink">
-          {text}
-        </p>
+        // Cartão gradiente (elemento-assinatura do design): o resumo da IA em
+        // destaque, texto branco sobre o vermelho da marca Ordo.
+        <div
+          className="mt-4 rounded-[22px] p-6 text-white shadow-[0_18px_40px_-20px_rgba(212,29,13,.55)]"
+          style={{ background: "linear-gradient(135deg, #d41d0d, #b01808)" }}
+        >
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.05em] text-white/80">
+            Resumo de performance
+          </p>
+          <p className="whitespace-pre-line text-[15px] font-medium leading-relaxed">
+            {text}
+          </p>
+        </div>
       )}
     </div>
   );

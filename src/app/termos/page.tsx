@@ -65,13 +65,13 @@ export default function TermosPage() {
         </li>
       </UL>
 
-      <H2>4. Planos e mensalidade</H2>
+      <H2>4. Planos</H2>
       <P>
         O Serviço é oferecido em planos (Basic, Pro e Max) com funcionalidades
-        distintas. Os preços, condições e forma de cobrança da mensalidade são os
-        informados ao Restaurante no momento da adesão. O Prestador pode atribuir,
-        alterar ou suspender o plano de um Restaurante nos termos acordados. A
-        cobrança da mensalidade é independente dos pagamentos feitos pelos Clientes.
+        distintas. As condições de contratação de cada plano são as informadas ao
+        Restaurante no momento da adesão. O Prestador pode atribuir, alterar ou
+        suspender o plano de um Restaurante nos termos acordados. A contratação do
+        Serviço é independente dos pagamentos feitos pelos Clientes ao Restaurante.
       </P>
 
       <H2>5. Pagamentos dos clientes</H2>
@@ -132,7 +132,7 @@ export default function TermosPage() {
         O software, a marca, o design e demais elementos da Plataforma são de
         propriedade do Prestador ou de seus licenciadores. Estes Termos não conferem
         qualquer direito de propriedade sobre a Plataforma, apenas um direito de uso
-        limitado, não exclusivo e revogável durante a vigência da assinatura. O
+        limitado, não exclusivo e revogável durante a vigência da contratação. O
         conteúdo enviado pelo Restaurante (cardápio, imagens) permanece de sua
         propriedade, que concede ao Prestador uma licença para hospedá-lo e exibi-lo
         no âmbito do Serviço.

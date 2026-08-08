@@ -10,8 +10,8 @@ import {
   placeOrder,
 } from "./actions";
 
-// Converte "3", "3,50" ou "3.50" em cêntimos. Inválido ou negativo → 0.
-function eurosToCents(raw: string): number {
+// Converte "3", "3,50" ou "3.50" em centavos. Inválido ou negativo → 0.
+function amountToCents(raw: string): number {
   const n = parseFloat(raw.replace(",", "."));
   if (!Number.isFinite(n) || n < 0) return 0;
   return Math.round(n * 100);
@@ -659,7 +659,7 @@ export function ClienteMenu({
                 <button
                   onClick={() => {
                     setTipCustom(true);
-                    setTipCents(eurosToCents(tipCustomValue));
+                    setTipCents(amountToCents(tipCustomValue));
                   }}
                   className={`flex-1 rounded-full border py-2 text-sm font-medium transition active:scale-[0.97] ${
                     tipCustom
@@ -677,7 +677,7 @@ export function ClienteMenu({
                   value={tipCustomValue}
                   onChange={(e) => {
                     setTipCustomValue(e.target.value);
-                    setTipCents(eurosToCents(e.target.value));
+                    setTipCents(amountToCents(e.target.value));
                   }}
                   placeholder="Valor da gorjeta em R$"
                   className="mt-2 w-full rounded-full border border-line bg-canvas px-4 py-2.5 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none"

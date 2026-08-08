@@ -40,6 +40,16 @@ function shortDate(s?: string): string {
   return m && d ? `${d}/${m}` : s;
 }
 
+/** Rótulo curto para as barras: "07" (dia) ou "jul" (mês). */
+function chartLabel(bucket: string): string {
+  if (bucket.length === 7) {
+    return new Intl.DateTimeFormat("pt-BR", { month: "short" })
+      .format(new Date(bucket + "-01T12:00:00"))
+      .replace(".", "");
+  }
+  return bucket.split("-")[2] ?? bucket;
+}
+
 export default async function FinanceiroPage({
   searchParams,
 }: {
@@ -98,6 +108,8 @@ export default async function FinanceiroPage({
   ];
 
   const series = [...m.series].reverse(); // mais recente primeiro
+  const chart = m.series; // cronológico (antigo → recente), para as barras
+  const maxPaid = Math.max(1, ...chart.map((d) => d.paidCents));
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-6">
@@ -132,8 +144,47 @@ export default async function FinanceiroPage({
         ))}
       </section>
 
+      {/* Gráfico de tendência (barras gradiente) */}
+      {chart.length > 0 && (
+        <div className="mt-4 rounded-[22px] border border-line bg-surface p-5 shadow-[var(--shadow-card)]">
+          <p className="mb-4 text-sm font-bold text-ink">
+            Faturado {m.granularity === "month" ? "por mês" : "por dia"}
+          </p>
+          <div className="flex items-end gap-2">
+            {chart.map((d) => (
+              <div
+                key={d.bucket}
+                className="flex h-40 flex-1 flex-col justify-end"
+                title={`${bucketLabel(d.bucket)} · ${formatMoney(d.paidCents)}`}
+              >
+                <div
+                  className="w-full rounded-t-lg"
+                  style={{
+                    height: `${(d.paidCents / maxPaid) * 100}%`,
+                    minHeight: d.paidCents > 0 ? "4px" : "0",
+                    background: "linear-gradient(180deg,#d41d0d,#f0787c)",
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+          {chart.length <= 16 && (
+            <div className="mt-2 flex gap-2">
+              {chart.map((d) => (
+                <div
+                  key={d.bucket}
+                  className="flex-1 text-center text-[10px] font-medium text-muted"
+                >
+                  {chartLabel(d.bucket)}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Detalhe da série */}
-      <div className="mt-8 mb-3 flex items-center justify-between">
+      <div className="mt-6 mb-3 flex items-center justify-between">
         <h2 className="text-sm font-semibold text-ink">
           {m.granularity === "month" ? "Por mês" : "Por dia"}
         </h2>

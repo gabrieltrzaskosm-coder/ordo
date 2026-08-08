@@ -155,11 +155,11 @@ export default async function InsightsPage({
             Horas de pico
           </h2>
           <div className="rounded-2xl border border-line bg-surface p-4 shadow-[var(--shadow-card)]">
-            <div className="flex h-28 items-end gap-0.5">
+            <div className="flex items-end gap-0.5">
               {m.byHour.map((count, h) => (
                 <div
                   key={h}
-                  className="group relative flex-1"
+                  className="flex h-28 flex-1 flex-col justify-end"
                   title={`${h}h — ${count} pedido(s)`}
                 >
                   <div

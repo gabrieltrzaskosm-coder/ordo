@@ -154,17 +154,21 @@ export default async function FinanceiroPage({
             {chart.map((d) => (
               <div
                 key={d.bucket}
-                className="flex h-40 flex-1 flex-col justify-end"
+                className="group flex h-40 flex-1 flex-col justify-end"
                 title={`${bucketLabel(d.bucket)} · ${formatMoney(d.paidCents)}`}
               >
                 <div
-                  className="w-full rounded-t-lg"
+                  className="relative w-full rounded-t-lg"
                   style={{
                     height: `${(d.paidCents / maxPaid) * 100}%`,
                     minHeight: d.paidCents > 0 ? "4px" : "0",
                     background: "linear-gradient(180deg,#d41d0d,#f0787c)",
                   }}
-                />
+                >
+                  <span className="pointer-events-none absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-ink px-1.5 py-0.5 text-[10px] font-bold text-canvas opacity-0 shadow transition-opacity group-hover:opacity-100">
+                    {formatMoney(d.paidCents)}
+                  </span>
+                </div>
               </div>
             ))}
           </div>

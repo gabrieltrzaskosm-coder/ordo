@@ -1,6 +1,7 @@
 import { requireManager } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { formatMoney } from "@/lib/money";
+import { getWeekdayAverages } from "@/lib/reports";
 import { GestaoHub, type HubStat } from "./GestaoHub";
 
 export const dynamic = "force-dynamic";
@@ -8,6 +9,7 @@ export const dynamic = "force-dynamic";
 export default async function GestaoPage() {
   const session = await requireManager();
   const supabase = await createClient();
+  const weekdays = await getWeekdayAverages();
 
   const inicioDoDia = new Date();
   inicioDoDia.setHours(0, 0, 0, 0);
@@ -34,6 +36,7 @@ export default async function GestaoPage() {
       establishmentName={session.establishmentName}
       plan={session.plan}
       stats={stats}
+      weekdays={weekdays}
     />
   );
 }

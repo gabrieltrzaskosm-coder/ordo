@@ -37,6 +37,51 @@ function dayKey(iso: string): string {
   return iso.slice(0, 10); // YYYY-MM-DD (UTC)
 }
 
+// ---------- Média de movimento por dia da semana ----------
+
+const WEEKDAY_LABELS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+// Ordem de exibição: segunda → domingo.
+const WEEKDAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
+
+export type WeekdayAverage = {
+  weekday: number; // getDay(): 0=Dom … 6=Sáb
+  label: string;
+  avg: number; // média de pedidos nesse dia da semana
+};
+
+/**
+ * Média de pedidos por dia da semana, sobre as últimas 8 semanas — uma "base"
+ * do movimento esperado (ex.: numa sexta típica, ~X pedidos). Divide o total de
+ * pedidos de cada dia da semana pelo nº de vezes que esse dia ocorreu no
+ * histórico. Corre sob a RLS do manager.
+ */
+export async function getWeekdayAverages(): Promise<WeekdayAverage[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("orders")
+    .select("created_at, status")
+    .gte("created_at", daysAgo(56).toISOString());
+
+  const valid = (data ?? []).filter((o) => o.status !== "cancelled");
+
+  const counts = Array(7).fill(0) as number[];
+  const dates: Array<Set<string>> = Array.from({ length: 7 }, () => new Set());
+  for (const o of valid) {
+    const wd = new Date(o.created_at).getDay();
+    counts[wd] += 1;
+    dates[wd].add(dayKey(o.created_at));
+  }
+
+  return WEEKDAY_ORDER.map((wd) => {
+    const occurrences = dates[wd].size;
+    return {
+      weekday: wd,
+      label: WEEKDAY_LABELS[wd],
+      avg: occurrences > 0 ? Math.round(counts[wd] / occurrences) : 0,
+    };
+  });
+}
+
 // ---------- Períodos e intervalos ----------
 //
 // Um período é um preset (últimos N dias/meses). Um intervalo (DateRange) é o

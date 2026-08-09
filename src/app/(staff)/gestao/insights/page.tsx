@@ -159,17 +159,21 @@ export default async function InsightsPage({
               {m.byHour.map((count, h) => (
                 <div
                   key={h}
-                  className="flex h-28 flex-1 flex-col justify-end"
+                  className="group flex h-28 flex-1 flex-col justify-end"
                   title={`${h}h — ${count} pedido(s)`}
                 >
                   <div
-                    className="w-full rounded-t"
+                    className="relative w-full rounded-t"
                     style={{
                       height: `${(count / maxHour) * 100}%`,
                       minHeight: count > 0 ? "3px" : "0",
                       background: "linear-gradient(180deg,#d41d0d,#f0787c)",
                     }}
-                  />
+                  >
+                    <span className="pointer-events-none absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-ink px-1.5 py-0.5 text-[10px] font-bold text-canvas opacity-0 shadow transition-opacity group-hover:opacity-100">
+                      {count}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>

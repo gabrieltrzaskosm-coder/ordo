@@ -11,6 +11,7 @@ import {
 } from "@/lib/plans";
 
 export type HubStat = { label: string; value: string; accent?: boolean };
+export type WeekdayAvg = { weekday: number; label: string; avg: number };
 
 type Card = {
   route: string;
@@ -170,12 +171,20 @@ export function GestaoHub({
   establishmentName,
   plan,
   stats,
+  weekdays,
 }: {
   establishmentName: string;
   plan: Plan;
   stats: HubStat[];
+  weekdays: WeekdayAvg[];
 }) {
   const gridRef = useRef<HTMLDivElement>(null);
+  const maxAvg = Math.max(0, ...weekdays.map((w) => w.avg));
+  const todayWeekday = new Date().getDay();
+  const busiest = weekdays.reduce(
+    (a, b) => (b.avg > a.avg ? b : a),
+    weekdays[0] ?? { weekday: 0, label: "", avg: 0 },
+  );
 
   // Hover "mágico" do bento: brilho que segue o cursor + tilt 3D por cartão.
   useEffect(() => {
@@ -258,6 +267,73 @@ export function GestaoHub({
         Valor <strong>pedido</strong> do dia (todos os pedidos), não apenas o já
         cobrado.
       </p>
+
+      {/* Movimento esperado por dia da semana — uma "base" para o restaurante */}
+      <section
+        className="rounded-[22px] border border-line bg-surface p-5 shadow-[var(--shadow-card)]"
+        style={{ marginTop: 16 }}
+      >
+        <div className="flex items-baseline justify-between gap-3">
+          <p className="text-sm font-bold text-ink">Movimento esperado por dia</p>
+          <p className="text-xs text-muted">média de pedidos · últimas 8 semanas</p>
+        </div>
+
+        {maxAvg === 0 ? (
+          <p className="mt-4 text-sm text-muted">
+            Ainda sem histórico suficiente. Esta base aparece à medida que os
+            pedidos vão entrando.
+          </p>
+        ) : (
+          <>
+            <div className="mt-4 flex items-end gap-2">
+              {weekdays.map((w) => {
+                const today = w.weekday === todayWeekday;
+                return (
+                  <div
+                    key={w.weekday}
+                    className="flex flex-1 flex-col items-center gap-2"
+                    title={`${w.label}: ~${w.avg} pedidos`}
+                  >
+                    <span
+                      className={
+                        "tnum text-sm font-extrabold " +
+                        (today ? "text-brand" : "text-ink")
+                      }
+                    >
+                      {w.avg}
+                    </span>
+                    <div className="flex h-24 w-full flex-col justify-end">
+                      <div
+                        className="w-full rounded-t-lg"
+                        style={{
+                          height: `${(w.avg / maxAvg) * 100}%`,
+                          minHeight: w.avg > 0 ? "4px" : "0",
+                          background: today
+                            ? "linear-gradient(180deg,#d41d0d,#f0787c)"
+                            : "rgba(212,29,13,.18)",
+                        }}
+                      />
+                    </div>
+                    <span
+                      className={
+                        "text-[11px] font-semibold " +
+                        (today ? "text-brand" : "text-muted")
+                      }
+                    >
+                      {w.label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+            <p className="mt-4 text-xs text-muted">
+              Uma base do movimento: numa{" "}
+              <strong className="font-semibold text-ink">{busiest.label}</strong>{" "}
+              típica, espere ~{busiest.avg} pedidos. Hoje está destacado.
+            </p>
+          </>
+        )}
+      </section>
 
       <div className="gh-grid" ref={gridRef} style={{ marginTop: 16 }}>
         <div className="gh-spot" aria-hidden />

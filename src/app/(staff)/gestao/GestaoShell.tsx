@@ -38,12 +38,16 @@ export function GestaoShell({
   role,
   plan,
   children,
+  linkOverrides,
 }: {
   establishmentName: string;
   email: string | null;
   role: string;
   plan: Plan;
   children: React.ReactNode;
+  // Opcional: reescreve o href de itens de navegação (rota real → href alvo).
+  // Usado pela demo pública para a sidebar navegar entre as simulações.
+  linkOverrides?: Record<string, string>;
 }) {
   const pathname = usePathname();
   const ulRef = useRef<HTMLUListElement>(null);
@@ -132,12 +136,13 @@ export function GestaoShell({
 
         <ul className="gs-nav" ref={ulRef}>
           {NAV.map((item, i) => {
-            const active = i === activeIdx;
+            const override = linkOverrides?.[item.route];
+            const active = override ? pathname === override : i === activeIdx;
             const locked = item.feature ? !hasFeature(plan, item.feature) : false;
             return (
               <li key={item.route} data-idx={i} data-active={active ? "1" : "0"}>
                 <Link
-                  href={item.route}
+                  href={override ?? item.route}
                   className={"gs-navlink" + (active ? " is-active" : "")}
                 >
                   <span className="gs-tick" />

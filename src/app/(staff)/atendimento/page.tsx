@@ -28,16 +28,17 @@ export default async function AtendimentoPage() {
         .select("id, created_at, restaurant_tables(label)")
         .eq("status", "open")
         .order("created_at", { ascending: true }),
-      // Pagamentos em aberto: pedidos ativos (não fechados, não cancelados) e
-      // ainda por pagar. É o que o garçom precisa de cobrar.
+      // O que o garçom precisa de tratar: pedidos ativos (não fechados, não
+      // cancelados) que estão POR PAGAR (para cobrar) OU PRONTOS (para ir
+      // buscar à cozinha e entregar). Um pedido pode ser as duas coisas.
       supabase
         .from("orders")
         .select(
-          "id, customer_name, total_cents, status, restaurant_tables(label), order_items(name_snapshot, qty)",
+          "id, customer_name, total_cents, status, paid_at, restaurant_tables(label), order_items(name_snapshot, qty)",
         )
-        .is("paid_at", null)
         .is("closed_at", null)
         .neq("status", "cancelled")
+        .or("paid_at.is.null,status.eq.ready")
         .order("created_at", { ascending: true }),
     ]);
 
@@ -56,6 +57,7 @@ export default async function AtendimentoPage() {
     customerName: o.customer_name,
     totalCents: o.total_cents,
     status: o.status,
+    paid: o.paid_at !== null,
     items: (o.order_items ?? []).map((i) => ({
       name: i.name_snapshot,
       qty: i.qty,

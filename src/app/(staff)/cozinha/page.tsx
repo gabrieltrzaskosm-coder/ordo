@@ -72,6 +72,7 @@ export default async function CozinhaPage() {
       orders={kitchenOrders}
       calls={waiterCalls}
       establishmentId={session.establishmentId}
+      establishmentName={session.establishmentName}
     />
   );
 }

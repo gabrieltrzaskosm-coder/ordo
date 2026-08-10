@@ -5,6 +5,8 @@ import {
   Bricolage_Grotesque,
   Instrument_Serif,
   Manrope,
+  Barlow,
+  Barlow_Semi_Condensed,
 } from "next/font/google";
 import "./globals.css";
 
@@ -43,6 +45,22 @@ const manrope = Manrope({
   weight: ["400", "500", "600", "700"],
 });
 
+// Tipografia do KDS da cozinha (só o KitchenBoard as usa, via .kds/.kds-cond):
+// Barlow para corpo e a variante Semi Condensed para títulos e números grandes —
+// legível de longe num ecrã de parede. Auto-alojadas pelo next/font (/_next), a
+// CSP font-src 'self' cobre-as; não se carrega do CDN do Google (seria bloqueado).
+const barlow = Barlow({
+  variable: "--font-barlow",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+});
+
+const barlowCondensed = Barlow_Semi_Condensed({
+  variable: "--font-barlow-cond",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+});
+
 export const metadata: Metadata = {
   title: "Ordo — pedido e pagamento por QR, da Otium",
   description:
@@ -64,7 +82,7 @@ export default function RootLayout({
   return (
     <html
       lang="pt"
-      className={`${geistSans.variable} ${geistMono.variable} ${bricolage.variable} ${instrumentSerif.variable} ${manrope.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${bricolage.variable} ${instrumentSerif.variable} ${manrope.variable} ${barlow.variable} ${barlowCondensed.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

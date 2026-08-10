@@ -225,3 +225,162 @@ body {
     transform: translateY(0);
   }
 }
+
+/* =============================================================
+   KDS — Kitchen Display System (rota /cozinha).
+   Estética própria de ecrã de parede: Barlow condensado + paleta
+   slate-fria + cores fortes por status. ESCOPADA a .kds para não
+   tocar no resto da app (cliente/gestão continuam nos tokens Ordo).
+   As animações abaixo congelam com prefers-reduced-motion (regra
+   global acima).
+   ============================================================= */
+.kds {
+  font-family: var(--font-barlow), system-ui, sans-serif;
+}
+.kds-cond {
+  font-family:
+    var(--font-barlow-cond), var(--font-barlow), system-ui, sans-serif;
+}
+
+@keyframes kdsPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.55);
+  }
+  50% {
+    box-shadow: 0 0 0 16px rgba(225, 29, 72, 0);
+  }
+}
+@keyframes kdsBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+@keyframes kdsFloat {
+  0% {
+    transform: translate(0, 0) scale(0.6);
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--dx), var(--dy)) scale(1);
+    opacity: 0;
+  }
+}
+
+/* Spotlight que segue o rato sobre o board (só desktop; no touch fica inerte). */
+.kds-board {
+  position: relative;
+}
+.kds-board::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  background: radial-gradient(
+    340px circle at var(--spot-x, -999px) var(--spot-y, -999px),
+    rgba(37, 99, 235, 0.12),
+    transparent 68%
+  );
+  transition: background 0.08s linear;
+}
+
+/* Card com tilt 3D e glow radial no hover (aplicados via JS). */
+.kds-card {
+  position: relative;
+  transition:
+    transform 0.18s cubic-bezier(0.2, 0.7, 0.3, 1),
+    box-shadow 0.2s;
+}
+.kds-card::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: var(--glow, 0);
+  background: radial-gradient(
+    220px circle at var(--gx, 50%) var(--gy, 50%),
+    var(--glowc, rgba(37, 99, 235, 0.5)),
+    transparent 62%
+  );
+  mix-blend-mode: multiply;
+  transition: opacity 0.25s;
+  z-index: 1;
+}
+
+/* Partículas flutuantes (cards críticos/atrasados e chamadas de garçom). */
+.kds-plyr {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: inherit;
+  z-index: 2;
+}
+.kds-particle {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--pc, #e11d48);
+  box-shadow: 0 0 8px var(--pc, #e11d48);
+  animation: kdsFloat 2.6s ease-out infinite;
+}
+.kds-particle:nth-child(1) {
+  left: 10%;
+  top: 88%;
+  --dx: 14px;
+  --dy: -96px;
+  animation-delay: 0s;
+}
+.kds-particle:nth-child(2) {
+  left: 32%;
+  top: 92%;
+  --dx: -10px;
+  --dy: -108px;
+  animation-delay: 0.5s;
+}
+.kds-particle:nth-child(3) {
+  left: 54%;
+  top: 90%;
+  --dx: 16px;
+  --dy: -84px;
+  animation-delay: 1s;
+}
+.kds-particle:nth-child(4) {
+  left: 74%;
+  top: 93%;
+  --dx: -14px;
+  --dy: -100px;
+  animation-delay: 1.4s;
+}
+.kds-particle:nth-child(5) {
+  left: 88%;
+  top: 88%;
+  --dx: 8px;
+  --dy: -116px;
+  animation-delay: 1.9s;
+}
+.kds-particle:nth-child(6) {
+  left: 20%;
+  top: 95%;
+  --dx: 20px;
+  --dy: -90px;
+  animation-delay: 2.3s;
+}
+
+.kds-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.kds-scroll::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.16);
+  border-radius: 8px;
+}

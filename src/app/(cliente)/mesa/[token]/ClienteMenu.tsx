@@ -52,11 +52,15 @@ export function ClienteMenu({
   menu,
   currency,
   bestSellerId = null,
+  preview = false,
 }: {
   token: string;
   menu: MenuCategory[];
   currency: string;
   bestSellerId?: string | null;
+  // Só a demo pública passa: não sonda a disponibilidade (sem sessão/BD),
+  // mostrando o menu completo.
+  preview?: boolean;
 }) {
   const [cart, setCart] = useState<CartLine[]>([]);
   const [name, setName] = useState("");
@@ -90,6 +94,7 @@ export function ClienteMenu({
   // O stock muda enquanto o cliente está no ecrã (outra mesa pediu o último).
   // Sem isto, ele só via o artigo/extra desaparecer ao recarregar a página.
   useEffect(() => {
+    if (preview) return; // demo: mantém orderable=null → menu completo
     let alive = true;
     async function poll() {
       const o = await getOrderableItems(token);
@@ -102,7 +107,7 @@ export function ClienteMenu({
       alive = false;
       clearInterval(id);
     };
-  }, [token]);
+  }, [token, preview]);
 
   // Tira de um item os extras que já não dão para fazer, e larga grupos que
   // ficaram sem opções — igual ao que o servidor faz em getMenu.

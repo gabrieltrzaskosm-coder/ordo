@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { GradientWaves } from "./GradientWaves";
+import { LoginNav } from "./LoginNav";
 import { LoginForm } from "./LoginForm";
 
 export default async function LoginPage({
@@ -9,78 +11,230 @@ export default async function LoginPage({
   const { erro } = await searchParams;
 
   const AVISOS: Record<string, string> = {
-    "sem-acesso": "Esta conta não está associada a nenhum restaurante.",
-    "link-invalido": "Link inválido. Peça um novo e-mail de recuperação.",
-    "link-expirado": "O link expirou. Peça um novo e-mail de recuperação.",
+    "sem-acesso":
+      "Sua conta ainda não tem acesso a este restaurante. Fale com o gestor.",
+    "link-invalido": "Este link não é mais válido. Solicite um novo acesso.",
+    "link-expirado": "Este link de acesso expirou. Solicite um novo.",
   };
   const aviso = erro ? (AVISOS[erro] ?? null) : null;
 
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-canvas px-5 py-10">
-      {/* Aurora quente animada atrás do cartão: ondas de terracota e âmbar que
-         derivam devagar. Tom forte e espalhado; congela em prefers-reduced-motion. */}
-      <div aria-hidden className="login-aurora pointer-events-none">
-        <span className="wave-1" />
-        <span className="wave-2" />
-        <span className="wave-3" />
+    <div
+      className="ordo-login"
+      style={{
+        position: "relative",
+        width: "100%",
+        minHeight: "100dvh",
+        overflow: "hidden",
+        background: "#0a0807",
+        color: "#fff",
+        display: "grid",
+        gridTemplateRows: "auto 1fr auto",
+        isolation: "isolate",
+      }}
+    >
+      {/* Fundo: shader WebGL de fios sobre um radial quente. */}
+      <div
+        aria-hidden
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 0,
+          background:
+            "radial-gradient(120% 100% at 20% 35%,#160d09 0%,#0a0807 55%,#060504 100%)",
+        }}
+      >
+        <GradientWaves />
       </div>
 
-      <div className="reveal relative w-full max-w-sm">
-        {/* Marca */}
-        <div className="mb-6 flex items-center justify-center gap-2">
-          <span className="h-2.5 w-2.5 rounded-full bg-brand" />
-          <span className="font-display text-xl font-bold tracking-tight text-ink">
-            Ordo
-          </span>
-          <span className="text-xs text-muted">por Otium</span>
-        </div>
+      {/* Brilho ember que deriva devagar. */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          top: "-10%",
+          left: "12%",
+          width: "60vw",
+          height: "60vw",
+          zIndex: 1,
+          pointerEvents: "none",
+          background:
+            "radial-gradient(circle at center,rgba(217,96,58,.20),rgba(217,96,58,0) 60%)",
+          filter: "blur(20px)",
+          animation: "ordoEmber 30s ease-in-out infinite",
+        }}
+      />
 
-        <div className="rounded-[var(--radius-xl)] border border-line bg-surface p-6 shadow-[var(--shadow-card)] sm:p-8">
-          <h1 className="font-display text-2xl font-bold tracking-tight text-ink">
-            Entrar
+      {/* Vinhetas para dar contraste ao painel à direita. */}
+      <div
+        aria-hidden
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 2,
+          pointerEvents: "none",
+          background:
+            "linear-gradient(90deg,rgba(10,8,7,.34) 0%,rgba(10,8,7,0) 28%,rgba(10,8,7,.55) 60%,rgba(10,8,7,.93) 100%),linear-gradient(180deg,rgba(10,8,7,.62) 0%,rgba(10,8,7,0) 24%,rgba(10,8,7,0) 74%,rgba(10,8,7,.9) 100%)",
+        }}
+      />
+
+      <LoginNav />
+
+      <div
+        className="ordo-body"
+        style={{
+          position: "relative",
+          zIndex: 5,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "flex-end",
+          padding: "24px clamp(20px,5vw,90px)",
+          minHeight: 0,
+        }}
+      >
+        <div
+          className="ordo-panel"
+          style={{
+            width: "min(38vw,560px)",
+            minWidth: 380,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "stretch",
+            animation: "ordoRise .8s cubic-bezier(.16,1,.3,1) both",
+          }}
+        >
+          <span
+            className="font-mono-ui"
+            style={{
+              alignSelf: "flex-start",
+              fontWeight: 400,
+              fontSize: "clamp(11px,.72vw,13px)",
+              letterSpacing: ".2em",
+              textTransform: "uppercase",
+              background: "rgba(255,255,255,.08)",
+              border: "1px solid rgba(255,255,255,.1)",
+              color: "rgba(255,255,255,.85)",
+              padding: "clamp(9px,.8vw,13px) clamp(14px,1.1vw,18px)",
+              lineHeight: 1,
+            }}
+          >
+            [ Acesso staff ]
+          </span>
+
+          <h1
+            className="font-sora"
+            style={{
+              fontWeight: 200,
+              fontSize: "clamp(56px,6vw,112px)",
+              letterSpacing: ".04em",
+              lineHeight: 0.95,
+              margin: "clamp(26px,3vw,46px) 0 0",
+            }}
+          >
+            Ordo
           </h1>
-          <p className="mt-1 mb-6 text-sm text-muted">
-            Acesso para cozinha, atendimento e gestão.
+
+          <p
+            className="font-mono-ui"
+            style={{
+              fontWeight: 300,
+              fontSize: "clamp(11px,.94vw,15px)",
+              letterSpacing: ".16em",
+              textTransform: "uppercase",
+              color: "rgba(255,255,255,.6)",
+              margin: "clamp(14px,1.4vw,22px) 0 0",
+              lineHeight: 1.5,
+            }}
+          >
+            Cozinha · Atendimento · Gestão
           </p>
 
           {aviso && (
-            <p className="mb-4 rounded-lg bg-warn-weak p-3 text-sm text-ink">
-              {aviso}
-            </p>
+            <div
+              role="alert"
+              style={{
+                display: "flex",
+                gap: 12,
+                alignItems: "flex-start",
+                border: "1px solid rgba(217,96,58,.4)",
+                borderLeft: "2px solid #d9603a",
+                background: "rgba(217,96,58,.08)",
+                padding: "13px 15px",
+                marginTop: "clamp(26px,3vw,40px)",
+              }}
+            >
+              <span
+                className="font-mono-ui"
+                style={{ fontSize: 12, color: "#e0764f", letterSpacing: ".1em", marginTop: 1 }}
+              >
+                !
+              </span>
+              <span
+                className="font-mono-ui"
+                style={{
+                  fontWeight: 300,
+                  fontSize: 12.5,
+                  lineHeight: 1.5,
+                  color: "rgba(255,255,255,.82)",
+                  letterSpacing: ".03em",
+                }}
+              >
+                {aviso}
+              </span>
+            </div>
           )}
 
           <LoginForm />
 
-          <div className="mt-5 border-t border-line pt-4 text-sm">
-            <Link
-              href="/recuperar"
-              className="text-muted transition hover:text-brand"
-            >
-              Esqueci minha senha
-            </Link>
-          </div>
-        </div>
-
-        <p className="mt-6 text-center text-sm text-muted">
-          Ainda não tem restaurante?{" "}
           <Link
-            href="/signup"
-            className="font-medium text-brand transition hover:text-brand-strong"
+            href="/recuperar"
+            className="font-mono-ui"
+            style={{
+              alignSelf: "center",
+              fontWeight: 400,
+              fontSize: "clamp(11px,.74vw,13px)",
+              letterSpacing: ".18em",
+              textTransform: "uppercase",
+              color: "rgba(255,255,255,.6)",
+              marginTop: "clamp(26px,2.6vw,42px)",
+            }}
           >
-            Criar conta
+            Esqueci minha senha
           </Link>
-        </p>
+        </div>
+      </div>
 
-        <p className="mt-6 text-center text-xs text-muted/80">
-          <Link href="/termos" className="transition hover:text-ink">
+      <footer
+        style={{
+          position: "relative",
+          zIndex: 5,
+          borderTop: "1px solid rgba(255,255,255,.14)",
+          padding: "clamp(18px,1.7vw,28px) clamp(20px,5vw,90px)",
+          textAlign: "center",
+        }}
+      >
+        <p
+          className="font-mono-ui"
+          style={{
+            fontWeight: 300,
+            fontSize: "clamp(11px,.82vw,13px)",
+            letterSpacing: ".08em",
+            color: "rgba(255,255,255,.5)",
+            margin: 0,
+            lineHeight: 1.6,
+          }}
+        >
+          Ao entrar você concorda com os{" "}
+          <Link href="/termos" style={{ color: "rgba(255,255,255,.85)", textDecoration: "underline", textUnderlineOffset: 3 }}>
             Termos
           </Link>{" "}
-          ·{" "}
-          <Link href="/privacidade" className="transition hover:text-ink">
+          e a{" "}
+          <Link href="/privacidade" style={{ color: "rgba(255,255,255,.85)", textDecoration: "underline", textUnderlineOffset: 3 }}>
             Privacidade e LGPD
           </Link>
+          .
         </p>
-      </div>
-    </main>
+      </footer>
+    </div>
   );
 }

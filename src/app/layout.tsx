@@ -7,6 +7,8 @@ import {
   Manrope,
   Barlow,
   Barlow_Semi_Condensed,
+  Sora,
+  JetBrains_Mono,
 } from "next/font/google";
 import "./globals.css";
 
@@ -61,6 +63,24 @@ const barlowCondensed = Barlow_Semi_Condensed({
   weight: ["500", "600", "700"],
 });
 
+// Tipografia do login (só a página /login as usa, via .ordo-login): Sora fina
+// para o hero e JetBrains Mono para labels/nav/botão. preload:false — não são
+// precisas no resto do app. Self-hosted pelo next/font → CSP font-src 'self'.
+// Sora é fonte variável: sem `weight` carrega a variável completa (100–800) e
+// usamos os pesos via CSS. Especificar pesos pedia instâncias estáticas que
+// davam 404 no build.
+const sora = Sora({
+  variable: "--font-sora",
+  subsets: ["latin"],
+  preload: false,
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains",
+  subsets: ["latin"],
+  preload: false,
+});
+
 export const metadata: Metadata = {
   title: "Ordo — pedido e pagamento por QR, da Otium",
   description:
@@ -82,7 +102,7 @@ export default function RootLayout({
   return (
     <html
       lang="pt"
-      className={`${geistSans.variable} ${geistMono.variable} ${bricolage.variable} ${instrumentSerif.variable} ${manrope.variable} ${barlow.variable} ${barlowCondensed.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${bricolage.variable} ${instrumentSerif.variable} ${manrope.variable} ${barlow.variable} ${barlowCondensed.variable} ${sora.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

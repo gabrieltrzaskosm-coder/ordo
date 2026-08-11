@@ -384,3 +384,96 @@ body {
   background: rgba(15, 23, 42, 0.16);
   border-radius: 8px;
 }
+
+/* =============================================================
+   Login (rota /login) — visual escuro/editorial próprio, ESCOPADO
+   a .ordo-login. Sora + JetBrains Mono; paleta quase-preta quente
+   com acento terracota. Animações congelam com prefers-reduced-motion
+   (regra global acima). O shader de fundo é WebGL (GradientWaves).
+   ============================================================= */
+.ordo-login {
+  font-family: var(--font-sora), system-ui, sans-serif;
+}
+.font-sora {
+  font-family: var(--font-sora), system-ui, sans-serif;
+}
+.font-mono-ui {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+}
+.ordo-login ::selection {
+  background: rgba(217, 96, 58, 0.35);
+}
+.ordo-login input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+  transition: color 0.25s ease;
+}
+.ordo-login input:focus::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+@keyframes ordoEmber {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(6%, -5%) scale(1.15);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+@keyframes ordoSweep {
+  0% {
+    transform: translateX(-30%);
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateX(160%);
+    opacity: 0;
+  }
+}
+@keyframes ordoRise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Login — responsivo da nav (mobile < 921px mostra burger + menu). */
+@media (max-width: 920px) {
+  .ordo-navlinks {
+    display: none !important;
+  }
+  .ordo-burger {
+    display: inline-flex !important;
+  }
+}
+@media (min-width: 921px) {
+  .ordo-burger {
+    display: none !important;
+  }
+  .ordo-mobmenu {
+    display: none !important;
+  }
+}
+@media (max-width: 1100px) {
+  .ordo-panel {
+    width: min(72vw, 520px) !important;
+  }
+}
+@media (max-width: 760px) {
+  .ordo-panel {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  .ordo-body {
+    justify-content: center !important;
+  }
+}

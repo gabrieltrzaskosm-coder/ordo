@@ -6,6 +6,14 @@
 
 ## Histórico de sessões
 
+### 2026-08-29 — Instalação do plugin ECC
+
+- Marketplace `ecc` adicionado a partir de `affaan-m/ECC`.
+- Plugin `ecc@ecc` instalado e habilitado no Codex, versão 2.2.0.
+- Verificação do cache concluída com sucesso; todas as referências do manifesto
+  (`skills`, MCP, ícone e logo) foram resolvidas.
+- Nenhum arquivo de aplicação foi alterado nesta sessão.
+
 ### 2026-08-29 — Instalação do UI/UX Pro Max
 
 - O CLI `uipro` já existente no ambiente (`uipro-cli@2.2.3`) foi utilizado para

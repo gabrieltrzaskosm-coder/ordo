@@ -6,6 +6,15 @@
 
 ## Histórico de sessões
 
+### 2026-08-29 — Instalação da skill Design Taste Frontend
+
+- Instalada a skill `design-taste-frontend` do repositório
+  `Leonxlnx/taste-skill` em `.agents/skills/`.
+- A skill orienta design de landing pages e redesigns, com foco em direção
+  visual, acessibilidade, responsividade, estados de interface e prevenção de
+  layouts genéricos.
+- A instalação não alterou o código da aplicação.
+
 ### 2026-08-29 — Instalação do plugin ECC
 
 - Marketplace `ecc` adicionado a partir de `affaan-m/ECC`.

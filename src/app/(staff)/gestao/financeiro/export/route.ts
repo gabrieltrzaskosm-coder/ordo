@@ -1,6 +1,6 @@
 // Exportação CSV do período selecionado (plano Pro). Gerado no servidor sob a
 // sessão do manager (RLS restringe ao estabelecimento). Separador ';' e BOM
-// UTF-8 para abrir bem no Excel em pt-PT. O período vem em `?p=` (default 30d),
+// UTF-8 para abrir bem no Excel em pt-BR. O período vem em `?p=` (default 30d),
 // alinhado com a página de balanço.
 import { requirePlan } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -36,7 +36,7 @@ export async function GET(request: Request) {
     const table = o.restaurant_tables as unknown as { label: string } | null;
     lines.push(
       [
-        csvField(new Date(o.created_at).toLocaleString("pt-PT")),
+        csvField(new Date(o.created_at).toLocaleString("pt-BR")),
         csvField(table?.label ?? "—"),
         csvField(o.customer_name ?? ""),
         csvField(o.status),

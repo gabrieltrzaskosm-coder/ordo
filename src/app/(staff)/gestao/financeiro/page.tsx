@@ -21,12 +21,12 @@ const BASE = "/gestao/financeiro";
 function bucketLabel(bucket: string): string {
   // "YYYY-MM" (mensal) ou "YYYY-MM-DD" (diário).
   if (bucket.length === 7) {
-    return new Intl.DateTimeFormat("pt-PT", {
+    return new Intl.DateTimeFormat("pt-BR", {
       month: "long",
       year: "numeric",
     }).format(new Date(bucket + "-01T12:00:00"));
   }
-  return new Intl.DateTimeFormat("pt-PT", {
+  return new Intl.DateTimeFormat("pt-BR", {
     weekday: "short",
     day: "2-digit",
     month: "2-digit",

@@ -150,19 +150,25 @@ export function ClienteMenu({
     const gone = cart.filter((l) => !lineStillOk(l, orderable));
     if (gone.length === 0) return;
     const names = [...new Set(gone.map((l) => l.name))];
-    setCart((c) => c.filter((l) => lineStillOk(l, orderable)));
-    setStatus(
+    const message =
       names.length === 1
         ? `${names[0]} deixou de estar disponível e saiu do seu pedido.`
-        : `${names.join(", ")} deixaram de estar disponíveis e saíram do seu pedido.`,
-    );
+        : `${names.join(", ")} deixaram de estar disponíveis e saíram do seu pedido.`;
+    const timer = window.setTimeout(() => {
+      setCart((c) => c.filter((l) => lineStillOk(l, orderable)));
+      setStatus(message);
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [orderable, cart, lineStillOk]);
 
   // O artigo pode esgotar com o modal de opções aberto.
   useEffect(() => {
     if (modalItem && orderable && !orderable.items.has(modalItem.id)) {
-      setModalItem(null);
-      setStatus(`${modalItem.name} esgotou agora mesmo.`);
+      const timer = window.setTimeout(() => {
+        setModalItem(null);
+        setStatus(`${modalItem.name} esgotou agora mesmo.`);
+      }, 0);
+      return () => window.clearTimeout(timer);
     }
   }, [modalItem, orderable]);
 
@@ -317,7 +323,7 @@ export function ClienteMenu({
     setStatus(null);
     startTransition(async () => {
       const res = await callWaiter(token);
-      setStatus(res.ok ? "Garçom a caminho." : res.error);
+      setStatus(res.ok ? "Atendente a caminho." : res.error);
     });
   }
 
@@ -329,7 +335,7 @@ export function ClienteMenu({
         className="reveal mb-6 flex w-full items-center justify-center gap-2 rounded-full border border-line bg-surface py-2.5 text-sm font-medium text-ink transition hover:border-brand/40 active:scale-[0.99] disabled:opacity-50"
       >
         <BellIcon />
-        Chamar garçom
+                Chamar atendente
       </button>
 
       {visibleMenu.length === 0 && (

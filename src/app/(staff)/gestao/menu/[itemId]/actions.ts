@@ -39,7 +39,7 @@ export async function uploadItemImage(
     return { ok: false, error: "Imagem demasiado grande (máx. 5 MB)." };
   }
   if (!file.type.startsWith("image/")) {
-    return { ok: false, error: "O ficheiro tem de ser uma imagem." };
+    return { ok: false, error: "O arquivo precisa ser uma imagem." };
   }
 
   const admin = createAdminClient();

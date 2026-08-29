@@ -4,7 +4,7 @@
 
 with est as (
   insert into establishments (name, slug, plan, vat_number, currency)
-  values ('Lancheria Demo', 'demo', 'basic', 'PT999999990', 'EUR')
+  values ('Lancheria Demo', 'demo', 'basic', null, 'BRL')
   returning id
 ),
 t as (

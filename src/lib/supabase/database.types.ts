@@ -779,7 +779,7 @@ export type Database = {
         | "ready"
         | "served"
         | "cancelled";
-      payment_method: "card" | "mbway" | "multibanco" | "cash";
+      payment_method: "card" | "pix" | "mbway" | "multibanco" | "cash";
       payment_status: "pending" | "paid" | "failed" | "refunded";
       plan_tier: "basic" | "pro" | "max";
       staff_role: "owner" | "manager" | "kitchen" | "waiter";

@@ -112,7 +112,7 @@ export async function callWaiter(token: string): Promise<ActionResult> {
   // para não deixar spammar a fila de chamadas da cozinha.
   const limited = await checkRateLimit(`waiter:${session.tableId}`, 5, 60);
   if (!limited.ok) {
-    return { ok: false, error: "Garçom já chamado. Aguarde um momento." };
+    return { ok: false, error: "Atendente já chamado. Aguarde um momento." };
   }
 
   const supabase = createAdminClient();
@@ -121,6 +121,6 @@ export async function callWaiter(token: string): Promise<ActionResult> {
     table_id: session.tableId,
     status: "open",
   });
-  if (error) return { ok: false, error: "Falha ao chamar o garçom." };
+  if (error) return { ok: false, error: "Falha ao chamar o atendente." };
   return { ok: true, orderId: "" };
 }

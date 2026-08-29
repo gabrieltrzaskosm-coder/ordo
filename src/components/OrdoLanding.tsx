@@ -25,7 +25,7 @@ const NAV = [
 const DIFERENCIAIS = [
   ["0%", "0% de comissão", "Você recebe 100% da venda. Nada de taxa por pedido comendo a sua margem."],
   ["⏱", "Menos fila, mais giro", "O cliente pede e paga sozinho — a mesa vira mais rápido e você atende mais gente."],
-  ["👥", "Menos garçom no rush", "Cada cliente se atende. A equipe foca no que importa quando o salão lota."],
+  ["👥", "Menos atendentes no rush", "Cada cliente se atende. A equipe foca no que importa quando o salão lota."],
   ["📷", "Sem app pra baixar", "Só a câmera do celular. Escaneou, abriu, pediu. Funciona na hora."],
   ["✎", "Cardápio sempre atual", "Muda preço e item num clique. Esgotou? Marca e some da tela na hora."],
   ["★", "Mais avaliações no Google", "No fim do pedido, o cliente satisfeito é convidado a avaliar o seu negócio."],

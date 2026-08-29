@@ -4,9 +4,9 @@
 // camada.
 //
 // Nota de fuso: as fronteiras de dia/mês usam a hora do servidor (UTC no
-// Vercel). Portugal é UTC+0/+1, por isso pode haver um desvio de 1h à volta da
-// meia-noite. Suficiente para gestão; afinar com o fuso do estabelecimento se
-// preciso.
+// Vercel). Para o Brasil, isso pode deslocar o fechamento do dia em relação ao
+// horário local do estabelecimento; o ideal é persistir o fuso por restaurante
+// antes de usar os relatórios como fechamento contábil.
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
 

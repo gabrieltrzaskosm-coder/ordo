@@ -52,8 +52,8 @@ export async function generateDailySummary(): Promise<SummaryResult> {
       model: "claude-haiku-4-5-20251001",
       max_tokens: 1024,
       system:
-        "És um analista de restauração. Escreves em português de Portugal, " +
-        "claro e direto, para o dono de um restaurante. Resume o dia em 3 a 5 " +
+        "Você é um analista de restaurantes. Escreva em português do Brasil, " +
+        "de forma clara e direta, para o dono de um restaurante. Resuma o dia em 3 a 5 " +
         "frases: o que correu bem, o que merece atenção e uma sugestão prática. " +
         "Se houver alertas de rutura de stock, menciona os mais urgentes (o que " +
         "esgota primeiro) como aviso acionável. Sem preâmbulo, sem markdown, sem " +

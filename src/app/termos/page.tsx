@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 // revisão jurídica, sobretudo a parte fiscal (NFC-e) e o foro aplicável.
 export default function TermosPage() {
   return (
-    <LegalLayout title="Termos de Uso" updated="25 de julho de 2026">
+    <LegalLayout title="Termos de Uso" updated="29 de agosto de 2026">
       <P>
         Estes Termos de Uso (&quot;Termos&quot;) regulam o acesso e o uso da
         plataforma Ordo (&quot;Plataforma&quot; ou &quot;Serviço&quot;),
@@ -31,19 +31,19 @@ export default function TermosPage() {
         </li>
         <li>
           <strong>Cliente:</strong> o consumidor final do Restaurante que consulta o
-          cardápio, faz pedidos e paga pela Plataforma.
+          cardápio, faz pedidos e realiza o pagamento diretamente ao Restaurante.
         </li>
         <li>
           <strong>Conta:</strong> o cadastro de acesso do Restaurante e de sua
-          equipe (dono, gestão, cozinha, garçom).
+          equipe (dono, gestão, cozinha, atendente).
         </li>
       </UL>
 
       <H2>2. Objeto</H2>
       <P>
         A Plataforma é uma ferramenta de software que permite ao Restaurante
-        publicar um cardápio, receber pedidos das mesas por QR code e disponibilizar
-        pagamento eletrônico aos Clientes. O Prestador fornece o software; não é
+        publicar um cardápio, receber pedidos das mesas por QR code e apoiar o
+        atendimento e a cobrança manual. O Prestador fornece o software; não é
         parte na relação de compra e venda entre o Restaurante e o Cliente, nem
         vendedor dos alimentos.
       </P>
@@ -77,15 +77,14 @@ export default function TermosPage() {
       <H2>5. Pagamentos dos clientes</H2>
       <UL>
         <li>
-          Os pagamentos dos Clientes são processados por meio de instituição de
-          pagamento (Pix e cartão), com repasse{" "}
-          <strong>diretamente à conta do Restaurante</strong>; o Prestador não
-          retém nem detém os valores dos Clientes.
+          No fluxo atual, o pagamento é combinado e recebido diretamente pelo
+          Restaurante na mesa. A Plataforma não recebe nem retém os valores da
+          venda de alimentos.
         </li>
         <li>
           O Restaurante é o vendedor e o responsável tributário pela operação,
-          inclusive pela emissão do documento fiscal exigível (por exemplo, NFC-e) e
-          pelo recolhimento dos tributos aplicáveis.
+          inclusive pelas obrigações fiscais, emissão de documento fiscal quando
+          exigível e recolhimento dos tributos aplicáveis.
         </li>
         <li>
           A disponibilização de pagamentos depende da aceitação, pelo Restaurante,

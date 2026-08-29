@@ -1,13 +1,12 @@
-# App Pedidos — MVP (Plano 1)
+# Ordo — MVP
 
 Sistema de pedidos e pagamento por QR code para restauração. Next.js (App Router)
 + Supabase (Postgres/Auth/Realtime/RLS). Fundação do MVP.
 
 ## Stack
-- **Next.js 16** (App Router, TypeScript, Tailwind) — PWA + Route Handlers.
+- **Next.js 16** (App Router, TypeScript, Tailwind) — web app responsivo.
 - **Supabase** — Postgres, Auth, Realtime, RLS multi-tenant.
-- **Pagamento** — abstração `PaymentProvider` (Stripe / IfThenPay) — *skeleton*.
-- **Faturação** — fornecedor certificado AT (Vendus/Moloni/InvoiceXpress) — *skeleton*.
+- **Pagamento atual** — cobrança manual na mesa; Pix e cartão online ficam no roadmap.
 
 ## Estrutura
 ```
@@ -16,11 +15,8 @@ src/
     (cliente)/mesa/[token]/   Fluxo do comensal (menu, pedido, chamar atendente)
     (staff)/cozinha/          Painel de cozinha (realtime — por ligar)
     (staff)/gestao/           Painel do dono (CRUD + financeiro — por ligar)
-    api/webhooks/payments/    Webhook de pagamento (assinatura + idempotência)
   lib/
     supabase/                 Clientes: client (browser), server (SSR), admin (service role)
-    payments/                 Interface + providers (stripe, ifthenpay)
-    invoicing/                Emissão de fatura certificada
     session/table.ts          qr_token -> mesa + estabelecimento
 supabase/
   migrations/                 0001_init.sql (schema), 0002_rls.sql (RLS)
@@ -35,8 +31,8 @@ supabase/
   para o papel `anon` (default deny). Preços recalculados sempre no servidor.
 
 ## Projeto Supabase
-- **Projeto:** `app-pedidos` (`wetlqdqtsyllvdxafbzh`), região **eu-west-3** (Paris —
-  dados na UE, alinhado com o RGPD).
+- **Projeto:** `app-pedidos` (`wetlqdqtsyllvdxafbzh`). A região e as transferências
+  internacionais devem ser avaliadas conforme a LGPD e as regras da ANPD.
 - Migrations de `supabase/migrations/` e o seed já estão aplicados.
 
 ## Correr localmente
@@ -73,10 +69,10 @@ dev, a página não hidrata e os botões não reagem.
 > email nesta fase. Ativar verificação antes de produção.
 
 ## Próximos passos (ver plano)
-- **Pagamento (Fase B):** Stripe **Connect** (dinheiro direto ao restaurante) +
-  cartão / Apple Pay / Google Pay / MB WAY + gorjeta. Precisa de conta Stripe.
-  Enquanto não existir, os totais da gestão são valor **pedido**, não cobrado.
-- **Planos e billing (Fase C):** gates por `plan` + mensalidade (Stripe Billing).
+- **Pagamento online (roadmap):** escolher um gateway brasileiro para Pix e cartão.
+  Enquanto não existir, os pagamentos são manuais e os totais da gestão representam
+  os pedidos registrados.
+- **Planos e billing:** gates por `plan`; a cobrança de assinatura ainda é manual.
 - Verificação de email + fluxo de troca de palavra-passe do staff.
 - Deploy: definir `NEXT_PUBLIC_APP_URL` com o domínio público **antes** de
   imprimir QR codes — os códigos embutem essa URL.

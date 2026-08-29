@@ -17,7 +17,7 @@ const ROLE_LABEL: Record<Role, string> = {
   owner: "Dono",
   manager: "Gerente",
   kitchen: "Cozinha",
-  waiter: "Garçom",
+  waiter: "Atendente",
 };
 
 // Cor do avatar/pill por função (fg/bg).
@@ -97,7 +97,7 @@ export function EquipaManager({ staff }: { staff: StaffMember[] }) {
               className="rounded-xl border border-line bg-canvas px-3 py-2 text-sm text-ink"
             >
               <option value="kitchen">Cozinha</option>
-              <option value="waiter">Garçom</option>
+              <option value="waiter">Atendente</option>
               <option value="manager">Gerente</option>
             </select>
             <input

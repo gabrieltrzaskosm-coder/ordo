@@ -6,6 +6,15 @@
 
 ## Histórico de sessões
 
+### 2026-08-29 — Instalação do UI/UX Pro Max
+
+- O CLI `uipro` já existente no ambiente (`uipro-cli@2.2.3`) foi utilizado para
+  inicializar o projeto para o Codex.
+- Foi criado `.codex/skills/ui-ux-pro-max/`, com instruções, dados de design e
+  scripts para apoiar futuras alterações de UI/UX.
+- A instalação global do pacote alternativo `ui-ux-pro-max-cli` não foi feita
+  porque o executável `uipro` já existia; não foi sobrescrito à força.
+
 ### 2026-08-29 — Alinhamento ao Brasil e LGPD
 
 - Alinhado o produto ao mercado brasileiro: BRL, pt-BR, Pix no modelo de dados

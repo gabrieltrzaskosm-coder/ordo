@@ -471,15 +471,15 @@ const CSS = `
 @media (max-width: 900px) { .ol-sidebar { display: none; } }
 
 /* Hero */
-.ol-hero { position: relative; height: 100dvh; min-height: 620px; width: 100%; background: #17100c; background-image: linear-gradient(118deg, #17100c 0%, #2a1c10 52%, #351b14 100%); overflow: hidden; display: flex; align-items: center; justify-content: flex-start; }
+.ol-hero { position: relative; min-height: 100dvh; width: 100%; background: #17100c; background-image: linear-gradient(118deg, #17100c 0%, #2a1c10 52%, #351b14 100%); overflow: hidden; display: flex; align-items: center; justify-content: center; }
 .ol-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(23,16,12,.18), rgba(23,16,12,.04) 65%, rgba(23,16,12,.28)); pointer-events: none; }
-.ol-hero-content { position: relative; z-index: 10; max-width: 900px; padding: 0 clamp(32px, 13vw, 220px); text-align: left; display: flex; flex-direction: column; align-items: flex-start; gap: 30px; }
+.ol-hero-content { position: relative; z-index: 10; width: min(100% - 48px, 1040px); padding: 104px 0 84px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 30px; }
 .ol-badge { display: flex; align-items: center; gap: 10px; padding: 7px 16px; border: 1px solid rgba(255,255,255,.28); border-radius: 999px; }
 .ol-badge-dot { width: 8px; height: 8px; border-radius: 50%; background: #f5b400; box-shadow: 0 0 12px #f5b400; }
 .ol-badge-txt { font-size: 12px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: rgba(255,255,255,.82); }
-.ol-hero-title { margin: 0; font-family: var(--font-instrument-serif), Georgia, serif; font-weight: 400; font-size: clamp(44px, 8.4vw, 108px); line-height: 0.98; letter-spacing: -0.01em; color: #ffffff; text-wrap: balance; text-shadow: 0 4px 40px rgba(0,0,0,.5); }
-.ol-hero-sub { margin: 0; max-width: 560px; font-size: clamp(15px, 2vw, 19px); line-height: 1.5; color: rgba(255,255,255,.78); }
-.ol-hero-ctas { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: flex-start; }
+.ol-hero-title { max-width: 1000px; margin: 0; font-family: var(--font-instrument-serif), Georgia, serif; font-weight: 400; font-size: clamp(44px, 8.4vw, 108px); line-height: 0.98; letter-spacing: -0.01em; color: #ffffff; text-wrap: balance; text-shadow: 0 4px 40px rgba(0,0,0,.5); }
+.ol-hero-sub { margin: 0 auto; max-width: 560px; font-size: clamp(15px, 2vw, 19px); line-height: 1.5; color: rgba(255,255,255,.78); }
+.ol-hero-ctas { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center; }
 .ol-arrow { font-size: 20px; line-height: 1; }
 .ol-cta-primary { display: inline-flex; align-items: center; gap: 10px; background: #d41d0d; color: #fff; font-weight: 700; font-size: 16px; letter-spacing: .04em; padding: 17px 36px; border-radius: 999px; box-shadow: 0 12px 34px rgba(212,29,13,.45); transition: transform .18s ease, background .18s ease, box-shadow .18s ease; }
 .ol-cta-primary:hover { background: #b01808; color: #fff; transform: translateY(-2px); box-shadow: 0 16px 40px rgba(212,29,13,.55); }
@@ -491,7 +491,7 @@ const CSS = `
 
 /* Seções genéricas */
 .ol-sec { position: relative; max-width: 1180px; margin: 0 auto; padding: clamp(80px, 12vw, 150px) 32px; }
-.ol-head { max-width: 720px; margin-bottom: 56px; }
+.ol-head { max-width: 820px; margin: 0 auto 56px; text-align: center; }
 .ol-eyebrow { font-family: ui-monospace, monospace; font-size: 12px; letter-spacing: .18em; text-transform: uppercase; font-weight: 600; }
 .ol-eyebrow-red { color: #d41d0d; }
 .ol-eyebrow-amber { color: #f5b400; }
@@ -500,23 +500,24 @@ const CSS = `
 .ol-h2-big { font-size: clamp(38px, 6vw, 74px); line-height: 1.0; }
 
 /* Reveal */
-.ol-reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s ease, transform .8s ease; }
+.ol-reveal { opacity: 1; transform: none; transition: opacity .8s ease, transform .8s ease; }
 .ol-reveal.is-in { opacity: 1; transform: none; }
 
 /* Diferenciais cards */
 .ol-grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-.ol-card { background: #fff; border: 1px solid #ece3d8; border-radius: 20px; padding: 30px; }
+.ol-card { background: #fff; border: 1px solid #ece3d8; border-radius: 20px; padding: 30px; text-align: center; }
 .ol-card-icon { display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 14px; background: #fbf8f4; border: 1px solid #ece3d8; font-family: var(--font-instrument-serif), Georgia, serif; font-size: 24px; color: #d41d0d; }
 .ol-card-title { margin: 22px 0 8px; font-size: 20px; font-weight: 700; color: #2a1c10; letter-spacing: -0.01em; }
 .ol-card-body { margin: 0; font-size: 15px; line-height: 1.55; color: #6b5136; }
 
 /* Segmentação e diagnóstico: o dono se reconhece antes de ver o produto. */
 .ol-segment-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-bottom: 44px; }
-.ol-segment { padding: 28px 30px; border-radius: 20px; background: #2a1c10; color: #fbf8f4; }
+.ol-segment { padding: 28px 30px; border-radius: 20px; background: #2a1c10; color: #fbf8f4; text-align: center; }
 .ol-segment-label { display: block; margin-bottom: 24px; color: #f5b400; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
 .ol-segment h3 { margin: 0 0 10px; font-size: clamp(20px, 2.4vw, 28px); line-height: 1.12; letter-spacing: -.02em; }
 .ol-segment p { margin: 0; color: rgba(251,248,244,.68); font-size: 15px; line-height: 1.55; }
 .ol-metrics { display: grid; grid-template-columns: minmax(220px, .8fr) minmax(0, 1.2fr); gap: 56px; margin-top: 76px; padding-top: 34px; border-top: 1px solid #ece3d8; }
+.ol-metrics-head { text-align: center; }
 .ol-metrics-head h3 { margin: 14px 0 0; font-family: var(--font-instrument-serif), Georgia, serif; font-size: clamp(28px, 4vw, 44px); font-weight: 400; line-height: 1.05; }
 .ol-metrics-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px 22px; }
 .ol-metric { display: flex; align-items: flex-start; gap: 13px; }
@@ -550,7 +551,7 @@ const CSS = `
 /* Planos */
 .ol-electric-defs { position: absolute; width: 0; height: 0; }
 .ol-grid-plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 22px; align-items: stretch; }
-.ol-plan { position: relative; display: flex; flex-direction: column; border-radius: 24px; padding: 38px 30px; background: #fff; border: 1px solid #ece3d8; }
+.ol-plan { position: relative; display: flex; flex-direction: column; align-items: center; border-radius: 24px; padding: 38px 30px; background: #fff; border: 1px solid #ece3d8; text-align: center; }
 .ol-plan.is-hl { background: #2a1c10; border: none; box-shadow: 0 24px 60px rgba(42,28,16,.28); }
 .ol-plan-bgglow { position: absolute; inset: -6px; border-radius: 28px; filter: blur(26px); opacity: .35; background: radial-gradient(circle, rgba(245,180,0,.55), transparent 70%); z-index: 0; }
 .ol-plan-glow2 { position: absolute; inset: 0; border-radius: 24px; border: 2px solid #f5b400; box-sizing: border-box; filter: blur(5px); opacity: .55; box-shadow: 0 0 24px rgba(245,180,0,.45); z-index: 1; }
@@ -560,7 +561,7 @@ const CSS = `
 .ol-plan.is-hl .ol-plan-name { color: #f5b400; }
 .ol-plan-tagline { position: relative; z-index: 4; margin: 8px 0 22px; font-size: 14px; font-weight: 600; color: #6b5136; }
 .ol-plan.is-hl .ol-plan-tagline { color: rgba(251,248,244,.72); }
-.ol-plan-feats { position: relative; z-index: 4; list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 13px; }
+.ol-plan-feats { position: relative; z-index: 4; width: 100%; list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 13px; text-align: left; }
 .ol-plan-feat { display: flex; align-items: flex-start; gap: 11px; font-size: 15px; line-height: 1.45; color: #2a1c10; }
 .ol-plan.is-hl .ol-plan-feat { color: rgba(251,248,244,.9); }
 .ol-plan-check { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: rgba(212,29,13,.1); color: #d41d0d; font-size: 11px; font-weight: 700; margin-top: 1px; }
@@ -568,10 +569,10 @@ const CSS = `
 
 /* Contato */
 .ol-contato { background: #fff; border-top: 1px solid #ece3d8; padding: clamp(80px, 12vw, 150px) 32px; }
-.ol-contato-layout { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, .78fr) minmax(460px, 1.22fr); gap: clamp(42px, 7vw, 100px); align-items: start; }
-.ol-contato-head { max-width: 520px; display: flex; flex-direction: column; align-items: flex-start; gap: 26px; }
-.ol-contato-sub { margin: 0; max-width: 520px; font-size: 17px; line-height: 1.5; color: #6b5136; }
-.od-form { display: flex; flex-direction: column; gap: 18px; padding: 30px; border: 1px solid #ece3d8; border-radius: 24px; background: #fbf8f4; }
+.ol-contato-layout { max-width: 820px; margin: 0 auto; display: flex; flex-direction: column; gap: 42px; align-items: center; }
+.ol-contato-head { max-width: 720px; display: flex; flex-direction: column; align-items: center; gap: 26px; text-align: center; }
+.ol-contato-sub { margin: 0; max-width: 600px; font-size: 17px; line-height: 1.5; color: #6b5136; }
+.od-form { width: 100%; display: flex; flex-direction: column; gap: 18px; padding: 30px; border: 1px solid #ece3d8; border-radius: 24px; background: #fbf8f4; }
 .od-form-heading { margin-bottom: 4px; }
 .od-form-kicker { color: #d41d0d; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
 .od-form-progress { display: flex; align-items: center; gap: 12px; margin-top: 16px; color: #806b57; font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: .04em; }
@@ -649,7 +650,7 @@ const CSS = `
 
 @media (max-width: 760px) {
   .ol-hero { min-height: 680px; }
-  .ol-hero-content { padding: 0 24px; gap: 24px; }
+  .ol-hero-content { width: min(100% - 40px, 680px); padding: 88px 0 78px; gap: 24px; }
   .ol-hero-title { font-size: clamp(42px, 12vw, 68px); }
   .ol-hero-sub { font-size: 16px; }
   .ol-segment-grid, .ol-metrics, .ol-contato-layout { grid-template-columns: 1fr; }

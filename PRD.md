@@ -6,6 +6,22 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Organização visual da página inicial
+
+- Centralizado o hero em toda a viewport, incluindo o título principal, a
+  mensagem de posicionamento e os CTAs.
+- Centralizados os títulos das seções, os blocos de segmentação, os cards de
+  diferenciais, os planos e a chamada do diagnóstico para criar uma leitura
+  mais clara e visível.
+- O formulário continua com labels, campos e opções alinhados à esquerda para
+  preservar o padrão de leitura e a acessibilidade de formulários.
+- Removido o estado inicial invisível dos elementos com reveal, evitando que
+  textos fiquem ocultos enquanto o JavaScript ou o observador de rolagem
+  carregam.
+- Validações: lint aprovado, 32 testes aprovados, build de produção aprovado
+  e `git diff --check` aprovado.
+- Pendente: revisão visual no link de produção e próximos ajustes de UX.
+
 ### 2026-08-30 — Diagnóstico do erro 403 do Resend
 
 - Logs de produção confirmaram que a chamada de envio está chegando ao Resend,

@@ -6,6 +6,16 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Ajuste da mensagem na tabela de impacto
+
+- Atualizada a linha “Pedido” para explicar que o cliente envia o pedido à
+  cozinha em tempo real e o garçom fica responsável por levá-lo à mesa.
+- Substituída a linha “Contratação” por “Equipe”, reforçando que equipes
+  mínimas podem absorver a demanda e que o objetivo é aumentar os lucros.
+- Corrigida a redação para “menores os lucros” e “equipes mínimas”, mantendo a
+  tabela legível em desktop e com rolagem horizontal em telas pequenas.
+- Pendente: revisão visual dos próximos blocos de conteúdo da home.
+
 ### 2026-08-30 — Organização visual da página inicial
 
 - Centralizado o hero em toda a viewport, incluindo o título principal, a

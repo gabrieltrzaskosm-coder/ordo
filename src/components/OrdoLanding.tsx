@@ -45,9 +45,9 @@ const METRICAS = [
 ] as const;
 
 const IMPACTO = [
-  ["Pedido", "Garçom anota e leva", "Cliente envia; a cozinha recebe em tempo real", "menos retrabalho"],
+  ["Pedido", "Garçom anota e leva", "Cliente envia; a cozinha recebe em tempo real, garçom apenas leva até a mesa", "Funções bem definidas"],
   ["Pico", "A equipe corre para absorver a fila", "O cliente inicia o pedido sem esperar", "mais capacidade"],
-  ["Contratação", "Mais gente para dar conta do movimento", "A equipe atual foca em servir e produzir", "folha mais protegida"],
+  ["Equipe", "Com mais movimento, mais equipe, menores os lucros", "Equipes mínimas dão conta da demanda", "Aumento de lucros"],
   ["Gestão", "Decisão baseada no que parece estar acontecendo", "Dados de pedidos, ritmo e vendas em um só lugar", "mais clareza"],
 ] as const;
 

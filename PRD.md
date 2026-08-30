@@ -15,6 +15,10 @@
   e confirmar o projeto/branch/build correto.
 - O envio do diagnóstico também depende de cadastrar no ambiente Production as
   variáveis `RESEND_API_KEY` e `RESEND_FROM_EMAIL`, e então fazer novo deploy.
+- Captura do painel confirmou `Blocked` nos quatro deployments recentes. A
+  inspeção técnica mostrou `readyState: BLOCKED` no deployment e
+  `readyState: READY` no build interno, indicando bloqueio de promoção/liberação
+  na Vercel, não falha de compilação do código.
 
 ### 2026-08-30 — Landing orientada a lucro e diagnóstico BANT
 

@@ -15,6 +15,8 @@
   chegam ao destinatário, embora o resultado seja calculado localmente.
 - Validações: lint aprovado, 32 testes aprovados e build de produção aprovado.
 - Aguardando a chave do Resend para concluir o envio real de e-mails.
+- Nova publicação concluída com `dpl_GpWiMiWEy9Ubv4zkw5np525q4Wtc`, status
+  `READY`, alias `https://app-pedidos-seven.vercel.app` e verificação HTTP 200.
 
 ### 2026-08-30 — Resultado desacoplado do envio de e-mail
 

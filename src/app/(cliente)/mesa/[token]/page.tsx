@@ -34,7 +34,7 @@ export default async function MesaPage({
             <p className="truncate text-[15px] font-semibold text-ink">
               {session.establishmentName}
             </p>
-            <p className="text-xs text-muted">Peça e pague à mesa</p>
+            <p className="text-xs text-muted">Peça pelo celular · pague na mesa</p>
           </div>
           <span className="shrink-0 rounded-full bg-brand-weak px-3 py-1 text-xs font-semibold text-brand-strong">
             {session.tableLabel}

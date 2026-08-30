@@ -6,6 +6,21 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Primeira rodada de UX no fluxo da mesa
+
+- Ajustada a promessa da tela do cliente: agora informa que o pedido é feito
+  pelo celular e o pagamento acontece na mesa, com o atendente.
+- Reorganizado o acesso a ajuda em um bloco secundário “Precisa de ajuda?” com
+  ação curta “Chamar”, mantendo o cardápio como foco principal.
+- Atualizados textos para pt-BR (“Seu nome”) e adicionada semântica
+  `role="status"`/`aria-live` às mensagens de retorno do fluxo.
+- Corrigido o limiar do scroll-spy das categorias, que estava maior que a
+  altura aproximada do cabeçalho fixo no celular.
+- Validações: lint aprovado e 30 testes aprovados. Build de produção em
+  execução nesta sessão.
+- Pendência: revisão visual em dispositivo real/viewport de 375px e avaliação
+  de outras superfícies (Gestão, Cozinha e landing pública).
+
 ### 2026-08-29 — Instalação da skill Design Taste Frontend
 
 - Instalada a skill `design-taste-frontend` do repositório

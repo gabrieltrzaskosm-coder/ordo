@@ -18,7 +18,7 @@ export function MenuNav({ categories }: { categories: MenuCategory[] }) {
   // (que falha nos saltos e entre secções). Loop barato (poucas categorias),
   // sem depender de rAF.
   useEffect(() => {
-    const LINE = 170; // altura da barra fixa (cabeçalho + categorias)
+    const LINE = 112; // altura aproximada do cabeçalho + categorias no celular
     const update = () => {
       let current = categories[0]?.id ?? null;
       for (const c of categories) {

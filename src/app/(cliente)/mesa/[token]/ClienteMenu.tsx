@@ -329,14 +329,20 @@ export function ClienteMenu({
 
   return (
     <div>
-      <button
-        onClick={chamar}
-        disabled={pending}
-        className="reveal mb-6 flex w-full items-center justify-center gap-2 rounded-full border border-line bg-surface py-2.5 text-sm font-medium text-ink transition hover:border-brand/40 active:scale-[0.99] disabled:opacity-50"
-      >
-        <BellIcon />
-                Chamar atendente
-      </button>
+      <div className="reveal mb-7 flex items-center justify-between gap-4 rounded-2xl border border-line bg-surface px-4 py-3 shadow-[var(--shadow-card)]">
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-ink">Precisa de ajuda?</p>
+          <p className="text-xs text-muted">Um atendente vai até a sua mesa.</p>
+        </div>
+        <button
+          onClick={chamar}
+          disabled={pending}
+          className="flex shrink-0 items-center gap-2 rounded-full border border-line px-3.5 py-2 text-sm font-medium text-ink transition-colors hover:border-brand/50 hover:text-brand-strong active:scale-[0.99] disabled:opacity-50"
+        >
+          <BellIcon />
+          Chamar
+        </button>
+      </div>
 
       {visibleMenu.length === 0 && (
         <div className="reveal rounded-2xl border border-dashed border-line py-12 text-center">
@@ -409,7 +415,7 @@ export function ClienteMenu({
       ))}
 
       {status && !placedOrder && count === 0 && (
-        <p className="mb-3 rounded-2xl bg-surface-2 px-4 py-3 text-sm text-ink">
+        <p role="status" aria-live="polite" className="mb-3 rounded-2xl bg-surface-2 px-4 py-3 text-sm text-ink">
           {status}
         </p>
       )}
@@ -587,7 +593,8 @@ export function ClienteMenu({
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="O seu nome"
+              placeholder="Seu nome"
+              aria-label="Seu nome"
               className="w-full rounded-full border border-line bg-canvas px-4 py-2.5 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none"
             />
             <button

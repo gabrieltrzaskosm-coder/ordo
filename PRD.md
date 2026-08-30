@@ -6,6 +6,20 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Desbloqueio do deployment Vercel
+
+- Investigado o bloqueio diretamente na API da Vercel após a captura mostrar
+  `Blocked`.
+- Causa encontrada: commits estavam usando o autor `seu@email.com`, que não
+  tinha acesso à equipe Vercel `gabrieltrzaskosm-7642's projects`.
+- Corrigido o e-mail Git local para `gabrieltrzaskosm@gmail.com` e criado o
+  commit `2048f4f` para disparar novo deployment.
+- Novo deployment `dpl_5bAqfwcTYhjUdSeuryzNr4edhLuU` concluído com sucesso,
+  `readyState: READY`, e alias de produção `https://app-pedidos-seven.vercel.app`.
+- Verificação HTTP confirmou a landing publicada e as novas mensagens do hero.
+- A configuração do Resend (`RESEND_API_KEY` e `RESEND_FROM_EMAIL`) continua
+  pendente para ativar o envio do formulário de diagnóstico.
+
 ### 2026-08-30 — MCP da Vercel
 
 - Adicionado o servidor MCP global `vercel` ao Codex usando

@@ -15,6 +15,9 @@
 - A configuração externa ainda precisa usar um remetente permitido pelo
   Resend: `onboarding@resend.dev` funciona apenas para o e-mail proprietário da
   conta de teste; para outros destinatários é necessário verificar um domínio.
+- Correção publicada com `dpl_818jSen2XFHVt4ATT5ijGVwUWqnS`, status `READY`,
+  alias `https://app-pedidos-seven.vercel.app`. Logs precisam ser rechecados
+  após um novo envio do formulário.
 
 ### 2026-08-30 — Exibição do resultado e diagnóstico do envio
 

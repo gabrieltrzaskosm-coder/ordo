@@ -6,6 +6,15 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — FAQ compacto em duas colunas
+
+- Reorganizado o FAQ em duas colunas com cinco perguntas em cada coluna para
+  reduzir a altura da seção e facilitar a varredura visual.
+- Mantido o comportamento expansível das respostas e o layout de uma coluna em
+  telas pequenas.
+- Reduzido o espaçamento vertical da seção para deixar a página mais compacta.
+- Pendente: validação final em produção após o deploy.
+
 ### 2026-08-30 — Métricas no hub de diagnóstico
 
 - Transformados os quatro pontos de “O diagnóstico olha para” em mensagens

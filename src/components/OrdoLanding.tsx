@@ -625,9 +625,9 @@ const CSS = `
 .ol-plan.is-hl .ol-plan-check { background: rgba(245,180,0,.16); color: #f5b400; }
 
 /* FAQ */
-.ol-faq-section { background: #fbf8f4; }
-.ol-faq { width: min(100%, 900px); margin: 0 auto; border-top: 1px solid #d9cabb; }
-.ol-faq-item { border-bottom: 1px solid #d9cabb; }
+.ol-faq-section { background: #fbf8f4; padding-top: clamp(64px, 9vw, 110px); padding-bottom: clamp(64px, 9vw, 110px); }
+.ol-faq { width: min(100%, 980px); margin: 0 auto; display: grid; grid-template-rows: repeat(5, minmax(0, auto)); grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); column-gap: clamp(28px, 5vw, 64px); }
+.ol-faq-item { border-top: 1px solid #d9cabb; }
 .ol-faq-question { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 74px; padding: 18px 4px; color: #2a1c10; cursor: pointer; list-style: none; font-size: clamp(17px, 2vw, 21px); font-weight: 700; line-height: 1.25; }
 .ol-faq-question::-webkit-details-marker { display: none; }
 .ol-faq-question::after { content: "+"; flex: none; color: #d41d0d; font-family: ui-monospace, monospace; font-size: 26px; font-weight: 400; line-height: 1; transition: transform .2s ease; }
@@ -733,6 +733,8 @@ const CSS = `
   .od-identity-grid { grid-template-columns: 1fr; }
   .od-result-projections { grid-template-columns: 1fr; }
   .od-slide-question h4 { font-size: 26px; }
+  .ol-faq { display: block; border-top: 1px solid #d9cabb; }
+  .ol-faq-item { border-top: 0; border-bottom: 1px solid #d9cabb; }
   .ol-faq-question { min-height: 68px; padding: 16px 0; font-size: 17px; }
   .ol-faq-answer { margin: -2px 34px 20px 0; font-size: 15px; }
   .ol-hero-ctas { align-items: stretch; flex-direction: column; width: 100%; }

@@ -6,6 +6,14 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Resultado desacoplado do envio de e-mail
+
+- Ajustado o envio do diagnóstico para preparar a confirmação imediatamente no
+  navegador, sem depender da resposta do Resend para exibir o resultado.
+- Mantidos o envio server-side, a classificação e as projeções internas; falhas
+  de e-mail agora aparecem como aviso sem bloquear a confirmação ao prospect.
+- Validações e deployment serão registrados após a publicação desta alteração.
+
 ### 2026-08-30 — Atualização do destinatário do formulário
 
 - Alterado o destinatário dos diagnósticos enviados pelo Resend para

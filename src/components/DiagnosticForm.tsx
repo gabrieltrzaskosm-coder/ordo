@@ -5,6 +5,7 @@ import {
   submitDiagnostic,
   type DiagnosticResult,
 } from "@/app/actions/diagnostic";
+import { calculateDiagnosticScore } from "@/lib/diagnostic-score";
 
 const inputClass = "od-input";
 
@@ -215,9 +216,39 @@ export function DiagnosticForm() {
     setPending(true);
     setResult(null);
     setError(null);
-    const response = await submitDiagnostic(formData);
-    setResult(response);
-    setPending(false);
+
+    const localAnalysis = calculateDiagnosticScore({
+      role: String(formData.get("role") ?? ""),
+      authority: String(formData.get("authority") ?? ""),
+      profile: String(formData.get("profile") ?? ""),
+      budget: String(formData.get("budget") ?? ""),
+      need: String(formData.get("need") ?? ""),
+      waiters: String(formData.get("waiters") ?? ""),
+      goal: String(formData.get("goal") ?? ""),
+    });
+
+    setResult({
+      ok: true,
+      message: "Suas respostas foram registradas.",
+      analysis: localAnalysis,
+    });
+
+    try {
+      const response = await submitDiagnostic(formData);
+      setResult({
+        ...response,
+        analysis: response.analysis ?? localAnalysis,
+      });
+    } catch (submissionError) {
+      console.error("Erro ao registrar o diagnóstico", submissionError);
+      setResult({
+        ok: false,
+        message: "Sua análise foi preparada, mas não conseguimos registrar o envio agora.",
+        analysis: localAnalysis,
+      });
+    } finally {
+      setPending(false);
+    }
   }
 
   if (result) {

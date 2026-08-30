@@ -12,6 +12,9 @@
   `otium.sap@gmail.com`.
 - Mantidos o assunto personalizado com o nome do restaurante, o e-mail de
   resposta do prospect e a classificação interna da análise.
+- Validações: lint aprovado, 32 testes aprovados e build de produção aprovado.
+- Deploy concluído com `dpl_Dw4puugMnJZot9MH9ZZJM7dVnEQi`, status `READY`,
+  alias `https://app-pedidos-seven.vercel.app`.
 
 ### 2026-08-30 — Pontuações ocultas no resultado público
 

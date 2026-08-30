@@ -97,7 +97,7 @@ export async function submitDiagnostic(
       },
       body: JSON.stringify({
         from: process.env.RESEND_FROM_EMAIL ?? "Ordo <onboarding@resend.dev>",
-        to: ["otumia@gmail.com"],
+        to: ["otium.sap@gmail.com"],
         reply_to: email,
         subject,
         text,

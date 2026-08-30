@@ -6,6 +6,13 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Atualização do destinatário do formulário
+
+- Alterado o destinatário dos diagnósticos enviados pelo Resend para
+  `otium.sap@gmail.com`.
+- Mantidos o assunto personalizado com o nome do restaurante, o e-mail de
+  resposta do prospect e a classificação interna da análise.
+
 ### 2026-08-30 — Pontuações ocultas no resultado público
 
 - Removidos da tela final do formulário todos os percentuais de aderência e de

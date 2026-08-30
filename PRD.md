@@ -21,8 +21,10 @@
 - Movido o FAQ para depois do formulário, mantendo as dez perguntas em duas
   colunas no desktop e uma coluna no mobile.
 - Validações: lint aprovado, 32 testes aprovados, build de produção aprovado e
-  `git diff --check` aprovado.
-- Pendente: validação final em produção após o deploy.
+  `git diff --check` aprovado. Produção verificada com HTTP 200, carrossel e
+  CTAs presentes no HTML e o bloco “0% de comissão” removido.
+- Deploy de produção concluído com `dpl_AB9as3pxzEybEPGFTqdk49FLzXDx`, status
+  `READY`, alias `https://app-pedidos-seven.vercel.app`.
 
 ### 2026-08-30 — FAQ compacto em duas colunas
 

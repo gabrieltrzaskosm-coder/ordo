@@ -16,7 +16,11 @@
   intermediárias e um no celular.
 - Adicionado “Resultados” ao menu lateral e mantido o CTA “Fazer diagnóstico
   grátis” na própria seção.
-- Pendente: validação final em produção após o deploy.
+- Validações: lint aprovado, 32 testes aprovados, build de produção aprovado,
+  `git diff --check` aprovado e produção verificada com HTTP 200, seção
+  “Resultados” presente e o antigo bloco “0% de comissão” ausente.
+- Deploy de produção concluído com `dpl_9KBz3vSZTSk74rxYcDSMMdSBreKU`, status
+  `READY`, alias `https://app-pedidos-seven.vercel.app`.
 
 ### 2026-08-30 — Carrossel de hubs e redistribuição da conversão
 

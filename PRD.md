@@ -6,6 +6,17 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — FAQ e limpeza do hero
+
+- Removido do topo do hero o selo “Para donos de restaurantes”, deixando a
+  mensagem principal mais direta.
+- Criada a seção FAQ com dez perguntas e respostas sobre funcionamento,
+  equipe, comissão, cardápio, dados de vendas e escolha de plano.
+- Adicionado “FAQ” ao menu lateral com scroll-spy e navegação por âncora.
+- FAQ implementado com `details/summary`, mantendo respostas fechadas por
+  padrão, foco de teclado e boa adaptação para telas pequenas.
+- Pendente: validação final em produção após o deploy.
+
 ### 2026-08-30 — Ajuste da mensagem na tabela de impacto
 
 - Atualizada a linha “Pedido” para explicar que o cliente envia o pedido à

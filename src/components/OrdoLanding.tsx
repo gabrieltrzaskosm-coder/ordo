@@ -20,6 +20,7 @@ const NAV = [
   { id: "diferenciais", label: "Diferenciais" },
   { id: "como", label: "Como Funciona" },
   { id: "planos", label: "Planos" },
+  { id: "faq", label: "FAQ" },
   { id: "contato", label: "Contato" },
 ] as const;
 
@@ -93,6 +94,49 @@ const PLANOS = [
       "Suporte 24/7",
     ],
   },
+] as const;
+
+const FAQ = [
+  [
+    "Como o Ordo funciona no restaurante?",
+    "O cliente escaneia o QR Code da mesa, acessa o cardápio pelo próprio celular e envia o pedido. A cozinha recebe as informações em tempo real e a equipe acompanha o andamento da operação.",
+  ],
+  [
+    "O cliente precisa baixar algum aplicativo?",
+    "Não. Basta apontar a câmera do celular para o QR Code da mesa. O cardápio abre no navegador, sem download e sem cadastro em aplicativo.",
+  ],
+  [
+    "O pedido vai direto para a cozinha?",
+    "Sim. O pedido é enviado para a operação em tempo real, reduzindo o caminho entre a escolha do cliente e o início da produção.",
+  ],
+  [
+    "O Ordo substitui os garçons?",
+    "Não. O Ordo organiza as funções: o cliente envia o pedido, a cozinha recebe as informações e o garçom concentra seu trabalho em servir, acompanhar e levar o pedido até a mesa.",
+  ],
+  [
+    "O Ordo serve para restaurantes pequenos?",
+    "Sim. O sistema foi pensado para operações de diferentes tamanhos, especialmente restaurantes que precisam fazer mais com a equipe atual e proteger a margem antes de contratar novamente.",
+  ],
+  [
+    "É possível atender mais mesas com uma equipe menor?",
+    "Esse é um dos objetivos da operação: tirar da equipe tarefas repetitivas de anotação e deslocamento para que equipes mínimas consigam absorver mais demanda. O impacto depende do cenário de cada restaurante.",
+  ],
+  [
+    "O Ordo cobra comissão sobre os pedidos?",
+    "Não. No Ordo, o restaurante recebe 100% da venda. Os planos são definidos pela estrutura e pelos recursos que fazem sentido para o seu negócio.",
+  ],
+  [
+    "Consigo acompanhar as vendas e os horários de pico?",
+    "Sim. Nos planos com inteligência de vendas, você acompanha dados como vendas, pedidos, ticket médio, horários de pico, itens mais vendidos e tendências para decidir com mais clareza.",
+  ],
+  [
+    "Posso atualizar preços e itens do cardápio?",
+    "Sim. O cardápio pode ser atualizado de forma centralizada, incluindo preços, itens e disponibilidade. Quando um produto esgota, ele pode deixar de aparecer para o cliente.",
+  ],
+  [
+    "Como saber qual plano é melhor para o meu restaurante?",
+    "O diagnóstico considera o tamanho da operação, o volume de pedidos, o peso da equipe na receita e os seus objetivos. A partir dessas respostas, nossa equipe orienta o plano mais adequado.",
+  ],
 ] as const;
 
 const STEP_LTR = "M6 0 C6 42, 94 12, 94 56";
@@ -183,10 +227,6 @@ export function OrdoLanding() {
       {/* ===== Hero fixo ===== */}
       <section id="inicio" className="ol-hero">
         <div className="ol-hero-content">
-          <div className="ol-badge">
-            <span className="ol-badge-dot" />
-            <span className="ol-badge-txt">Para donos de restaurantes</span>
-          </div>
           <h1 className="ol-hero-title">
             Seu restaurante trabalhando com
             <br />
@@ -418,6 +458,24 @@ export function OrdoLanding() {
         </div>
       </section>
 
+      {/* ===== FAQ ===== */}
+      <section id="faq" className="ol-sec ol-faq-section">
+        <div className="ol-reveal ol-head">
+          <span className="ol-eyebrow ol-eyebrow-red">FAQ</span>
+          <h2 className="ol-h2">
+            As respostas para decidir se o Ordo faz sentido para o seu restaurante.
+          </h2>
+        </div>
+        <div className="ol-faq" aria-label="Perguntas frequentes sobre o Ordo">
+          {FAQ.map(([question, answer]) => (
+            <details key={question} className="ol-faq-item">
+              <summary className="ol-faq-question">{question}</summary>
+              <p className="ol-faq-answer">{answer}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
       {/* ===== Contato ===== */}
       <section id="contato" className="ol-contato">
         <div className="ol-contato-layout">
@@ -474,9 +532,6 @@ const CSS = `
 .ol-hero { position: relative; min-height: 100dvh; width: 100%; background: #17100c; background-image: linear-gradient(118deg, #17100c 0%, #2a1c10 52%, #351b14 100%); overflow: hidden; display: flex; align-items: center; justify-content: center; }
 .ol-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(23,16,12,.18), rgba(23,16,12,.04) 65%, rgba(23,16,12,.28)); pointer-events: none; }
 .ol-hero-content { position: relative; z-index: 10; width: min(100% - 48px, 1040px); padding: 104px 0 84px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 30px; }
-.ol-badge { display: flex; align-items: center; gap: 10px; padding: 7px 16px; border: 1px solid rgba(255,255,255,.28); border-radius: 999px; }
-.ol-badge-dot { width: 8px; height: 8px; border-radius: 50%; background: #f5b400; box-shadow: 0 0 12px #f5b400; }
-.ol-badge-txt { font-size: 12px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: rgba(255,255,255,.82); }
 .ol-hero-title { max-width: 1000px; margin: 0; font-family: var(--font-instrument-serif), Georgia, serif; font-weight: 400; font-size: clamp(44px, 8.4vw, 108px); line-height: 0.98; letter-spacing: -0.01em; color: #ffffff; text-wrap: balance; text-shadow: 0 4px 40px rgba(0,0,0,.5); }
 .ol-hero-sub { margin: 0 auto; max-width: 560px; font-size: clamp(15px, 2vw, 19px); line-height: 1.5; color: rgba(255,255,255,.78); }
 .ol-hero-ctas { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center; }
@@ -566,6 +621,16 @@ const CSS = `
 .ol-plan.is-hl .ol-plan-feat { color: rgba(251,248,244,.9); }
 .ol-plan-check { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: rgba(212,29,13,.1); color: #d41d0d; font-size: 11px; font-weight: 700; margin-top: 1px; }
 .ol-plan.is-hl .ol-plan-check { background: rgba(245,180,0,.16); color: #f5b400; }
+
+/* FAQ */
+.ol-faq-section { background: #fbf8f4; }
+.ol-faq { width: min(100%, 900px); margin: 0 auto; border-top: 1px solid #d9cabb; }
+.ol-faq-item { border-bottom: 1px solid #d9cabb; }
+.ol-faq-question { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 74px; padding: 18px 4px; color: #2a1c10; cursor: pointer; list-style: none; font-size: clamp(17px, 2vw, 21px); font-weight: 700; line-height: 1.25; }
+.ol-faq-question::-webkit-details-marker { display: none; }
+.ol-faq-question::after { content: "+"; flex: none; color: #d41d0d; font-family: ui-monospace, monospace; font-size: 26px; font-weight: 400; line-height: 1; transition: transform .2s ease; }
+.ol-faq-item[open] .ol-faq-question::after { transform: rotate(45deg); }
+.ol-faq-answer { max-width: 760px; margin: -4px 54px 24px 4px; color: #6b5136; font-size: 16px; line-height: 1.6; }
 
 /* Contato */
 .ol-contato { background: #fff; border-top: 1px solid #ece3d8; padding: clamp(80px, 12vw, 150px) 32px; }
@@ -666,6 +731,8 @@ const CSS = `
   .od-identity-grid { grid-template-columns: 1fr; }
   .od-result-projections { grid-template-columns: 1fr; }
   .od-slide-question h4 { font-size: 26px; }
+  .ol-faq-question { min-height: 68px; padding: 16px 0; font-size: 17px; }
+  .ol-faq-answer { margin: -2px 34px 20px 0; font-size: 15px; }
   .ol-hero-ctas { align-items: stretch; flex-direction: column; width: 100%; }
   .ol-cta-primary, .ol-cta-ghost { justify-content: center; }
 }

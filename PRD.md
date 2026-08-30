@@ -6,6 +6,25 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — UX do diagnóstico em carrossel
+
+- Transformado o formulário de diagnóstico em um carrossel com uma pergunta
+  por tela, progresso visível, navegação para voltar e validação antes de
+  avançar.
+- A primeira sequência passou a coletar identificação, cargo, autoridade de
+  decisão, perfil do restaurante, peso da equipe, desafio principal, quantidade
+  de garçons e timing de melhoria.
+- Atualizadas as opções de desafio conforme a estratégia comercial: velocidade
+  e demanda, receitas e lucros, clareza financeira e redução de erros/retrabalho.
+- Incluídas as perguntas de cargo, tomada de decisão e garçons de salão.
+- O Server Action agora classifica internamente o lead como quente, morno ou em
+  qualificação e envia essa classificação junto aos dados para
+  `otumia@gmail.com`, mantendo as etiquetas invisíveis para o prospect.
+- Validações desta sessão: lint aprovado, 30 testes aprovados, build de
+  produção aprovado e `git diff --check` aprovado.
+- Pendência: o envio real depende de cadastrar `RESEND_API_KEY` e
+  `RESEND_FROM_EMAIL` no ambiente Production da Vercel.
+
 ### 2026-08-30 — Desbloqueio do deployment Vercel
 
 - Investigado o bloqueio diretamente na API da Vercel após a captura mostrar

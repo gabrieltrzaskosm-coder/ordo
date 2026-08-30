@@ -574,6 +574,9 @@ const CSS = `
 .od-form { display: flex; flex-direction: column; gap: 18px; padding: 30px; border: 1px solid #ece3d8; border-radius: 24px; background: #fbf8f4; }
 .od-form-heading { margin-bottom: 4px; }
 .od-form-kicker { color: #d41d0d; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.od-form-progress { display: flex; align-items: center; gap: 12px; margin-top: 16px; color: #806b57; font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: .04em; }
+.od-form-progress-track { flex: 1; height: 4px; overflow: hidden; border-radius: 999px; background: #eadfd4; }
+.od-form-progress-track span { display: block; height: 100%; border-radius: inherit; background: #d41d0d; transition: width .25s ease; }
 .od-form-heading h3 { margin: 12px 0 8px; color: #2a1c10; font-size: clamp(24px, 3vw, 34px); line-height: 1.08; letter-spacing: -.03em; }
 .od-form-heading p { margin: 0; color: #6b5136; font-size: 14px; line-height: 1.5; }
 .od-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
@@ -581,6 +584,23 @@ const CSS = `
 .od-input { width: 100%; min-height: 46px; border: 1px solid #d9cabb; border-radius: 10px; background: #fff; padding: 0 13px; color: #2a1c10; font: inherit; font-size: 14px; font-weight: 500; outline: none; }
 .od-input::placeholder { color: #9b856e; }
 .od-input:focus { border-color: #d41d0d; box-shadow: 0 0 0 3px rgba(212,29,13,.12); }
+.od-carousel { display: flex; min-height: 276px; flex-direction: column; justify-content: center; }
+.od-slide { display: flex; flex-direction: column; gap: 24px; }
+.od-slide-question { display: flex; align-items: flex-start; gap: 14px; }
+.od-slide-number { padding-top: 6px; color: #d41d0d; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .1em; }
+.od-slide-question h4 { margin: 0; color: #2a1c10; font-size: clamp(24px, 3vw, 34px); line-height: 1.08; letter-spacing: -.03em; }
+.od-slide-question p { margin: 8px 0 0; color: #806b57; font-size: 13px; line-height: 1.4; }
+.od-option-list { display: flex; flex-direction: column; gap: 10px; }
+.od-option { display: flex; align-items: center; gap: 12px; min-height: 52px; border: 1px solid #d9cabb; border-radius: 14px; background: #fff; padding: 10px 13px; color: #2a1c10; cursor: pointer; font-size: 14px; font-weight: 600; transition: border-color .2s ease, background .2s ease, transform .2s ease; }
+.od-option:hover { border-color: #d41d0d; transform: translateX(2px); }
+.od-option:has(input:checked) { border-color: #d41d0d; background: #fff4f1; }
+.od-option input { width: 17px; height: 17px; accent-color: #d41d0d; }
+.od-option span { flex: 1; }
+.od-option i { color: #d41d0d; font-size: 18px; font-style: normal; }
+.od-form-actions { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.od-form-actions .od-form-submit { flex: 0 1 260px; }
+.od-form-back { min-height: 52px; border: 1px solid #d9cabb; border-radius: 999px; background: transparent; padding: 0 20px; color: #6b5136; cursor: pointer; font: inherit; font-size: 14px; font-weight: 700; }
+.od-form-back:hover { border-color: #d41d0d; color: #d41d0d; }
 .od-form-submit { display: inline-flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 52px; border: 0; border-radius: 999px; background: #d41d0d; padding: 0 20px 0 24px; color: #fff; cursor: pointer; font: inherit; font-size: 15px; font-weight: 700; transition: background .2s ease, transform .2s ease; }
 .od-form-submit:hover { background: #b01808; transform: translateY(-1px); }
 .od-form-submit:disabled { cursor: wait; opacity: .65; }
@@ -618,6 +638,8 @@ const CSS = `
 @media (max-width: 480px) {
   .ol-sec, .ol-como, .ol-contato { padding-left: 20px; padding-right: 20px; }
   .od-form-grid, .ol-metrics-list { grid-template-columns: 1fr; }
+  .od-form-actions .od-form-submit { flex: 1; }
+  .od-slide-question h4 { font-size: 26px; }
   .ol-hero-ctas { align-items: stretch; flex-direction: column; width: 100%; }
   .ol-cta-primary, .ol-cta-ghost { justify-content: center; }
 }

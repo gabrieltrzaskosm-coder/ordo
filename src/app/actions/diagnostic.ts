@@ -7,6 +7,8 @@ const diagnosticSchema = z.object({
   ownerName: z.string().trim().min(2, "Informe seu nome."),
   email: z.string().trim().email("Informe um e-mail válido."),
   whatsapp: z.string().trim().min(8, "Informe um WhatsApp válido."),
+  role: z.string().trim().min(1, "Informe seu cargo."),
+  waiters: z.string().trim().min(1, "Informe a quantidade de garçons."),
   profile: z.string().trim().min(1, "Selecione o perfil do restaurante."),
   authority: z.string().trim().min(1, "Informe seu papel no restaurante."),
   budget: z.string().trim().min(1, "Selecione uma faixa de investimento."),
@@ -47,7 +49,24 @@ export async function submitDiagnostic(
     };
   }
 
-  const { restaurantName, ownerName, email, whatsapp, profile, authority, budget, need, timing } = parsed.data;
+  const { restaurantName, ownerName, email, whatsapp, role, authority, profile, budget, need, waiters, timing } = parsed.data;
+  const hotSignals = [
+    role === "Dono",
+    authority === "Sim, a decisão é só minha",
+    need === "Aumentar as receitas e lucros",
+    waiters === "4 ou mais",
+  ];
+  const warmSignals = [
+    role === "CEO",
+    authority === "Tenho um sócio, decidimos juntos",
+    need === "Atender mais rápido e aumentar a demanda",
+    waiters === "2-3",
+  ];
+  const lead = hotSignals.some(Boolean)
+    ? "Lead Quente"
+    : warmSignals.some(Boolean)
+      ? "Lead Morno"
+      : "Lead em qualificação";
   const subject = `Formulário do Sistema ORDO - ${restaurantName}`;
   const text = [
     "Novo diagnóstico de lucro operacional — Ordo",
@@ -58,10 +77,13 @@ export async function submitDiagnostic(
     `WhatsApp: ${whatsapp}`,
     "",
     "QUALIFICAÇÃO",
+    `Cargo: ${role}`,
+    `Classificação: ${lead}`,
     `Perfil: ${profile}`,
     `Papel na decisão: ${authority}`,
     `Faixa de investimento: ${budget}`,
     `Principal desafio: ${need}`,
+    `Garçons de salão: ${waiters}`,
     `Momento para agir: ${timing}`,
   ].join("\n");
 

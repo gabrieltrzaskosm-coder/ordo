@@ -14,7 +14,10 @@
   prospecção, para uso na apresentação comercial e no e-mail da equipe.
 - O prospect agora recebe apenas uma confirmação acolhedora, informando que a
   análise personalizada será apresentada pela equipe ORDO.
-- Validações e deploy serão registrados após a publicação desta alteração.
+- Validações: lint aprovado, 32 testes aprovados, build de produção aprovado e
+  `git diff --check` aprovado.
+- Deploy de produção concluído com `dpl_4vbk9D2p1FhJwMBatj3svsD69b98`, status
+  `READY`, alias `https://app-pedidos-seven.vercel.app`.
 
 ### 2026-08-30 — Resultado automático de aderência do diagnóstico
 

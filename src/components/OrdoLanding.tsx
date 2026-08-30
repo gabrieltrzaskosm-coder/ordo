@@ -24,19 +24,66 @@ const NAV = [
   { id: "contato", label: "Contato" },
 ] as const;
 
-const DIFERENCIAIS = [
-  ["0%", "0% de comissão", "Você recebe 100% da venda. Nada de taxa por pedido comendo a sua margem."],
-  ["01", "Mais ritmo no salão", "O cliente pede pelo próprio celular e o pedido chega direto à operação, sem depender de uma ida extra à mesa."],
-  ["02", "Menos pressão na equipe", "Nos horários de pico, a equipe deixa de correr atrás de cada pedido e consegue focar em servir bem."],
-  ["03", "Sem app pra baixar", "Só a câmera do celular. Escaneou, abriu, pediu. A experiência começa na hora."],
-  ["04", "Cardápio sempre atual", "Mude preços e itens em um clique. Esgotou? O produto deixa de aparecer para o cliente."],
-  ["05", "Mais clareza para decidir", "Veja o que vende, quando o salão acelera e onde sua operação pode recuperar margem."],
-] as const;
-
 const SEGMENTOS = [
   ["Restaurantes grandes", "A demanda já existe. O gargalo é a velocidade.", "Para salões cheios que precisam receber mais pedidos sem transformar cada pico em uma corrida da equipe."],
   ["Restaurantes médios e pequenos", "A folha pesa. Cada contratação precisa se pagar.", "Para operações que precisam fazer mais com equipes menores."],
 ] as const;
+
+const SHOWCASE = [
+  { label: "Gestão", eyebrow: "Visão do negócio", type: "gestao" },
+  { label: "Atendimento", eyebrow: "Ritmo do salão", type: "atendimento" },
+  { label: "Cozinha", eyebrow: "Produção em tempo real", type: "cozinha" },
+  { label: "Cliente", eyebrow: "Pedido sem espera", type: "cliente" },
+] as const;
+
+type ShowcaseType = (typeof SHOWCASE)[number]["type"];
+
+function ShowcaseVisual({ type }: { type: ShowcaseType }) {
+  if (type === "cliente") {
+    return (
+      <div className="ol-preview-device ol-preview-device-mobile">
+        <div className="ol-preview-mobile-top"><span>Trattoria</span><span>⌕</span></div>
+        <div className="ol-preview-mobile-hero">
+          <span>Cardápio da mesa 12</span>
+          <strong>Escolha sem esperar.</strong>
+        </div>
+        <div className="ol-preview-mobile-tabs"><span className="is-active">Mais pedidos</span><span>Entradas</span><span>Principais</span></div>
+        <div className="ol-preview-menu-item"><span className="ol-preview-food-art food-art-red" /><div><strong>Burger Ordo</strong><small>Blend 180g, cheddar e picles</small><b>R$ 38,90</b></div><i>+</i></div>
+        <div className="ol-preview-menu-item"><span className="ol-preview-food-art food-art-green" /><div><strong>Risoto de cogumelos</strong><small>Arbóreo, funghi e parmesão</small><b>R$ 42,90</b></div><i>+</i></div>
+        <div className="ol-preview-order-bar"><span>2 itens</span><strong>Ver pedido · R$ 81,80</strong></div>
+      </div>
+    );
+  }
+
+  if (type === "cozinha") {
+    return (
+      <div className="ol-preview-device ol-preview-device-wide">
+        <div className="ol-preview-appbar"><strong>Ordo<span>.</span></strong><b>Cozinha</b><small>Trattoria Vermelha · agora</small></div>
+        <div className="ol-preview-kitchen-grid">
+          <div className="ol-preview-column"><header><span>NOVOS</span><b>02</b></header><div className="ol-preview-ticket is-new"><strong>Mesa 12</strong><small>João · há 40s</small><p>2× Burger Duplo<br />1× Batata rústica</p><button>Iniciar preparo</button></div><div className="ol-preview-ticket is-new"><strong>Mesa 07</strong><small>Marina · há 1m</small><p>1× Risoto Funghi</p></div></div>
+          <div className="ol-preview-column"><header><span>EM PREPARO</span><b>02</b></header><div className="ol-preview-ticket is-prep"><strong>Mesa 03</strong><small>Pedro · há 2m</small><p>1× Ribeye 400g<br />1× Caesar salad</p><button>Marcar pronto</button></div><div className="ol-preview-ticket is-prep"><strong>Mesa 18</strong><small>há 4m</small><p>2× Salmão grelhado</p></div></div>
+          <div className="ol-preview-column"><header><span>PRONTOS</span><b>01</b></header><div className="ol-preview-ticket is-ready"><strong>Mesa 09</strong><small>Rafa · pronto</small><p>1× Poke bowl</p><button>Entregar</button></div></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (type === "atendimento") {
+    return (
+      <div className="ol-preview-device ol-preview-device-wide">
+        <div className="ol-preview-appbar"><strong>Ordo<span>.</span></strong><b>Atendimento</b><small>18 mesas · 6 abertas</small></div>
+        <div className="ol-preview-service-layout"><div className="ol-preview-table-grid">{["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"].map((table, index) => <span key={table} className={index % 4 === 0 ? "is-waiting" : index % 3 === 0 ? "is-open" : "is-free"}>Mesa {table}<small>{index % 4 === 0 ? "chamou" : index % 3 === 0 ? "3 itens" : "livre"}</small></span>)}</div><div className="ol-preview-order-panel"><small>Pedido selecionado</small><h3>Mesa 12</h3><p>2× Burger Duplo</p><p>1× Batata rústica</p><hr /><strong>R$ 84,00</strong><button>Ver pedido</button></div></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="ol-preview-device ol-preview-device-wide">
+      <div className="ol-preview-appbar"><strong>Ordo<span>.</span></strong><b>Gestão</b><small>Trattoria Vermelha · Hoje</small></div>
+      <div className="ol-preview-management"><div className="ol-preview-management-head"><div><small>Visão geral</small><h3>O ritmo do seu restaurante</h3></div><button>Hoje⌄</button></div><div className="ol-preview-stat-grid"><div><small>Pedidos hoje</small><strong>23</strong><b>+18% vs. ontem</b></div><div><small>Valor pedido</small><strong>R$ 864</strong><b>+12% vs. ontem</b></div><div><small>Ticket médio</small><strong>R$ 37,56</strong><b>+8% vs. ontem</b></div></div><div className="ol-preview-chart"><div><small>Movimento esperado por dia</small><strong>O pico começa às 19h</strong></div><div className="ol-preview-bars">{[32, 48, 42, 64, 78, 92, 58].map((height, index) => <span key={index} style={{ height: `${height}%` }} className={index === 5 ? "is-highlight" : ""} />)}</div><div className="ol-preview-chart-labels"><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span><span>Dom</span></div></div></div>
+    </div>
+  );
+}
 
 const METRICAS = [
   ["7 min até o primeiro atendimento", "Em uma operação sem ritmo, um cliente pode esperar cerca de 7 minutos para ser atendido em horas de pico."],
@@ -145,6 +192,7 @@ const STEP_RTL = "M94 0 C94 42, 6 12, 6 56";
 export function OrdoLanding() {
   const rootRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
+  const [showcaseIndex, setShowcaseIndex] = useState(0);
 
   const scrollTo = (id: string) => (e: React.MouseEvent) => {
     e.preventDefault();
@@ -200,6 +248,20 @@ export function OrdoLanding() {
       window.removeEventListener("scroll", onScroll);
     };
   }, []);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timer = window.setInterval(() => {
+      setShowcaseIndex((current) => (current + 1) % SHOWCASE.length);
+    }, 7000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const moveShowcase = (direction: -1 | 1) => {
+    setShowcaseIndex(
+      (current) => (current + direction + SHOWCASE.length) % SHOWCASE.length
+    );
+  };
 
   return (
     <div className="ol-root" ref={rootRef}>
@@ -270,19 +332,6 @@ export function OrdoLanding() {
             </article>
           ))}
         </div>
-        <div className="ol-grid-cards">
-          {DIFERENCIAIS.map(([icon, title, body], i) => (
-            <div
-              key={title}
-              className="ol-reveal ol-card"
-              style={{ transitionDelay: `${i * 60}ms` }}
-            >
-              <div className="ol-card-icon">{icon}</div>
-              <h3 className="ol-card-title">{title}</h3>
-              <p className="ol-card-body">{body}</p>
-            </div>
-          ))}
-        </div>
         <div className="ol-metrics">
           <div className="ol-metrics-head">
             <span className="ol-eyebrow ol-eyebrow-red">O diagnóstico olha para</span>
@@ -316,6 +365,44 @@ export function OrdoLanding() {
             </table>
           </div>
           <p className="ol-table-note">A tabela mostra a lógica operacional do produto. O diagnóstico mede o impacto real no seu restaurante.</p>
+        </div>
+        <div className="ol-section-cta">
+          <p>Quer descobrir onde o seu restaurante pode recuperar margem?</p>
+          <a href="#contato" onClick={scrollTo("contato")} className="ol-cta-primary">
+            Fazer diagnóstico grátis<span className="ol-arrow">→</span>
+          </a>
+        </div>
+      </section>
+
+      {/* ===== Preview dos hubs ===== */}
+      <section className="ol-showcase" aria-labelledby="showcase-title">
+        <div className="ol-showcase-inner">
+          <div className="ol-showcase-copy">
+            <span className="ol-eyebrow ol-eyebrow-red">Dentro do Ordo</span>
+            <h2 id="showcase-title" className="ol-h2">
+              Uma operação mais rápida em cada tela.
+            </h2>
+            <p>Do pedido do cliente à decisão do dono, cada hub organiza o próximo passo da equipe.</p>
+            <a href="#contato" onClick={scrollTo("contato")} className="ol-cta-primary">
+              Fazer diagnóstico grátis<span className="ol-arrow">→</span>
+            </a>
+          </div>
+          <div className="ol-showcase-stage">
+            <div className="ol-showcase-label"><span>{SHOWCASE[showcaseIndex].eyebrow}</span><strong>{SHOWCASE[showcaseIndex].label}</strong></div>
+            <div className="ol-showcase-viewport" aria-live="polite">
+              <ShowcaseVisual type={SHOWCASE[showcaseIndex].type} />
+            </div>
+            <div className="ol-showcase-controls">
+              <button type="button" className="ol-showcase-arrow" onClick={() => moveShowcase(-1)} aria-label="Tela anterior">←</button>
+              <div className="ol-showcase-dots" aria-label="Selecionar tela do sistema">
+                {SHOWCASE.map((item, index) => (
+                  <button type="button" key={item.type} className={index === showcaseIndex ? "is-active" : ""} onClick={() => setShowcaseIndex(index)} aria-label={`Mostrar hub ${item.label}`} aria-pressed={index === showcaseIndex} />
+                ))}
+              </div>
+              <span className="ol-showcase-count">0{showcaseIndex + 1} / 0{SHOWCASE.length}</span>
+              <button type="button" className="ol-showcase-arrow" onClick={() => moveShowcase(1)} aria-label="Próxima tela">→</button>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -379,6 +466,11 @@ export function OrdoLanding() {
                 </div>
               );
             })}
+          </div>
+          <div className="ol-como-cta">
+            <a href="#contato" onClick={scrollTo("contato")} className="ol-cta-primary">
+              Fazer diagnóstico grátis<span className="ol-arrow">→</span>
+            </a>
           </div>
         </div>
       </section>
@@ -457,23 +549,11 @@ export function OrdoLanding() {
             </div>
           ))}
         </div>
-      </section>
-
-      {/* ===== FAQ ===== */}
-      <section id="faq" className="ol-sec ol-faq-section">
-        <div className="ol-reveal ol-head">
-          <span className="ol-eyebrow ol-eyebrow-red">FAQ</span>
-          <h2 className="ol-h2">
-            As respostas para decidir se o Ordo faz sentido para o seu restaurante.
-          </h2>
-        </div>
-        <div className="ol-faq" aria-label="Perguntas frequentes sobre o Ordo">
-          {FAQ.map(([question, answer]) => (
-            <details key={question} className="ol-faq-item">
-              <summary className="ol-faq-question">{question}</summary>
-              <p className="ol-faq-answer">{answer}</p>
-            </details>
-          ))}
+        <div className="ol-section-cta">
+          <p>Veja qual plano acompanha o momento do seu restaurante.</p>
+          <a href="#contato" onClick={scrollTo("contato")} className="ol-cta-primary">
+            Fazer diagnóstico grátis<span className="ol-arrow">→</span>
+          </a>
         </div>
       </section>
 
@@ -492,6 +572,24 @@ export function OrdoLanding() {
           </div>
           <DiagnosticForm />
         </div>
+
+        {/* ===== FAQ ===== */}
+        <section id="faq" className="ol-sec ol-faq-section">
+          <div className="ol-reveal ol-head">
+            <span className="ol-eyebrow ol-eyebrow-red">FAQ</span>
+            <h2 className="ol-h2">
+              As respostas para decidir se o Ordo faz sentido para o seu restaurante.
+            </h2>
+          </div>
+          <div className="ol-faq" aria-label="Perguntas frequentes sobre o Ordo">
+            {FAQ.map(([question, answer]) => (
+              <details key={question} className="ol-faq-item">
+                <summary className="ol-faq-question">{question}</summary>
+                <p className="ol-faq-answer">{answer}</p>
+              </details>
+            ))}
+          </div>
+        </section>
 
         <div className="ol-footer">
           <span className="ol-footer-brand">
@@ -591,11 +689,100 @@ const CSS = `
 .ol-impact-table tbody td:nth-child(3) { color: #2a1c10; font-weight: 600; }
 .ol-impact-table tbody td:last-child { color: #d41d0d; font-weight: 700; }
 .ol-table-note { margin: 12px 0 0; color: #806b57; font-size: 11px; line-height: 1.45; }
+.ol-section-cta { display: flex; flex-direction: column; align-items: center; gap: 16px; margin: 64px auto 0; text-align: center; }
+.ol-section-cta p { margin: 0; color: #6b5136; font-size: 15px; }
+
+/* Previews dos hubs */
+.ol-showcase { border-top: 1px solid #ece3d8; border-bottom: 1px solid #ece3d8; background: #fff; padding: clamp(74px, 10vw, 126px) 32px; }
+.ol-showcase-inner { display: grid; grid-template-columns: minmax(260px, .72fr) minmax(0, 1.28fr); gap: clamp(42px, 8vw, 112px); max-width: 1180px; margin: 0 auto; align-items: center; }
+.ol-showcase-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; }
+.ol-showcase-copy .ol-h2 { margin-top: 0; }
+.ol-showcase-copy p { max-width: 390px; margin: 0; color: #6b5136; font-size: 17px; line-height: 1.55; }
+.ol-showcase-stage { min-width: 0; }
+.ol-showcase-label { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; margin: 0 4px 12px; }
+.ol-showcase-label span { color: #806b57; font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+.ol-showcase-label strong { color: #d41d0d; font-size: 14px; }
+.ol-showcase-viewport { position: relative; aspect-ratio: 16 / 10; overflow: hidden; border-radius: 24px; background: #2a1c10; padding: 14px; box-shadow: 0 20px 50px rgba(42,28,16,.18); }
+.ol-preview-device { width: 100%; height: 100%; overflow: hidden; border: 1px solid #e7ddd2; border-radius: 15px; background: #fbf8f4; color: #2a1c10; font-family: var(--font-manrope), ui-sans-serif, system-ui, sans-serif; }
+.ol-preview-device-wide { padding: 0; }
+.ol-preview-appbar { display: flex; align-items: center; gap: 16px; height: 48px; border-bottom: 1px solid #e7ddd2; background: #fff; padding: 0 18px; }
+.ol-preview-appbar strong { font-family: var(--font-instrument-serif), Georgia, serif; font-size: 23px; font-weight: 400; }
+.ol-preview-appbar strong span { color: #d41d0d; }
+.ol-preview-appbar b { font-size: 12px; }
+.ol-preview-appbar small { margin-left: auto; color: #806b57; font-size: 10px; }
+.ol-preview-management { padding: 22px; }
+.ol-preview-management-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; }
+.ol-preview-management-head small, .ol-preview-chart small { display: block; color: #806b57; font-size: 9px; text-transform: uppercase; letter-spacing: .1em; }
+.ol-preview-management h3 { margin: 5px 0 0; font-family: var(--font-instrument-serif), Georgia, serif; font-size: 24px; font-weight: 400; }
+.ol-preview-management button, .ol-preview-order-panel button { border: 1px solid #d9cabb; border-radius: 999px; background: #fff; padding: 7px 12px; color: #6b5136; font: inherit; font-size: 10px; }
+.ol-preview-stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
+.ol-preview-stat-grid > div { border: 1px solid #e7ddd2; border-radius: 10px; background: #fff; padding: 13px; }
+.ol-preview-stat-grid small { display: block; color: #806b57; font-size: 9px; }
+.ol-preview-stat-grid strong { display: block; margin: 8px 0 4px; font-size: 21px; letter-spacing: -.04em; }
+.ol-preview-stat-grid b { color: #2f7d42; font-size: 9px; }
+.ol-preview-chart { margin-top: 14px; border: 1px solid #e7ddd2; border-radius: 10px; background: #fff; padding: 14px; }
+.ol-preview-chart > div:first-child { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.ol-preview-chart > div:first-child strong { font-size: 11px; }
+.ol-preview-bars { display: flex; align-items: flex-end; gap: 9px; height: 86px; margin-top: 14px; border-bottom: 1px solid #e7ddd2; }
+.ol-preview-bars span { flex: 1; min-height: 14px; border-radius: 4px 4px 0 0; background: #e9c7bd; }
+.ol-preview-bars span.is-highlight { background: #d41d0d; }
+.ol-preview-chart-labels { display: flex; justify-content: space-between; padding-top: 7px; color: #806b57; font-size: 8px; }
+.ol-preview-kitchen-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; height: calc(100% - 48px); background: #f1ece6; padding: 14px; }
+.ol-preview-column { min-width: 0; }
+.ol-preview-column header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; color: #806b57; font-size: 9px; font-weight: 700; letter-spacing: .1em; }
+.ol-preview-column header b { display: grid; width: 20px; height: 20px; place-items: center; border-radius: 50%; background: #e7ddd2; color: #2a1c10; font-size: 9px; }
+.ol-preview-ticket { border-left: 3px solid #d9cabb; border-radius: 8px; background: #fff; margin-bottom: 8px; padding: 10px; box-shadow: 0 2px 7px rgba(42,28,16,.06); }
+.ol-preview-ticket.is-new { border-color: #d41d0d; }
+.ol-preview-ticket.is-prep { border-color: #f5b400; }
+.ol-preview-ticket.is-ready { border-color: #2f7d42; }
+.ol-preview-ticket strong { display: block; font-size: 11px; }
+.ol-preview-ticket small { display: block; margin-top: 3px; color: #806b57; font-size: 8px; }
+.ol-preview-ticket p { margin: 9px 0; color: #6b5136; font-size: 9px; line-height: 1.45; }
+.ol-preview-ticket button { width: 100%; border: 0; border-radius: 5px; background: #2a1c10; padding: 6px 4px; color: #fff; font: inherit; font-size: 8px; }
+.ol-preview-service-layout { display: grid; grid-template-columns: minmax(0, 1fr) 170px; gap: 16px; height: calc(100% - 48px); padding: 18px; }
+.ol-preview-table-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; align-content: start; }
+.ol-preview-table-grid > span { display: flex; min-height: 55px; flex-direction: column; justify-content: center; border: 1px solid #d9cabb; border-radius: 9px; background: #fff; padding: 7px; font-size: 9px; font-weight: 700; }
+.ol-preview-table-grid > span small { margin-top: 4px; color: #806b57; font-size: 8px; font-weight: 500; }
+.ol-preview-table-grid > span.is-open { border-color: #f5b400; background: #fff9e9; }
+.ol-preview-table-grid > span.is-waiting { border-color: #d41d0d; background: #fff1ee; }
+.ol-preview-order-panel { border: 1px solid #e7ddd2; border-radius: 10px; background: #fff; padding: 14px; }
+.ol-preview-order-panel > small { color: #806b57; font-size: 9px; text-transform: uppercase; letter-spacing: .08em; }
+.ol-preview-order-panel h3 { margin: 7px 0 16px; font-family: var(--font-instrument-serif), Georgia, serif; font-size: 22px; font-weight: 400; }
+.ol-preview-order-panel p { margin: 7px 0; color: #6b5136; font-size: 10px; }
+.ol-preview-order-panel hr { border: 0; border-top: 1px solid #e7ddd2; margin: 15px 0 10px; }
+.ol-preview-order-panel > strong { display: block; margin-bottom: 14px; font-size: 18px; }
+.ol-preview-order-panel button { width: 100%; background: #d41d0d; border-color: #d41d0d; color: #fff; }
+.ol-preview-device-mobile { position: relative; max-width: 280px; margin: 0 auto; padding: 0 14px 58px; }
+.ol-preview-mobile-top { display: flex; align-items: center; justify-content: space-between; height: 42px; border-bottom: 1px solid #e7ddd2; font-size: 11px; font-weight: 700; }
+.ol-preview-mobile-hero { padding: 18px 2px 14px; }
+.ol-preview-mobile-hero span { display: block; color: #806b57; font-size: 8px; text-transform: uppercase; letter-spacing: .1em; }
+.ol-preview-mobile-hero strong { display: block; margin-top: 6px; font-family: var(--font-instrument-serif), Georgia, serif; font-size: 24px; font-weight: 400; }
+.ol-preview-mobile-tabs { display: flex; gap: 14px; overflow: hidden; border-bottom: 1px solid #e7ddd2; padding: 0 0 10px; white-space: nowrap; }
+.ol-preview-mobile-tabs span { color: #806b57; font-size: 9px; }
+.ol-preview-mobile-tabs span.is-active { color: #d41d0d; font-weight: 700; }
+.ol-preview-menu-item { display: grid; grid-template-columns: 43px minmax(0, 1fr) 20px; align-items: center; gap: 9px; border-bottom: 1px solid #e7ddd2; padding: 12px 0; }
+.ol-preview-food-art { width: 43px; height: 43px; border-radius: 10px; background: radial-gradient(circle at 30% 30%, #f5b400 0 12%, transparent 13%), linear-gradient(135deg, #c9492f, #6d2717); }
+.ol-preview-food-art.food-art-green { background: radial-gradient(circle at 65% 35%, #f5b400 0 10%, transparent 11%), linear-gradient(135deg, #75924b, #263a21); }
+.ol-preview-menu-item strong, .ol-preview-menu-item small, .ol-preview-menu-item b { display: block; }
+.ol-preview-menu-item strong { font-size: 10px; }
+.ol-preview-menu-item small { overflow: hidden; margin: 3px 0; color: #806b57; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.ol-preview-menu-item b { color: #d41d0d; font-size: 9px; }
+.ol-preview-menu-item i { display: grid; width: 20px; height: 20px; place-items: center; border-radius: 50%; background: #fff1ee; color: #d41d0d; font-size: 16px; font-style: normal; }
+.ol-preview-order-bar { position: absolute; right: 14px; bottom: 12px; left: 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; border-radius: 9px; background: #d41d0d; padding: 11px 12px; color: #fff; font-size: 9px; }
+.ol-preview-order-bar strong { font-size: 9px; }
+.ol-showcase-controls { display: flex; align-items: center; gap: 14px; margin-top: 16px; }
+.ol-showcase-arrow { display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid #d9cabb; border-radius: 50%; background: #fff; color: #2a1c10; cursor: pointer; font-size: 18px; transition: border-color .2s ease, background .2s ease, transform .2s ease; }
+.ol-showcase-arrow:hover { border-color: #d41d0d; background: #fff1ee; transform: translateY(-1px); }
+.ol-showcase-dots { display: flex; align-items: center; gap: 6px; }
+.ol-showcase-dots button { width: 7px; height: 7px; border: 0; border-radius: 50%; background: #d9cabb; cursor: pointer; padding: 0; transition: background .2s ease, transform .2s ease; }
+.ol-showcase-dots button.is-active { background: #d41d0d; transform: scale(1.35); }
+.ol-showcase-count { margin-left: auto; color: #806b57; font-family: ui-monospace, monospace; font-size: 10px; }
 
 /* Como funciona */
 .ol-como { background: #2a1c10; color: #fbf8f4; padding: clamp(80px, 12vw, 150px) 32px; }
 .ol-como-inner { max-width: 1180px; margin: 0 auto; }
 .ol-como .ol-head { margin-bottom: 64px; }
+.ol-como-cta { display: flex; justify-content: center; margin-top: 50px; }
 .ol-steps { max-width: 560px; margin: 0 auto; }
 .ol-step-row { display: flex; }
 .ol-step-group { display: flex; align-items: center; gap: 16px; width: 340px; max-width: 100%; }
@@ -720,6 +907,11 @@ const CSS = `
   .ol-hero-content { width: min(100% - 40px, 680px); padding: 88px 0 78px; gap: 24px; }
   .ol-hero-title { font-size: clamp(42px, 12vw, 68px); }
   .ol-hero-sub { font-size: 16px; }
+  .ol-showcase { padding-left: 24px; padding-right: 24px; }
+  .ol-showcase-inner { grid-template-columns: 1fr; gap: 38px; }
+  .ol-showcase-copy { align-items: center; text-align: center; }
+  .ol-showcase-copy p { max-width: 560px; }
+  .ol-preview-appbar small { display: none; }
   .ol-segment-grid, .ol-metrics, .ol-contato-layout { grid-template-columns: 1fr; }
   .ol-metrics { gap: 30px; }
   .ol-contato-layout { gap: 38px; }
@@ -728,6 +920,19 @@ const CSS = `
 
 @media (max-width: 480px) {
   .ol-sec, .ol-como, .ol-contato { padding-left: 20px; padding-right: 20px; }
+  .ol-showcase { padding-left: 20px; padding-right: 20px; }
+  .ol-showcase-viewport { aspect-ratio: 4 / 3; padding: 10px; border-radius: 18px; }
+  .ol-showcase-label { align-items: center; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+  .ol-preview-management { padding: 14px; }
+  .ol-preview-management h3 { font-size: 20px; }
+  .ol-preview-stat-grid { gap: 6px; }
+  .ol-preview-stat-grid > div { padding: 9px; }
+  .ol-preview-stat-grid strong { font-size: 15px; }
+  .ol-preview-kitchen-grid { gap: 6px; padding: 9px; }
+  .ol-preview-ticket { padding: 7px; }
+  .ol-preview-ticket p { margin: 6px 0; }
+  .ol-preview-service-layout { grid-template-columns: 1fr; padding: 10px; }
+  .ol-preview-order-panel { display: none; }
   .od-form-grid, .ol-metrics-list { grid-template-columns: 1fr; }
   .od-form-actions .od-form-submit { flex: 1; }
   .od-identity-grid { grid-template-columns: 1fr; }

@@ -6,6 +6,24 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Carrossel de hubs e redistribuição da conversão
+
+- Removidos da seção “Diferenciais” os seis cards numerados, incluindo o item
+  “0% de comissão”, conforme solicitado.
+- Criado um carrossel visual entre “Diferenciais” e “Como funciona”, com
+  previews dos hubs Gestão, Atendimento, Cozinha e Cliente, setas, indicadores
+  de posição, rotação automática e suporte a `prefers-reduced-motion`.
+- Os previews foram construídos dentro da landing porque as páginas reais de
+  preview usam proteção contra iframe (`frame-ancestors 'none'` e
+  `X-Frame-Options: DENY`); nenhuma proteção de segurança foi enfraquecida.
+- Distribuídos CTAs “Fazer diagnóstico grátis” no hero, diferenciais,
+  carrossel, “Como funciona” e planos.
+- Movido o FAQ para depois do formulário, mantendo as dez perguntas em duas
+  colunas no desktop e uma coluna no mobile.
+- Validações: lint aprovado, 32 testes aprovados, build de produção aprovado e
+  `git diff --check` aprovado.
+- Pendente: validação final em produção após o deploy.
+
 ### 2026-08-30 — FAQ compacto em duas colunas
 
 - Reorganizado o FAQ em duas colunas com cinco perguntas em cada coluna para

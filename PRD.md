@@ -28,6 +28,10 @@
   inspeção técnica mostrou `readyState: BLOCKED` no deployment e
   `readyState: READY` no build interno, indicando bloqueio de promoção/liberação
   na Vercel, não falha de compilação do código.
+- Nova tentativa manual de deploy criou `dpl_BonWemHVvLqdwj7xJySTvXCvm1ba`,
+  novamente com build `READY` e deployment `BLOCKED`. A tentativa de promoção
+  manual foi recusada pela Vercel com HTTP 422 porque o deployment não estava
+  pronto para promoção. Bloqueio externo permanece.
 
 ### 2026-08-30 — Landing orientada a lucro e diagnóstico BANT
 

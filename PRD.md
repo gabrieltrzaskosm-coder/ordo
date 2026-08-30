@@ -17,7 +17,11 @@
 - Como o projeto não possui shadcn/ui, `sonner` ou `Questionnaire`, a
   experiência foi implementada com `dialog` nativo e CSS escopado, sem nova
   dependência.
-- Pendente: validação final em produção após o deploy.
+- Validações: lint aprovado, 32 testes aprovados, build de produção aprovado,
+  `git diff --check` aprovado e produção verificada com HTTP 200, modal e fluxo
+  de diagnóstico presentes no HTML.
+- Deploy de produção concluído com `dpl_5uco44Xkq92gSyJ58prJzPVgXjQo`, status
+  `READY`, alias `https://app-pedidos-seven.vercel.app`.
 
 ### 2026-08-30 — Carrossel de resultados
 

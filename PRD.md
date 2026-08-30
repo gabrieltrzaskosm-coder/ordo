@@ -18,7 +18,15 @@
   Restaurant Association; não são metas nem padrão obrigatório para o Brasil.
 - Atualizado o texto de restaurantes médios e pequenos para “fazer mais com
   equipes menores”.
-- Pendente: validação final em produção após o deploy.
+- A referência de 36,5% foi encontrada no levantamento 2025 da National
+  Restaurant Association para restaurantes full-service em 2024; a referência
+  de 5% é uma margem pré-impostos típica apresentada pela mesma entidade. Os
+  números não foram tratados como padrão brasileiro nem como promessa.
+- Validações: lint aprovado, 32 testes aprovados, build de produção aprovado e
+  `git diff --check` aprovado. Produção verificada com HTTP 200 e textos novos
+  presentes no HTML.
+- Deploy de produção concluído com `dpl_DhBHNCAeCC3TrPq3iqPBJFwDaifg`, status
+  `READY`, alias `https://app-pedidos-seven.vercel.app`.
 
 ### 2026-08-30 — FAQ e limpeza do hero
 

@@ -14,6 +14,11 @@
   mínimas podem absorver a demanda e que o objetivo é aumentar os lucros.
 - Corrigida a redação para “menores os lucros” e “equipes mínimas”, mantendo a
   tabela legível em desktop e com rolagem horizontal em telas pequenas.
+- Validações: lint aprovado, 32 testes aprovados, build de produção aprovado,
+  `git diff --check` aprovado e produção verificada com HTTP 200 e os textos
+  atualizados presentes no HTML.
+- Deploy de produção concluído com `dpl_GQ5W3KqQpXDqDxsbvBeegnzM63Xh`, status
+  `READY`, alias `https://app-pedidos-seven.vercel.app`.
 - Pendente: revisão visual dos próximos blocos de conteúdo da home.
 
 ### 2026-08-30 — Organização visual da página inicial

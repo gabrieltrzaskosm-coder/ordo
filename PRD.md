@@ -6,6 +6,20 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Pergunta final orientada a resultado
+
+- Substituída a pergunta final sobre prazo de decisão por: “Qual resultado
+  faria mais diferença no lucro do seu restaurante hoje?”.
+- Novas opções: atender mais mesas sem contratar mais garçons, reduzir o custo
+  da equipe sem perder velocidade, aumentar as vendas nos horários de pico e
+  entender quanto o Ordo pode melhorar os resultados.
+- Ajustada a última opção da pergunta sobre peso da equipe para exatamente
+  “Mais de 70%”.
+- A classificação definitiva das respostas da nova pergunta ficou pendente de
+  definição comercial com o responsável pelos leads.
+- Validações: lint aprovado, 30 testes aprovados, build de produção aprovado e
+  `git diff --check` aprovado.
+
 ### 2026-08-30 — Identificação agrupada no primeiro slide
 
 - Ajustado o carrossel para reunir nome do restaurante, nome do responsável,

@@ -13,7 +13,7 @@ const diagnosticSchema = z.object({
   authority: z.string().trim().min(1, "Informe seu papel no restaurante."),
   budget: z.string().trim().min(1, "Selecione uma faixa de investimento."),
   need: z.string().trim().min(1, "Selecione o principal desafio."),
-  timing: z.string().trim().min(1, "Informe quando quer agir."),
+  goal: z.string().trim().min(1, "Informe o resultado mais importante."),
   website: z.string().max(0).optional(),
 });
 
@@ -49,7 +49,7 @@ export async function submitDiagnostic(
     };
   }
 
-  const { restaurantName, ownerName, email, whatsapp, role, authority, profile, budget, need, waiters, timing } = parsed.data;
+  const { restaurantName, ownerName, email, whatsapp, role, authority, profile, budget, need, waiters, goal } = parsed.data;
   const hotSignals = [
     role === "Dono",
     authority === "Sim, a decisão é só minha",
@@ -84,7 +84,7 @@ export async function submitDiagnostic(
     `Faixa de investimento: ${budget}`,
     `Principal desafio: ${need}`,
     `Garçons de salão: ${waiters}`,
-    `Momento para agir: ${timing}`,
+    `Resultado desejado: ${goal}`,
   ].join("\n");
 
   try {

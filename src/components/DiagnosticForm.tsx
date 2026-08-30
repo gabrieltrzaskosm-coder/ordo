@@ -21,7 +21,7 @@ type FormKey =
   | "budget"
   | "need"
   | "waiters"
-  | "timing";
+  | "goal";
 
 type IdentityField = {
   key: FormKey;
@@ -112,7 +112,7 @@ const STEPS: Step[] = [
       { label: "Até 30%" },
       { label: "Entre 30% e 50%" },
       { label: "Entre 50% e 70%" },
-      { label: "Mais de 70% ou não sei calcular" },
+      { label: "Mais de 70%" },
     ],
   },
   {
@@ -133,14 +133,14 @@ const STEPS: Step[] = [
     options: [{ label: "1" }, { label: "2-3" }, { label: "4 ou mais" }],
   },
   {
-    key: "timing",
-    question: "Quando você gostaria de melhorar essa operação?",
+    key: "goal",
+    question: "Qual resultado faria mais diferença no lucro do seu restaurante hoje?",
     type: "options",
     options: [
-      { label: "O quanto antes" },
-      { label: "Nos próximos 30 dias" },
-      { label: "Nos próximos 3 meses" },
-      { label: "Ainda estou pesquisando" },
+      { label: "Atender mais mesas sem contratar mais garçons" },
+      { label: "Reduzir o custo da equipe sem perder velocidade" },
+      { label: "Aumentar as vendas nos horários de pico" },
+      { label: "Entender quanto o Ordo pode melhorar meus resultados" },
     ],
   },
 ];

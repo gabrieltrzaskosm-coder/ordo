@@ -6,6 +6,17 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Identificação agrupada no primeiro slide
+
+- Ajustado o carrossel para reunir nome do restaurante, nome do responsável,
+  e-mail e WhatsApp no primeiro slide.
+- Mantidas as perguntas de qualificação em slides individuais a partir da
+  segunda etapa, com progresso e navegação preservados.
+- O primeiro slide usa grade responsiva: duas colunas em telas maiores e uma
+  coluna no mobile.
+- Validações: lint aprovado, 30 testes aprovados, build de produção aprovado e
+  `git diff --check` aprovado.
+
 ### 2026-08-30 — UX do diagnóstico em carrossel
 
 - Transformado o formulário de diagnóstico em um carrossel com uma pergunta

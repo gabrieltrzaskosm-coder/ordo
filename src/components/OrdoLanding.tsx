@@ -590,8 +590,9 @@ const CSS = `
 .od-slide-number { padding-top: 6px; color: #d41d0d; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .1em; }
 .od-slide-question h4 { margin: 0; color: #2a1c10; font-size: clamp(24px, 3vw, 34px); line-height: 1.08; letter-spacing: -.03em; }
 .od-slide-question p { margin: 8px 0 0; color: #806b57; font-size: 13px; line-height: 1.4; }
+.od-identity-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .od-option-list { display: flex; flex-direction: column; gap: 10px; }
-.od-option { display: flex; align-items: center; gap: 12px; min-height: 52px; border: 1px solid #d9cabb; border-radius: 14px; background: #fff; padding: 10px 13px; color: #2a1c10; cursor: pointer; font-size: 14px; font-weight: 600; transition: border-color .2s ease, background .2s ease, transform .2s ease; }
+.od-option { display: flex; flex-direction: row; align-items: center; gap: 12px; min-height: 52px; border: 1px solid #d9cabb; border-radius: 14px; background: #fff; padding: 10px 13px; color: #2a1c10; cursor: pointer; font-size: 14px; font-weight: 600; transition: border-color .2s ease, background .2s ease, transform .2s ease; }
 .od-option:hover { border-color: #d41d0d; transform: translateX(2px); }
 .od-option:has(input:checked) { border-color: #d41d0d; background: #fff4f1; }
 .od-option input { width: 17px; height: 17px; accent-color: #d41d0d; }
@@ -639,6 +640,7 @@ const CSS = `
   .ol-sec, .ol-como, .ol-contato { padding-left: 20px; padding-right: 20px; }
   .od-form-grid, .ol-metrics-list { grid-template-columns: 1fr; }
   .od-form-actions .od-form-submit { flex: 1; }
+  .od-identity-grid { grid-template-columns: 1fr; }
   .od-slide-question h4 { font-size: 26px; }
   .ol-hero-ctas { align-items: stretch; flex-direction: column; width: 100%; }
   .ol-cta-primary, .ol-cta-ghost { justify-content: center; }

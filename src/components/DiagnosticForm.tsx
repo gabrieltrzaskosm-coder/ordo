@@ -10,55 +10,73 @@ const inputClass = "od-input";
 
 type Option = { label: string };
 
+type FormKey =
+  | "restaurantName"
+  | "ownerName"
+  | "email"
+  | "whatsapp"
+  | "role"
+  | "authority"
+  | "profile"
+  | "budget"
+  | "need"
+  | "waiters"
+  | "timing";
+
+type IdentityField = {
+  key: FormKey;
+  label: string;
+  type: "text" | "email" | "tel";
+  placeholder: string;
+  autoComplete?: string;
+};
+
 type Step = {
-  key:
-    | "restaurantName"
-    | "ownerName"
-    | "email"
-    | "whatsapp"
-    | "role"
-    | "authority"
-    | "profile"
-    | "budget"
-    | "need"
-    | "waiters"
-    | "timing";
+  key: string;
   question: string;
   description?: string;
-  type: "text" | "email" | "tel" | "options";
+  type: "text" | "email" | "tel" | "options" | "identity";
   placeholder?: string;
   autoComplete?: string;
   options?: Option[];
+  fields?: IdentityField[];
 };
 
 const STEPS: Step[] = [
   {
-    key: "restaurantName",
-    question: "Qual é o nome do seu restaurante?",
-    type: "text",
-    placeholder: "Ex.: Bistrô Central",
-  },
-  {
-    key: "ownerName",
-    question: "Como podemos chamar você?",
-    type: "text",
-    placeholder: "Seu nome",
-    autoComplete: "name",
-  },
-  {
-    key: "email",
-    question: "Para onde enviamos seu diagnóstico?",
-    type: "email",
-    description: "Usaremos seu e-mail apenas para retornar a análise.",
-    placeholder: "voce@restaurante.com.br",
-    autoComplete: "email",
-  },
-  {
-    key: "whatsapp",
-    question: "Qual WhatsApp podemos usar para falar com você?",
-    type: "tel",
-    placeholder: "(11) 99999-9999",
-    autoComplete: "tel",
+    key: "identity",
+    question: "Antes de começar, conte quem está por trás da operação.",
+    description: "Esses dados nos ajudam a preparar um diagnóstico para o seu restaurante.",
+    type: "identity",
+    fields: [
+      {
+        key: "restaurantName",
+        label: "Nome do restaurante",
+        type: "text",
+        placeholder: "Ex.: Bistrô Central",
+      },
+      {
+        key: "ownerName",
+        label: "Seu nome",
+        type: "text",
+        placeholder: "Como podemos chamar você?",
+        autoComplete: "name",
+      },
+      {
+        key: "email",
+        label: "E-mail",
+        type: "email",
+        placeholder: "voce@restaurante.com.br",
+        autoComplete: "email",
+      },
+      {
+        key: "whatsapp",
+        label: "WhatsApp",
+        type: "tel",
+        placeholder: "(11) 99999-9999",
+        autoComplete: "tel",
+      },
+    ],
   },
   {
     key: "role",
@@ -136,6 +154,23 @@ export function DiagnosticForm() {
   const currentStep = STEPS[stepIndex];
 
   function validateCurrentStep() {
+    if (currentStep.type === "identity") {
+      for (const field of currentStep.fields ?? []) {
+        const control = formRef.current?.elements.namedItem(field.key);
+        if (!(control instanceof HTMLInputElement) || !control.value.trim()) {
+          setError("Preencha todos os dados de identificação para continuar.");
+          return false;
+        }
+        if (!control.checkValidity()) {
+          setError("Confira o e-mail informado antes de continuar.");
+          return false;
+        }
+      }
+
+      setError(null);
+      return true;
+    }
+
     const control = formRef.current?.elements.namedItem(currentStep.key);
     if (!control) return false;
 
@@ -206,7 +241,7 @@ export function DiagnosticForm() {
           </span>
         </div>
         <h3>Descubra onde seu restaurante está perdendo ritmo e lucro.</h3>
-        <p>Uma pergunta por vez. No final, mostramos onde o Ordo pode aliviar sua operação.</p>
+        <p>Começamos com seus dados. Depois, uma pergunta por vez para encontrar onde o Ordo pode aliviar sua operação.</p>
       </div>
 
       <div className="od-carousel" aria-live="polite">
@@ -225,7 +260,24 @@ export function DiagnosticForm() {
               </div>
             </div>
 
-            {step.type === "options" ? (
+            {step.type === "identity" ? (
+              <div className="od-identity-grid">
+                {step.fields?.map((field, fieldIndex) => (
+                  <label key={field.key}>
+                    {field.label}
+                    <input
+                      className={inputClass}
+                      name={field.key}
+                      type={field.type}
+                      required
+                      placeholder={field.placeholder}
+                      autoComplete={field.autoComplete}
+                      autoFocus={index === stepIndex && fieldIndex === 0}
+                    />
+                  </label>
+                ))}
+              </div>
+            ) : step.type === "options" ? (
               <div className="od-option-list">
                 {step.options?.map((option, optionIndex) => (
                   <label className="od-option" key={option.label}>

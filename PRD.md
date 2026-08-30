@@ -6,6 +6,15 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — MCP da Vercel
+
+- Adicionado o servidor MCP global `vercel` ao Codex usando
+  `https://mcp.vercel.com`.
+- Autenticação OAuth concluída com sucesso.
+- Verificação concluída: MCP `vercel` aparece habilitado e autenticado.
+- Nenhum arquivo ou código da aplicação foi alterado; por isso não houve novo
+  deploy da aplicação.
+
 ### 2026-08-30 — Verificação do link de produção
 
 - Verificado o deployment `dpl_AP6VkvARF7x6gvbkonmBKJMzGbC1` e a URL pública.

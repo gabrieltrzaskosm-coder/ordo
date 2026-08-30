@@ -36,6 +36,8 @@
   `git diff --check` aprovado.
 - Deploy de produção concluído com `dpl_4vbk9D2p1FhJwMBatj3svsD69b98`, status
   `READY`, alias `https://app-pedidos-seven.vercel.app`.
+- Nova publicação concluída com `dpl_9tNb92iiF3VjMQuRe9hDKMs7SNJ3`, status
+  `READY`, alias `https://app-pedidos-seven.vercel.app`.
 
 ### 2026-08-30 — Resultado automático de aderência do diagnóstico
 

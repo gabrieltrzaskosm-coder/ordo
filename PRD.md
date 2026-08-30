@@ -13,7 +13,11 @@
 - Mantido o comportamento expansível das respostas e o layout de uma coluna em
   telas pequenas.
 - Reduzido o espaçamento vertical da seção para deixar a página mais compacta.
-- Pendente: validação final em produção após o deploy.
+- Validações: lint aprovado, 32 testes aprovados, build de produção aprovado,
+  `git diff --check` aprovado e produção verificada com HTTP 200 e FAQ presente
+  no HTML.
+- Deploy de produção concluído com `dpl_CdnrNdWFv3hhBJZXpNnTdeDkuEV1`, status
+  `READY`, alias `https://app-pedidos-seven.vercel.app`.
 
 ### 2026-08-30 — Métricas no hub de diagnóstico
 

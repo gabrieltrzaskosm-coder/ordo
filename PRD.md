@@ -6,6 +6,16 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Pontuações ocultas no resultado público
+
+- Removidos da tela final do formulário todos os percentuais de aderência e de
+  aumento de lucros.
+- Mantidos o cálculo, a classificação e as projeções no fluxo interno de
+  prospecção, para uso na apresentação comercial e no e-mail da equipe.
+- O prospect agora recebe apenas uma confirmação acolhedora, informando que a
+  análise personalizada será apresentada pela equipe ORDO.
+- Validações e deploy serão registrados após a publicação desta alteração.
+
 ### 2026-08-30 — Resultado automático de aderência do diagnóstico
 
 - Criada uma análise automática para aparecer ao final do formulário com o

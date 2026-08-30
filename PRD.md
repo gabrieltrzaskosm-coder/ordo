@@ -20,6 +20,8 @@
   carregam.
 - Validações: lint aprovado, 32 testes aprovados, build de produção aprovado
   e `git diff --check` aprovado.
+- Deploy de produção concluído com `dpl_DEez2Dvyt2QQoSaeQ3qRNk3XKoXR`, status
+  `READY`, alias `https://app-pedidos-seven.vercel.app` e verificação HTTP 200.
 - Pendente: revisão visual no link de produção e próximos ajustes de UX.
 
 ### 2026-08-30 — Diagnóstico do erro 403 do Resend

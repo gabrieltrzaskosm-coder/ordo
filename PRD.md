@@ -6,6 +6,18 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Carrossel de resultados
+
+- Criada a seção “Resultados” entre o carrossel dos hubs e “Como funciona”,
+  destacando ganhos operacionais: mais ritmo, menos retrabalho, mais mesas,
+  equipe mais enxuta e mais clareza.
+- Implementado carrossel responsivo inspirado no padrão fornecido, com cards,
+  setas, indicadores, seleção direta e três cards no desktop, dois em telas
+  intermediárias e um no celular.
+- Adicionado “Resultados” ao menu lateral e mantido o CTA “Fazer diagnóstico
+  grátis” na própria seção.
+- Pendente: validação final em produção após o deploy.
+
 ### 2026-08-30 — Carrossel de hubs e redistribuição da conversão
 
 - Removidos da seção “Diferenciais” os seis cards numerados, incluindo o item

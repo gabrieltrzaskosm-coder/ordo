@@ -18,6 +18,7 @@ import { DiagnosticForm } from "./DiagnosticForm";
 const NAV = [
   { id: "inicio", label: "Início" },
   { id: "diferenciais", label: "Diferenciais" },
+  { id: "resultados", label: "Resultados" },
   { id: "como", label: "Como Funciona" },
   { id: "planos", label: "Planos" },
   { id: "faq", label: "FAQ" },
@@ -34,6 +35,14 @@ const SHOWCASE = [
   { label: "Atendimento", eyebrow: "Ritmo do salão", type: "atendimento" },
   { label: "Cozinha", eyebrow: "Produção em tempo real", type: "cozinha" },
   { label: "Cliente", eyebrow: "Pedido sem espera", type: "cliente" },
+] as const;
+
+const RESULTADOS = [
+  ["Mais ritmo", "O cliente inicia o pedido sem esperar um atendente chegar à mesa."],
+  ["Menos retrabalho", "A cozinha recebe o pedido com as informações certas e a equipe sabe o próximo passo."],
+  ["Mais mesas", "Uma equipe mais organizada consegue absorver melhor os horários de pico."],
+  ["Equipe mais enxuta", "As pessoas deixam de correr atrás de tarefas repetitivas e focam em servir e produzir."],
+  ["Mais clareza", "Dados de pedidos, vendas e horários de pico ajudam o dono a decidir com mais segurança."],
 ] as const;
 
 type ShowcaseType = (typeof SHOWCASE)[number]["type"];
@@ -193,6 +202,7 @@ export function OrdoLanding() {
   const rootRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
   const [showcaseIndex, setShowcaseIndex] = useState(0);
+  const [resultsIndex, setResultsIndex] = useState(0);
 
   const scrollTo = (id: string) => (e: React.MouseEvent) => {
     e.preventDefault();
@@ -262,6 +272,17 @@ export function OrdoLanding() {
       (current) => (current + direction + SHOWCASE.length) % SHOWCASE.length
     );
   };
+
+  const moveResults = (direction: -1 | 1) => {
+    setResultsIndex(
+      (current) => (current + direction + RESULTADOS.length) % RESULTADOS.length
+    );
+  };
+
+  const visibleResults = [0, 1, 2].map((offset) => {
+    const index = (resultsIndex + offset) % RESULTADOS.length;
+    return { index, result: RESULTADOS[index] };
+  });
 
   return (
     <div className="ol-root" ref={rootRef}>
@@ -403,6 +424,43 @@ export function OrdoLanding() {
               <button type="button" className="ol-showcase-arrow" onClick={() => moveShowcase(1)} aria-label="Próxima tela">→</button>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ===== Resultados ===== */}
+      <section id="resultados" className="ol-results" aria-labelledby="results-title">
+        <div className="ol-results-inner">
+          <div className="ol-results-head">
+            <span className="ol-eyebrow ol-eyebrow-red">Resultados</span>
+            <h2 id="results-title" className="ol-h2">O impacto que aparece na operação e chega no lucro.</h2>
+            <p>O Ordo organiza o fluxo para que o restaurante ganhe velocidade sem depender de aumentar a equipe.</p>
+          </div>
+          <div className="ol-results-carousel">
+            <div className="ol-results-track" aria-live="polite">
+              {visibleResults.map(({ index, result: [title, body] }, offset) => (
+                <article key={`${index}-${offset}`} className="ol-result-slide">
+                  <div className="ol-result-card">
+                    <span className="ol-result-number">0{index + 1}</span>
+                    <h3>{title}</h3>
+                    <p>{body}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+          <div className="ol-results-controls">
+            <button type="button" className="ol-showcase-arrow" onClick={() => moveResults(-1)} aria-label="Resultado anterior">←</button>
+            <div className="ol-showcase-dots" aria-label="Selecionar resultado">
+              {RESULTADOS.map(([title], index) => (
+                <button type="button" key={title} className={index === resultsIndex ? "is-active" : ""} onClick={() => setResultsIndex(index)} aria-label={`Mostrar resultado: ${title}`} aria-pressed={index === resultsIndex} />
+              ))}
+            </div>
+            <span className="ol-showcase-count">0{resultsIndex + 1} / 0{RESULTADOS.length}</span>
+            <button type="button" className="ol-showcase-arrow" onClick={() => moveResults(1)} aria-label="Próximo resultado">→</button>
+          </div>
+          <a href="#contato" onClick={scrollTo("contato")} className="ol-cta-primary">
+            Fazer diagnóstico grátis<span className="ol-arrow">→</span>
+          </a>
         </div>
       </section>
 
@@ -778,6 +836,24 @@ const CSS = `
 .ol-showcase-dots button.is-active { background: #d41d0d; transform: scale(1.35); }
 .ol-showcase-count { margin-left: auto; color: #806b57; font-family: ui-monospace, monospace; font-size: 10px; }
 
+/* Resultados */
+.ol-results { background: #fbf8f4; padding: clamp(74px, 10vw, 126px) 32px; }
+.ol-results-inner { max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
+.ol-results-head { max-width: 720px; text-align: center; }
+.ol-results-head .ol-h2 { margin-top: 14px; }
+.ol-results-head p { max-width: 580px; margin: 18px auto 0; color: #6b5136; font-size: 16px; line-height: 1.55; }
+.ol-results-carousel { width: 100%; overflow: hidden; margin-top: 44px; }
+.ol-results-track { display: flex; width: 100%; }
+.ol-result-slide { flex: 0 0 33.333%; padding: 0 8px; }
+.ol-result-card { position: relative; min-height: 218px; border: 1px solid #e7ddd2; border-radius: 20px; background: #fff; padding: 28px; transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease; }
+.ol-result-card:hover { border-color: #d41d0d; transform: translateY(-2px); box-shadow: 0 14px 32px rgba(42,28,16,.09); }
+.ol-result-number { color: #d41d0d; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .12em; }
+.ol-result-card h3 { margin: 34px 0 10px; color: #2a1c10; font-family: var(--font-instrument-serif), Georgia, serif; font-size: 34px; font-weight: 400; line-height: 1; }
+.ol-result-card p { max-width: 280px; margin: 0; color: #6b5136; font-size: 14px; line-height: 1.5; }
+.ol-results-controls { display: flex; align-items: center; gap: 14px; width: 100%; max-width: 1140px; margin-top: 18px; padding: 0 8px; }
+.ol-results-controls .ol-showcase-count { margin-left: 0; }
+.ol-results-inner > .ol-cta-primary { margin-top: 30px; }
+
 /* Como funciona */
 .ol-como { background: #2a1c10; color: #fbf8f4; padding: clamp(80px, 12vw, 150px) 32px; }
 .ol-como-inner { max-width: 1180px; margin: 0 auto; }
@@ -912,6 +988,8 @@ const CSS = `
   .ol-showcase-copy { align-items: center; text-align: center; }
   .ol-showcase-copy p { max-width: 560px; }
   .ol-preview-appbar small { display: none; }
+  .ol-results { padding-left: 24px; padding-right: 24px; }
+  .ol-result-slide { flex-basis: 50%; }
   .ol-segment-grid, .ol-metrics, .ol-contato-layout { grid-template-columns: 1fr; }
   .ol-metrics { gap: 30px; }
   .ol-contato-layout { gap: 38px; }
@@ -933,6 +1011,11 @@ const CSS = `
   .ol-preview-ticket p { margin: 6px 0; }
   .ol-preview-service-layout { grid-template-columns: 1fr; padding: 10px; }
   .ol-preview-order-panel { display: none; }
+  .ol-results { padding-left: 20px; padding-right: 20px; }
+  .ol-result-slide { flex-basis: 100%; }
+  .ol-result-slide:not(:first-child) { display: none; }
+  .ol-result-card { min-height: 190px; padding: 24px; }
+  .ol-result-card h3 { margin-top: 28px; font-size: 32px; }
   .od-form-grid, .ol-metrics-list { grid-template-columns: 1fr; }
   .od-form-actions .od-form-submit { flex: 1; }
   .od-identity-grid { grid-template-columns: 1fr; }

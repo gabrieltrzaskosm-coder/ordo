@@ -22,6 +22,8 @@
   `otumia@gmail.com`, mantendo as etiquetas invisíveis para o prospect.
 - Validações desta sessão: lint aprovado, 30 testes aprovados, build de
   produção aprovado e `git diff --check` aprovado.
+- Deploy de produção concluído com `dpl_687m3foumJzD4XorK7WwzJkXWhEJ`, status
+  `READY`, alias `https://app-pedidos-seven.vercel.app` e verificação HTTP 200.
 - Pendência: o envio real depende de cadastrar `RESEND_API_KEY` e
   `RESEND_FROM_EMAIL` no ambiente Production da Vercel.
 

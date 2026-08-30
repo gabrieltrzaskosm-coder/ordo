@@ -6,6 +6,31 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Redirecionamento da landing para conversão do dono
+
+- Removido o fundo animado/spotlight do hero; a primeira dobra agora usa fundo
+  fixo e foco tipográfico na promessa: “Seu restaurante trabalhando com menos
+  equipe e você lucrando mais”.
+- Posicionamento atualizado para: “O único sistema que diminui o trabalho e
+  aumenta a demanda”, falando diretamente com o dono e conectando velocidade,
+  equipe e lucro.
+- Criada segmentação para restaurantes grandes com alta demanda e restaurantes
+  médios/pequenos com pressão de folha/equipe.
+- Corrigidas promessas incompatíveis com o produto atual: pagamento online foi
+  removido da copy da landing e substituído por pagamento manual na mesa.
+- Criados indicadores de diagnóstico (tempo até o pedido, pedidos por hora,
+  equipe sobre faturamento e tempo de fechamento) e tabela “Hoje / Com Ordo /
+  O que muda”, sem apresentar resultados fictícios como dados comprovados.
+- Criado formulário de diagnóstico com qualificação BANT: perfil, autoridade,
+  pressão de equipe/orçamento, necessidade e prazo. O formulário valida no
+  servidor, inclui honeypot e foi preparado para enviar para `otumia@gmail.com`
+  com assunto `Formulário do Sistema ORDO - [NOME DO RESTAURANTE]` via Resend.
+- Configuração pendente no Vercel: `RESEND_API_KEY` e `RESEND_FROM_EMAIL` ainda
+  não existem no projeto; sem elas o formulário não pode enviar e-mails em
+  produção. Nenhum segredo foi adicionado ao repositório.
+- Validações: lint aprovado, 30 testes aprovados, build de produção aprovado e
+  `git diff --check` aprovado.
+
 ### 2026-08-30 — Primeira rodada de UX no fluxo da mesa
 
 - Ajustada a promessa da tela do cliente: agora informa que o pedido é feito

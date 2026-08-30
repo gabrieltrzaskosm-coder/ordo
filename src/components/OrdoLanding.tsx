@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { DiagnosticForm } from "./DiagnosticForm";
 
 /**
  * Landing pública da Ordo (produto da Otium). Port fiel do design feito no
@@ -24,19 +25,38 @@ const NAV = [
 
 const DIFERENCIAIS = [
   ["0%", "0% de comissão", "Você recebe 100% da venda. Nada de taxa por pedido comendo a sua margem."],
-  ["⏱", "Menos fila, mais giro", "O cliente pede e paga sozinho — a mesa vira mais rápido e você atende mais gente."],
-  ["👥", "Menos atendentes no rush", "Cada cliente se atende. A equipe foca no que importa quando o salão lota."],
-  ["📷", "Sem app pra baixar", "Só a câmera do celular. Escaneou, abriu, pediu. Funciona na hora."],
-  ["✎", "Cardápio sempre atual", "Muda preço e item num clique. Esgotou? Marca e some da tela na hora."],
-  ["★", "Mais avaliações no Google", "No fim do pedido, o cliente satisfeito é convidado a avaliar o seu negócio."],
+  ["01", "Mais ritmo no salão", "O cliente pede pelo próprio celular e o pedido chega direto à operação, sem depender de uma ida extra à mesa."],
+  ["02", "Menos pressão na equipe", "Nos horários de pico, a equipe deixa de correr atrás de cada pedido e consegue focar em servir bem."],
+  ["03", "Sem app pra baixar", "Só a câmera do celular. Escaneou, abriu, pediu. A experiência começa na hora."],
+  ["04", "Cardápio sempre atual", "Mude preços e itens em um clique. Esgotou? O produto deixa de aparecer para o cliente."],
+  ["05", "Mais clareza para decidir", "Veja o que vende, quando o salão acelera e onde sua operação pode recuperar margem."],
+] as const;
+
+const SEGMENTOS = [
+  ["Restaurantes grandes", "A demanda já existe. O gargalo é a velocidade.", "Para salões cheios que precisam receber mais pedidos sem transformar cada pico em uma corrida da equipe."],
+  ["Restaurantes médios e pequenos", "A folha pesa. Cada contratação precisa se pagar.", "Para operações que precisam fazer mais com a equipe atual e proteger o lucro antes de contratar de novo."],
+] as const;
+
+const METRICAS = [
+  ["Tempo até o pedido", "Quantos minutos passam entre o cliente sentar e o pedido chegar à cozinha?"],
+  ["Pedidos por hora", "Quantos pedidos sua equipe consegue absorver no pico sem criar fila?"],
+  ["Equipe sobre faturamento", "Quanto da receita é consumido por salários e encargos?"],
+  ["Tempo de fechamento", "Quanto tempo a equipe gasta para resolver a conta e liberar a mesa?"],
+] as const;
+
+const IMPACTO = [
+  ["Pedido", "Garçom anota e leva", "Cliente envia; a cozinha recebe em tempo real", "menos retrabalho"],
+  ["Pico", "A equipe corre para absorver a fila", "O cliente inicia o pedido sem esperar", "mais capacidade"],
+  ["Contratação", "Mais gente para dar conta do movimento", "A equipe atual foca em servir e produzir", "folha mais protegida"],
+  ["Gestão", "Decisão baseada no que parece estar acontecendo", "Dados de pedidos, ritmo e vendas em um só lugar", "mais clareza"],
 ] as const;
 
 const PASSOS = [
   ["1", "Cliente escaneia o QR Code", "Aponta a câmera do celular para o QR da mesa. Sem baixar nada, o cardápio abre na hora."],
-  ["2", "Faz o pagamento pelo próprio aparelho", "Paga por Pix, cartão ou Apple Pay direto no celular, sem esperar a conta."],
-  ["3", "Pedido enviado para a cozinha", "O pedido cai na cozinha em tempo real e o dinheiro entra na conta do restaurante."],
+  ["2", "Faz o pedido pelo próprio aparelho", "Escolhe os itens, extras e quantidades sem esperar um atendente chegar à mesa."],
+  ["3", "Pedido enviado para a cozinha", "O pedido cai na cozinha em tempo real e a equipe começa a produção mais rápido."],
   ["4", "Pedido pronto — cliente recebe atualizações", "O status muda em tempo real: em preparo, pronto, a caminho."],
-  ["5", "Pedido entregue ao cliente", "A comida chega à mesa. No fim, o cliente é convidado a avaliar no Google."],
+  ["5", "Pedido entregue ao cliente", "A equipe foca em servir. O pagamento continua sendo feito na mesa, com o atendente."],
 ] as const;
 
 const PLANOS = [
@@ -47,7 +67,7 @@ const PLANOS = [
     feats: [
       "Cardápio digital por QR code",
       "Pedido em tempo real na cozinha",
-      "Pagamento Pix, cartão e Apple Pay",
+      "Pagamento manual na mesa",
       "Marcar item como esgotado",
     ],
   },
@@ -80,8 +100,6 @@ const STEP_RTL = "M94 0 C94 42, 6 12, 6 56";
 
 export function OrdoLanding() {
   const rootRef = useRef<HTMLDivElement>(null);
-  const svgRef = useRef<SVGSVGElement>(null);
-  const sidebarRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
 
   const scrollTo = (id: string) => (e: React.MouseEvent) => {
@@ -133,75 +151,9 @@ export function OrdoLanding() {
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
 
-    // ---- Spotlight (hero) + sidebar proximity ----
-    let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-    let target = { ...mouse };
-    const onMove = (e: MouseEvent) => {
-      target = { x: e.clientX, y: e.clientY };
-      mouse = { x: e.clientX, y: e.clientY };
-    };
-
-    const NUM = 6;
-    const pts = Array.from({ length: NUM }, () => ({
-      x: window.innerWidth / 2,
-      y: window.innerHeight / 2,
-    }));
-    let raf = 0;
-
-    const placeTrail = () => {
-      const s = svgRef.current;
-      if (!s) return;
-      const rect = s.getBoundingClientRect();
-      for (let i = 0; i < NUM; i++) {
-        const c = s.querySelector<SVGCircleElement>("#ol-trail-" + i);
-        if (c) {
-          c.setAttribute("cx", String(pts[i].x - rect.left));
-          c.setAttribute("cy", String(pts[i].y - rect.top));
-        }
-      }
-    };
-
-    if (reduce) {
-      placeTrail();
-    } else {
-      window.addEventListener("mousemove", onMove);
-      const bar = sidebarRef.current;
-      const animate = () => {
-        const s = svgRef.current;
-        if (s) {
-          const rect = s.getBoundingClientRect();
-          pts[0].x += (target.x - pts[0].x) * 0.2;
-          pts[0].y += (target.y - pts[0].y) * 0.2;
-          for (let i = 1; i < NUM; i++) {
-            pts[i].x += (pts[i - 1].x - pts[i].x) * 0.35;
-            pts[i].y += (pts[i - 1].y - pts[i].y) * 0.35;
-          }
-          for (let i = 0; i < NUM; i++) {
-            const c = s.querySelector<SVGCircleElement>("#ol-trail-" + i);
-            if (c) {
-              c.setAttribute("cx", String(pts[i].x - rect.left));
-              c.setAttribute("cy", String(pts[i].y - rect.top));
-            }
-          }
-        }
-        if (bar) {
-          bar.querySelectorAll<HTMLElement>("[data-nav]").forEach((a) => {
-            const r = a.getBoundingClientRect();
-            const cy = r.top + r.height / 2;
-            const prox = Math.max(0, 1 - Math.abs(mouse.y - cy) / 150);
-            a.style.transform = `translateX(${(prox * 26).toFixed(1)}px)`;
-          });
-        }
-        raf = requestAnimationFrame(animate);
-      };
-      raf = requestAnimationFrame(animate);
-    }
-
     return () => {
       io?.disconnect();
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("mousemove", onMove);
-      cancelAnimationFrame(raf);
     };
   }, []);
 
@@ -211,7 +163,7 @@ export function OrdoLanding() {
 
       {/* ===== Sidebar de navegação ===== */}
       <nav className="ol-sidebar" aria-label="Seções">
-        <div className="ol-sidebar-inner" ref={sidebarRef}>
+        <div className="ol-sidebar-inner">
           {NAV.map((item, i) => (
             <a
               key={item.id}
@@ -228,76 +180,34 @@ export function OrdoLanding() {
         </div>
       </nav>
 
-      {/* ===== Hero / spotlight ===== */}
+      {/* ===== Hero fixo ===== */}
       <section id="inicio" className="ol-hero">
-        <div className="ol-hero-motion">
-          <div className="ol-hero-grad ol-anim" />
-        </div>
-
-        <svg ref={svgRef} className="ol-hero-svg" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="ol-hole">
-              <stop offset="0%" stopColor="black" stopOpacity="1" />
-              <stop offset="60%" stopColor="black" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="black" stopOpacity="0" />
-            </radialGradient>
-            <pattern
-              id="ol-poster"
-              width="26"
-              height="26"
-              patternUnits="userSpaceOnUse"
-              patternTransform="rotate(45)"
-            >
-              <rect width="26" height="26" fill="#0c0906" />
-              <rect width="13" height="26" fill="#120d08" />
-            </pattern>
-            <mask
-              id="ol-mask"
-              maskContentUnits="userSpaceOnUse"
-              x="0"
-              y="0"
-              width="100%"
-              height="100%"
-            >
-              <rect width="100%" height="100%" fill="white" />
-              <circle id="ol-trail-5" cx="-1000" cy="-1000" r="245" fill="url(#ol-hole)" opacity="0.25" />
-              <circle id="ol-trail-4" cx="-1000" cy="-1000" r="280" fill="url(#ol-hole)" opacity="0.4" />
-              <circle id="ol-trail-3" cx="-1000" cy="-1000" r="315" fill="url(#ol-hole)" opacity="0.55" />
-              <circle id="ol-trail-2" cx="-1000" cy="-1000" r="350" fill="url(#ol-hole)" opacity="0.7" />
-              <circle id="ol-trail-1" cx="-1000" cy="-1000" r="385" fill="url(#ol-hole)" opacity="0.85" />
-              <circle id="ol-trail-0" cx="-1000" cy="-1000" r="420" fill="url(#ol-hole)" opacity="1" />
-            </mask>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#ol-poster)" mask="url(#ol-mask)" />
-        </svg>
-        <div className="ol-hero-scrim" />
-
         <div className="ol-hero-content">
           <div className="ol-badge">
-            <span className="ol-badge-dot ol-anim" />
-            <span className="ol-badge-txt">Ordo · by Otium</span>
+            <span className="ol-badge-dot" />
+            <span className="ol-badge-txt">Para donos de restaurantes</span>
           </div>
           <h1 className="ol-hero-title">
-            Mais autonomia ao seu cliente,
+            Seu restaurante trabalhando com
             <br />
-            <span className="ol-italic ol-amber">mais dinheiro</span> no seu bolso
+            <span className="ol-amber">menos equipe</span> e você lucrando mais
           </h1>
           <p className="ol-hero-sub">
-            Pedidos e pagamentos por QR Code, para restaurantes que querem ter
-            mais lucros.
+            O único sistema que diminui o trabalho e aumenta a demanda —
+            colocando mais ritmo no salão e mais lucro no caixa.
           </p>
           <div className="ol-hero-ctas">
             <a href="#contato" onClick={scrollTo("contato")} className="ol-cta-primary">
-              FORMULÁRIO<span className="ol-arrow">→</span>
+              Fazer diagnóstico grátis<span className="ol-arrow">→</span>
             </a>
             <a href="#como" onClick={scrollTo("como")} className="ol-cta-ghost">
-              Como funciona
+              Ver como funciona
             </a>
           </div>
         </div>
 
-        <div className="ol-hero-scroll ol-anim">
-          <span className="ol-hero-scroll-txt">mova o cursor</span>
+        <div className="ol-hero-scroll">
+          <span className="ol-hero-scroll-txt">deslize para ver</span>
           <span className="ol-hero-scroll-arrow">↓</span>
         </div>
       </section>
@@ -307,9 +217,18 @@ export function OrdoLanding() {
         <div className="ol-reveal ol-head">
           <span className="ol-eyebrow ol-eyebrow-red">Diferenciais</span>
           <h2 className="ol-h2">
-            Menos espera do cliente por atendimento, mais eficiência, contas
-            fecham mais altas.
+            Mais pedidos no mesmo ritmo. Menos correria para a equipe. Mais
+            lucro para o dono.
           </h2>
+        </div>
+        <div className="ol-segment-grid">
+          {SEGMENTOS.map(([title, heading, body]) => (
+            <article key={title} className="ol-segment">
+              <span className="ol-segment-label">{title}</span>
+              <h3>{heading}</h3>
+              <p>{body}</p>
+            </article>
+          ))}
         </div>
         <div className="ol-grid-cards">
           {DIFERENCIAIS.map(([icon, title, body], i) => (
@@ -324,6 +243,39 @@ export function OrdoLanding() {
             </div>
           ))}
         </div>
+        <div className="ol-metrics">
+          <div className="ol-metrics-head">
+            <span className="ol-eyebrow ol-eyebrow-red">O diagnóstico olha para</span>
+            <h3>Os números que mostram onde o seu lucro está escapando.</h3>
+          </div>
+          <div className="ol-metrics-list">
+            {METRICAS.map(([title, body], i) => (
+              <div key={title} className="ol-metric">
+                <span className="ol-metric-number">0{i + 1}</span>
+                <div><strong>{title}</strong><p>{body}</p></div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="ol-impact">
+          <div className="ol-metrics-head">
+            <span className="ol-eyebrow ol-eyebrow-red">A mudança na prática</span>
+            <h3>Menos esforço no caminho entre o cliente e o caixa.</h3>
+          </div>
+          <div className="ol-impact-wrap">
+            <table className="ol-impact-table">
+              <thead>
+                <tr><th>Etapa</th><th>Hoje</th><th>Com Ordo</th><th>O que muda</th></tr>
+              </thead>
+              <tbody>
+                {IMPACTO.map(([step, today, withOrdo, change]) => (
+                  <tr key={step}><th scope="row">{step}</th><td>{today}</td><td>{withOrdo}</td><td>{change}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="ol-table-note">A tabela mostra a lógica operacional do produto. O diagnóstico mede o impacto real no seu restaurante.</p>
+        </div>
       </section>
 
       {/* ===== Como funciona ===== */}
@@ -332,7 +284,7 @@ export function OrdoLanding() {
           <div className="ol-reveal ol-head">
             <span className="ol-eyebrow ol-eyebrow-amber">Como funciona</span>
             <h2 className="ol-h2 ol-h2-light">
-              Cinco passos. Zero download. Do escaneio à entrega.
+              O cliente pede. A equipe produz. Você acompanha o ritmo.
             </h2>
           </div>
           <div className="ol-steps">
@@ -468,25 +420,18 @@ export function OrdoLanding() {
 
       {/* ===== Contato ===== */}
       <section id="contato" className="ol-contato">
-        <div className="ol-reveal ol-contato-head">
-          <span className="ol-eyebrow ol-eyebrow-red">Contato</span>
-          <h2 className="ol-h2 ol-h2-big">
-            Em poucos passos você pode ganhar mais dinheiro e atender melhor os
-            seus clientes.
-          </h2>
-          <p className="ol-contato-sub">
-            Preencha o formulário e a nossa equipe entra em contato para
-            configurar o seu cardápio digital.
-          </p>
-          <a
-            href="mailto:otium.sap@gmail.com?subject=Quero%20conhecer%20a%20Ordo"
-            className="ol-cta-primary"
-          >
-            FORMULÁRIO<span className="ol-arrow">→</span>
-          </a>
-          <a href="mailto:otium.sap@gmail.com" className="ol-contato-mail">
-            otium.sap@gmail.com
-          </a>
+        <div className="ol-contato-layout">
+          <div className="ol-reveal ol-contato-head">
+            <span className="ol-eyebrow ol-eyebrow-red">Diagnóstico Ordo</span>
+            <h2 className="ol-h2 ol-h2-big">
+              Seu próximo ganho pode estar na operação.
+            </h2>
+            <p className="ol-contato-sub">
+              Conte como seu restaurante funciona hoje. Vamos identificar onde
+              reduzir esforço, acelerar o atendimento e proteger sua margem.
+            </p>
+          </div>
+          <DiagnosticForm />
         </div>
 
         <div className="ol-footer">
@@ -499,7 +444,7 @@ export function OrdoLanding() {
             <Link href="/login">Entrar</Link>
           </div>
           <span className="ol-footer-copy">
-            {`© ${new Date().getFullYear()} Otium · Pedido & pagamento por QR code`}
+            {`© ${new Date().getFullYear()} Otium · Operação à mesa por QR code`}
           </span>
         </div>
       </section>
@@ -512,10 +457,6 @@ const CSS = `
 .ol-root a { text-decoration: none; }
 .ol-italic { font-style: italic; }
 .ol-amber { color: #f5b400; }
-
-@keyframes olShimmer { 0% { transform: translate(-8%, -6%) scale(1.15); } 50% { transform: translate(8%, 6%) scale(1.25); } 100% { transform: translate(-8%, -6%) scale(1.15); } }
-@keyframes olPulse { 0%,100% { opacity: .55; } 50% { opacity: .9; } }
-@keyframes olFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
 /* Sidebar */
 .ol-sidebar { position: fixed; left: 0; top: 0; height: 100vh; width: 190px; z-index: 60; display: flex; flex-direction: column; justify-content: center; padding-left: 26px; mix-blend-mode: difference; pointer-events: none; }
@@ -530,24 +471,21 @@ const CSS = `
 @media (max-width: 900px) { .ol-sidebar { display: none; } }
 
 /* Hero */
-.ol-hero { position: relative; height: 100dvh; min-height: 620px; width: 100%; background: #0c0906; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-.ol-hero-motion { position: absolute; inset: 0; overflow: hidden; }
-.ol-hero-grad { position: absolute; inset: -20%; background: radial-gradient(circle at 30% 30%, #d41d0d 0%, rgba(212,29,13,0) 55%), radial-gradient(circle at 70% 60%, #f5b400 0%, rgba(245,180,0,0) 50%), linear-gradient(120deg, #2a1c10, #0c0906); animation: olShimmer 14s ease-in-out infinite; }
-.ol-hero-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-.ol-hero-scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(12,9,6,.5) 0%, rgba(12,9,6,.15) 40%, rgba(12,9,6,.75) 100%); pointer-events: none; }
-.ol-hero-content { position: relative; z-index: 10; max-width: 1000px; padding: 0 32px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 30px; }
-.ol-badge { display: flex; align-items: center; gap: 10px; padding: 7px 16px; border: 1px solid rgba(255,255,255,.28); border-radius: 999px; backdrop-filter: blur(4px); }
-.ol-badge-dot { width: 8px; height: 8px; border-radius: 50%; background: #f5b400; box-shadow: 0 0 12px #f5b400; animation: olPulse 2.4s ease-in-out infinite; }
+.ol-hero { position: relative; height: 100dvh; min-height: 620px; width: 100%; background: #17100c; background-image: linear-gradient(118deg, #17100c 0%, #2a1c10 52%, #351b14 100%); overflow: hidden; display: flex; align-items: center; justify-content: flex-start; }
+.ol-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(23,16,12,.18), rgba(23,16,12,.04) 65%, rgba(23,16,12,.28)); pointer-events: none; }
+.ol-hero-content { position: relative; z-index: 10; max-width: 900px; padding: 0 clamp(32px, 13vw, 220px); text-align: left; display: flex; flex-direction: column; align-items: flex-start; gap: 30px; }
+.ol-badge { display: flex; align-items: center; gap: 10px; padding: 7px 16px; border: 1px solid rgba(255,255,255,.28); border-radius: 999px; }
+.ol-badge-dot { width: 8px; height: 8px; border-radius: 50%; background: #f5b400; box-shadow: 0 0 12px #f5b400; }
 .ol-badge-txt { font-size: 12px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: rgba(255,255,255,.82); }
 .ol-hero-title { margin: 0; font-family: var(--font-instrument-serif), Georgia, serif; font-weight: 400; font-size: clamp(44px, 8.4vw, 108px); line-height: 0.98; letter-spacing: -0.01em; color: #ffffff; text-wrap: balance; text-shadow: 0 4px 40px rgba(0,0,0,.5); }
 .ol-hero-sub { margin: 0; max-width: 560px; font-size: clamp(15px, 2vw, 19px); line-height: 1.5; color: rgba(255,255,255,.78); }
-.ol-hero-ctas { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center; }
+.ol-hero-ctas { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: flex-start; }
 .ol-arrow { font-size: 20px; line-height: 1; }
 .ol-cta-primary { display: inline-flex; align-items: center; gap: 10px; background: #d41d0d; color: #fff; font-weight: 700; font-size: 16px; letter-spacing: .04em; padding: 17px 36px; border-radius: 999px; box-shadow: 0 12px 34px rgba(212,29,13,.45); transition: transform .18s ease, background .18s ease, box-shadow .18s ease; }
 .ol-cta-primary:hover { background: #b01808; color: #fff; transform: translateY(-2px); box-shadow: 0 16px 40px rgba(212,29,13,.55); }
 .ol-cta-ghost { display: inline-flex; align-items: center; gap: 8px; color: rgba(255,255,255,.9); font-weight: 600; font-size: 15px; padding: 16px 8px; border-bottom: 1px solid rgba(255,255,255,.35); }
 .ol-cta-ghost:hover { color: #fff; border-color: #fff; }
-.ol-hero-scroll { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 6px; animation: olFloat 2.6s ease-in-out infinite; }
+.ol-hero-scroll { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .ol-hero-scroll-txt { font-family: ui-monospace, monospace; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.55); }
 .ol-hero-scroll-arrow { color: rgba(255,255,255,.55); font-size: 18px; }
 
@@ -571,6 +509,30 @@ const CSS = `
 .ol-card-icon { display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 14px; background: #fbf8f4; border: 1px solid #ece3d8; font-family: var(--font-instrument-serif), Georgia, serif; font-size: 24px; color: #d41d0d; }
 .ol-card-title { margin: 22px 0 8px; font-size: 20px; font-weight: 700; color: #2a1c10; letter-spacing: -0.01em; }
 .ol-card-body { margin: 0; font-size: 15px; line-height: 1.55; color: #6b5136; }
+
+/* Segmentação e diagnóstico: o dono se reconhece antes de ver o produto. */
+.ol-segment-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-bottom: 44px; }
+.ol-segment { padding: 28px 30px; border-radius: 20px; background: #2a1c10; color: #fbf8f4; }
+.ol-segment-label { display: block; margin-bottom: 24px; color: #f5b400; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.ol-segment h3 { margin: 0 0 10px; font-size: clamp(20px, 2.4vw, 28px); line-height: 1.12; letter-spacing: -.02em; }
+.ol-segment p { margin: 0; color: rgba(251,248,244,.68); font-size: 15px; line-height: 1.55; }
+.ol-metrics { display: grid; grid-template-columns: minmax(220px, .8fr) minmax(0, 1.2fr); gap: 56px; margin-top: 76px; padding-top: 34px; border-top: 1px solid #ece3d8; }
+.ol-metrics-head h3 { margin: 14px 0 0; font-family: var(--font-instrument-serif), Georgia, serif; font-size: clamp(28px, 4vw, 44px); font-weight: 400; line-height: 1.05; }
+.ol-metrics-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px 22px; }
+.ol-metric { display: flex; align-items: flex-start; gap: 13px; }
+.ol-metric-number { color: #d41d0d; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .1em; }
+.ol-metric strong { display: block; font-size: 16px; }
+.ol-metric p { margin: 6px 0 0; color: #6b5136; font-size: 13px; line-height: 1.45; }
+.ol-impact { margin-top: 76px; padding-top: 34px; border-top: 1px solid #ece3d8; }
+.ol-impact-wrap { margin-top: 28px; overflow-x: auto; border: 1px solid #ece3d8; border-radius: 18px; background: #fff; }
+.ol-impact-table { width: 100%; min-width: 760px; border-collapse: collapse; text-align: left; }
+.ol-impact-table th, .ol-impact-table td { padding: 17px 18px; border-bottom: 1px solid #ece3d8; vertical-align: top; font-size: 13px; line-height: 1.45; }
+.ol-impact-table thead th { background: #fbf8f4; color: #806b57; font-family: ui-monospace, monospace; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.ol-impact-table tbody tr:last-child th, .ol-impact-table tbody tr:last-child td { border-bottom: 0; }
+.ol-impact-table tbody th { width: 13%; color: #d41d0d; font-size: 14px; }
+.ol-impact-table tbody td:nth-child(3) { color: #2a1c10; font-weight: 600; }
+.ol-impact-table tbody td:last-child { color: #d41d0d; font-weight: 700; }
+.ol-table-note { margin: 12px 0 0; color: #806b57; font-size: 11px; line-height: 1.45; }
 
 /* Como funciona */
 .ol-como { background: #2a1c10; color: #fbf8f4; padding: clamp(80px, 12vw, 150px) 32px; }
@@ -606,10 +568,30 @@ const CSS = `
 
 /* Contato */
 .ol-contato { background: #fff; border-top: 1px solid #ece3d8; padding: clamp(80px, 12vw, 150px) 32px; }
-.ol-contato-head { max-width: 820px; margin: 0 auto; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 26px; }
+.ol-contato-layout { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, .78fr) minmax(460px, 1.22fr); gap: clamp(42px, 7vw, 100px); align-items: start; }
+.ol-contato-head { max-width: 520px; display: flex; flex-direction: column; align-items: flex-start; gap: 26px; }
 .ol-contato-sub { margin: 0; max-width: 520px; font-size: 17px; line-height: 1.5; color: #6b5136; }
-.ol-contato-mail { font-family: ui-monospace, monospace; font-size: 14px; color: #6b5136; letter-spacing: .02em; }
-.ol-contato-mail:hover { color: #d41d0d; }
+.od-form { display: flex; flex-direction: column; gap: 18px; padding: 30px; border: 1px solid #ece3d8; border-radius: 24px; background: #fbf8f4; }
+.od-form-heading { margin-bottom: 4px; }
+.od-form-kicker { color: #d41d0d; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.od-form-heading h3 { margin: 12px 0 8px; color: #2a1c10; font-size: clamp(24px, 3vw, 34px); line-height: 1.08; letter-spacing: -.03em; }
+.od-form-heading p { margin: 0; color: #6b5136; font-size: 14px; line-height: 1.5; }
+.od-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.od-form label { display: flex; flex-direction: column; gap: 7px; color: #2a1c10; font-size: 12px; font-weight: 700; }
+.od-input { width: 100%; min-height: 46px; border: 1px solid #d9cabb; border-radius: 10px; background: #fff; padding: 0 13px; color: #2a1c10; font: inherit; font-size: 14px; font-weight: 500; outline: none; }
+.od-input::placeholder { color: #9b856e; }
+.od-input:focus { border-color: #d41d0d; box-shadow: 0 0 0 3px rgba(212,29,13,.12); }
+.od-form-submit { display: inline-flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 52px; border: 0; border-radius: 999px; background: #d41d0d; padding: 0 20px 0 24px; color: #fff; cursor: pointer; font: inherit; font-size: 15px; font-weight: 700; transition: background .2s ease, transform .2s ease; }
+.od-form-submit:hover { background: #b01808; transform: translateY(-1px); }
+.od-form-submit:disabled { cursor: wait; opacity: .65; }
+.od-form-submit span { font-size: 21px; }
+.od-form-note { margin: -5px 0 0; color: #806b57; font-size: 11px; line-height: 1.4; text-align: center; }
+.od-form-error { margin: 0; border-radius: 10px; background: #fff0ed; padding: 10px 12px; color: #9b1c10; font-size: 13px; line-height: 1.4; }
+.od-form-success { display: flex; min-height: 360px; flex-direction: column; align-items: center; justify-content: center; gap: 12px; border: 1px solid #d8e8d9; border-radius: 24px; background: #f4fbf4; padding: 30px; text-align: center; }
+.od-success-mark { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 50%; background: #2f7d42; color: #fff; font-size: 22px; }
+.od-form-success h3 { margin: 0; color: #205b2d; font-size: 24px; }
+.od-form-success p { margin: 0; color: #4d6f54; font-size: 14px; }
+.od-honeypot { position: absolute; left: -10000px; width: 1px; height: 1px; opacity: 0; }
 .ol-footer { max-width: 1180px; margin: clamp(70px, 10vw, 110px) auto 0; padding-top: 34px; border-top: 1px solid #ece3d8; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
 .ol-footer-brand { font-family: var(--font-instrument-serif), Georgia, serif; font-size: 26px; color: #2a1c10; }
 .ol-amber-dot { color: #d41d0d; }
@@ -619,7 +601,24 @@ const CSS = `
 .ol-footer-copy { font-size: 13px; color: #6b5136; }
 
 @media (prefers-reduced-motion: reduce) {
-  .ol-anim { animation: none !important; }
   .ol-reveal { transition: none !important; }
+}
+
+@media (max-width: 760px) {
+  .ol-hero { min-height: 680px; }
+  .ol-hero-content { padding: 0 24px; gap: 24px; }
+  .ol-hero-title { font-size: clamp(42px, 12vw, 68px); }
+  .ol-hero-sub { font-size: 16px; }
+  .ol-segment-grid, .ol-metrics, .ol-contato-layout { grid-template-columns: 1fr; }
+  .ol-metrics { gap: 30px; }
+  .ol-contato-layout { gap: 38px; }
+  .od-form { padding: 22px 18px; }
+}
+
+@media (max-width: 480px) {
+  .ol-sec, .ol-como, .ol-contato { padding-left: 20px; padding-right: 20px; }
+  .od-form-grid, .ol-metrics-list { grid-template-columns: 1fr; }
+  .ol-hero-ctas { align-items: stretch; flex-direction: column; width: 100%; }
+  .ol-cta-primary, .ol-cta-ghost { justify-content: center; }
 }
 `;

@@ -15,7 +15,12 @@
 - Adicionado “FAQ” ao menu lateral com scroll-spy e navegação por âncora.
 - FAQ implementado com `details/summary`, mantendo respostas fechadas por
   padrão, foco de teclado e boa adaptação para telas pequenas.
-- Pendente: validação final em produção após o deploy.
+- Validações: lint aprovado, 32 testes aprovados, build de produção aprovado,
+  `git diff --check` aprovado e produção verificada com HTTP 200, FAQ presente
+  e selo removido do HTML.
+- Deploy de produção concluído com `dpl_CPFA6w8gcTvzohwjNJfkEAeUttVt`, status
+  `READY`, alias `https://app-pedidos-seven.vercel.app`.
+- Pendente: revisão visual dos próximos blocos de conteúdo da home.
 
 ### 2026-08-30 — Ajuste da mensagem na tabela de impacto
 

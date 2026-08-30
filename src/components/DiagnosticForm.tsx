@@ -309,7 +309,7 @@ export function DiagnosticForm() {
       <div className="od-carousel" aria-live="polite">
         {STEPS.map((step, index) => (
           <div
-            className="od-slide"
+            className={`od-slide ${index === stepIndex ? "is-active" : ""}`}
             key={step.key}
             hidden={index !== stepIndex}
             aria-hidden={index !== stepIndex}

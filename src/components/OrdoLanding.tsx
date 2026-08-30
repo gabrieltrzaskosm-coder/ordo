@@ -198,17 +198,63 @@ const FAQ = [
 const STEP_LTR = "M6 0 C6 42, 94 12, 94 56";
 const STEP_RTL = "M94 0 C94 42, 6 12, 6 56";
 
+function DiagnosticDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (open && !dialog.open) dialog.showModal();
+    if (!open && dialog.open) dialog.close();
+  }, [open]);
+
+  return (
+    <dialog
+      ref={dialogRef}
+      className="ol-diagnostic-dialog"
+      onCancel={() => onOpenChange(false)}
+      onClose={() => onOpenChange(false)}
+      aria-labelledby="diagnostic-dialog-title"
+    >
+      <div className="ol-diagnostic-dialog-inner">
+        <div className="ol-diagnostic-dialog-header">
+          <div>
+            <span className="ol-eyebrow ol-eyebrow-red">Diagnóstico ORDO</span>
+            <h2 id="diagnostic-dialog-title">Vamos entender o ritmo do seu restaurante.</h2>
+            <p>Responda algumas perguntas. No final, você recebe uma leitura inicial da oportunidade.</p>
+          </div>
+          <button type="button" className="ol-dialog-close" onClick={() => onOpenChange(false)} aria-label="Fechar diagnóstico">×</button>
+        </div>
+        {open && <DiagnosticForm />}
+      </div>
+    </dialog>
+  );
+}
+
 export function OrdoLanding() {
   const rootRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
   const [showcaseIndex, setShowcaseIndex] = useState(0);
   const [resultsIndex, setResultsIndex] = useState(0);
+  const [diagnosticOpen, setDiagnosticOpen] = useState(false);
 
   const scrollTo = (id: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     document
       .getElementById(id)
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const openDiagnostic = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setDiagnosticOpen(true);
   };
 
   useEffect(() => {
@@ -287,6 +333,7 @@ export function OrdoLanding() {
   return (
     <div className="ol-root" ref={rootRef}>
       <style>{CSS}</style>
+      <DiagnosticDialog open={diagnosticOpen} onOpenChange={setDiagnosticOpen} />
 
       {/* ===== Sidebar de navegação ===== */}
       <nav className="ol-sidebar" aria-label="Seções">
@@ -320,7 +367,7 @@ export function OrdoLanding() {
             colocando mais ritmo no salão e mais lucro no caixa.
           </p>
           <div className="ol-hero-ctas">
-            <a href="#contato" onClick={scrollTo("contato")} className="ol-cta-primary">
+            <a href="#contato" onClick={openDiagnostic} className="ol-cta-primary">
               Fazer diagnóstico grátis<span className="ol-arrow">→</span>
             </a>
             <a href="#como" onClick={scrollTo("como")} className="ol-cta-ghost">
@@ -389,7 +436,7 @@ export function OrdoLanding() {
         </div>
         <div className="ol-section-cta">
           <p>Quer descobrir onde o seu restaurante pode recuperar margem?</p>
-          <a href="#contato" onClick={scrollTo("contato")} className="ol-cta-primary">
+          <a href="#contato" onClick={openDiagnostic} className="ol-cta-primary">
             Fazer diagnóstico grátis<span className="ol-arrow">→</span>
           </a>
         </div>
@@ -404,7 +451,7 @@ export function OrdoLanding() {
               Uma operação mais rápida em cada tela.
             </h2>
             <p>Do pedido do cliente à decisão do dono, cada hub organiza o próximo passo da equipe.</p>
-            <a href="#contato" onClick={scrollTo("contato")} className="ol-cta-primary">
+            <a href="#contato" onClick={openDiagnostic} className="ol-cta-primary">
               Fazer diagnóstico grátis<span className="ol-arrow">→</span>
             </a>
           </div>
@@ -458,7 +505,7 @@ export function OrdoLanding() {
             <span className="ol-showcase-count">0{resultsIndex + 1} / 0{RESULTADOS.length}</span>
             <button type="button" className="ol-showcase-arrow" onClick={() => moveResults(1)} aria-label="Próximo resultado">→</button>
           </div>
-          <a href="#contato" onClick={scrollTo("contato")} className="ol-cta-primary">
+          <a href="#contato" onClick={openDiagnostic} className="ol-cta-primary">
             Fazer diagnóstico grátis<span className="ol-arrow">→</span>
           </a>
         </div>
@@ -526,7 +573,7 @@ export function OrdoLanding() {
             })}
           </div>
           <div className="ol-como-cta">
-            <a href="#contato" onClick={scrollTo("contato")} className="ol-cta-primary">
+            <a href="#contato" onClick={openDiagnostic} className="ol-cta-primary">
               Fazer diagnóstico grátis<span className="ol-arrow">→</span>
             </a>
           </div>
@@ -609,7 +656,7 @@ export function OrdoLanding() {
         </div>
         <div className="ol-section-cta">
           <p>Veja qual plano acompanha o momento do seu restaurante.</p>
-          <a href="#contato" onClick={scrollTo("contato")} className="ol-cta-primary">
+          <a href="#contato" onClick={openDiagnostic} className="ol-cta-primary">
             Fazer diagnóstico grátis<span className="ol-arrow">→</span>
           </a>
         </div>
@@ -897,6 +944,23 @@ const CSS = `
 .ol-faq-item[open] .ol-faq-question::after { transform: rotate(45deg); }
 .ol-faq-answer { max-width: 760px; margin: -4px 54px 24px 4px; color: #6b5136; font-size: 16px; line-height: 1.6; }
 
+/* Diagnóstico aberto pelos CTAs */
+.ol-diagnostic-dialog { width: min(calc(100% - 32px), 860px); max-width: none; max-height: calc(100dvh - 32px); overflow: hidden; border: 0; border-radius: 24px; background: #fff; color: #2a1c10; padding: 0; box-shadow: 0 28px 90px rgba(42,28,16,.3); }
+.ol-diagnostic-dialog::backdrop { background: rgba(23,16,12,.68); backdrop-filter: blur(5px); }
+.ol-diagnostic-dialog-inner { max-height: calc(100dvh - 32px); overflow-y: auto; padding: 34px; }
+.ol-diagnostic-dialog-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 22px; }
+.ol-diagnostic-dialog-header h2 { max-width: 620px; margin: 10px 0 7px; color: #2a1c10; font-family: var(--font-instrument-serif), Georgia, serif; font-size: clamp(28px, 4vw, 42px); font-weight: 400; line-height: 1; }
+.ol-diagnostic-dialog-header p { max-width: 570px; margin: 0; color: #6b5136; font-size: 14px; line-height: 1.5; }
+.ol-dialog-close { flex: none; display: grid; width: 38px; height: 38px; place-items: center; border: 1px solid #d9cabb; border-radius: 50%; background: #fff; color: #2a1c10; cursor: pointer; font-size: 24px; line-height: 1; transition: border-color .2s ease, color .2s ease, transform .2s ease; }
+.ol-dialog-close:hover { border-color: #d41d0d; color: #d41d0d; transform: rotate(4deg); }
+.ol-diagnostic-dialog .od-form { border: 0; background: transparent; padding: 0; }
+
+@keyframes od-slide-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.od-slide.is-active { animation: od-slide-in .3s ease both; }
+
 /* Contato */
 .ol-contato { background: #fff; border-top: 1px solid #ece3d8; padding: clamp(80px, 12vw, 150px) 32px; }
 .ol-contato-layout { max-width: 820px; margin: 0 auto; display: flex; flex-direction: column; gap: 42px; align-items: center; }
@@ -990,6 +1054,10 @@ const CSS = `
   .ol-preview-appbar small { display: none; }
   .ol-results { padding-left: 24px; padding-right: 24px; }
   .ol-result-slide { flex-basis: 50%; }
+  .ol-diagnostic-dialog { width: calc(100% - 24px); max-height: calc(100dvh - 24px); border-radius: 20px; }
+  .ol-diagnostic-dialog-inner { max-height: calc(100dvh - 24px); padding: 24px 18px 18px; }
+  .ol-diagnostic-dialog-header { gap: 14px; margin-bottom: 14px; }
+  .ol-diagnostic-dialog-header h2 { font-size: 30px; }
   .ol-segment-grid, .ol-metrics, .ol-contato-layout { grid-template-columns: 1fr; }
   .ol-metrics { gap: 30px; }
   .ol-contato-layout { gap: 38px; }
@@ -1016,6 +1084,8 @@ const CSS = `
   .ol-result-slide:not(:first-child) { display: none; }
   .ol-result-card { min-height: 190px; padding: 24px; }
   .ol-result-card h3 { margin-top: 28px; font-size: 32px; }
+  .ol-diagnostic-dialog-header h2 { font-size: 27px; }
+  .ol-diagnostic-dialog-header p { font-size: 13px; }
   .od-form-grid, .ol-metrics-list { grid-template-columns: 1fr; }
   .od-form-actions .od-form-submit { flex: 1; }
   .od-identity-grid { grid-template-columns: 1fr; }

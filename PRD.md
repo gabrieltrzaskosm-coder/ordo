@@ -6,6 +6,19 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Diagnóstico em modal com transição animada
+
+- Os CTAs “Fazer diagnóstico grátis” agora abrem o questionário em um modal
+  nativo e acessível, em vez de apenas rolar até o formulário.
+- O modal reutiliza o `DiagnosticForm` existente, preservando cálculo de
+  aderência, projeções, envio por e-mail e resultado final.
+- Adicionada animação de entrada nas perguntas, com respeito a
+  `prefers-reduced-motion`, além de fechamento por botão e tecla Esc.
+- Como o projeto não possui shadcn/ui, `sonner` ou `Questionnaire`, a
+  experiência foi implementada com `dialog` nativo e CSS escopado, sem nova
+  dependência.
+- Pendente: validação final em produção após o deploy.
+
 ### 2026-08-30 — Carrossel de resultados
 
 - Criada a seção “Resultados” entre o carrossel dos hubs e “Como funciona”,

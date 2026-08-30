@@ -94,6 +94,7 @@ export async function submitDiagnostic(
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
+        "User-Agent": "ordo-diagnostic/1.0",
       },
       body: JSON.stringify({
         from: process.env.RESEND_FROM_EMAIL ?? "Ordo <onboarding@resend.dev>",
@@ -106,7 +107,12 @@ export async function submitDiagnostic(
     });
 
     if (!response.ok) {
-      console.error("Falha ao enviar diagnóstico para o Resend", response.status);
+      const errorBody = await response.text().catch(() => "");
+      console.error(
+        "Falha ao enviar diagnóstico para o Resend",
+        response.status,
+        errorBody,
+      );
       return {
         ok: false,
         message:

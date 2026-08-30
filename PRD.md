@@ -6,6 +6,16 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Diagnóstico do erro 403 do Resend
+
+- Logs de produção confirmaram que a chamada de envio está chegando ao Resend,
+  mas retornando HTTP 403.
+- Adicionado `User-Agent` à chamada direta da API e registro controlado do
+  corpo do erro nos logs, sem registrar a chave secreta.
+- A configuração externa ainda precisa usar um remetente permitido pelo
+  Resend: `onboarding@resend.dev` funciona apenas para o e-mail proprietário da
+  conta de teste; para outros destinatários é necessário verificar um domínio.
+
 ### 2026-08-30 — Exibição do resultado e diagnóstico do envio
 
 - Restaurados no resultado público o percentual de aderência e as projeções do

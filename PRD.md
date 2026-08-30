@@ -6,6 +6,35 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Landing orientada a lucro e diagnóstico BANT
+
+- Reposicionada a landing para falar diretamente com o dono do restaurante:
+  “Seu restaurante trabalhando com menos equipe e você lucrando mais”.
+- Removido o fundo animado/spotlight do hero e adotado fundo fixo, com foco na
+  promessa principal e CTA “Fazer diagnóstico grátis”.
+- Posicionamento incluído na primeira dobra: “O único sistema que diminui o
+  trabalho e aumenta a demanda”.
+- Criados blocos específicos para restaurantes grandes/alta demanda e
+  médios/pequenos com pressão de equipe, além de indicadores e tabela de
+  impacto operacional. Os indicadores são pontos de diagnóstico, não métricas
+  históricas inventadas apresentadas como prova.
+- Corrigidas promessas de pagamento online na landing: o produto atual informa
+  pagamento manual na mesa.
+- Criado formulário de diagnóstico com qualificação BANT (perfil, autoridade,
+  pressão de equipe/orçamento, necessidade e timing), validação server-side e
+  proteção honeypot.
+- Criado Server Action com envio para `otumia@gmail.com` via API do Resend e
+  assunto `Formulário do Sistema ORDO - [NOME DO RESTAURANTE]`.
+- Bloqueio de configuração: o projeto Vercel não possui ainda
+  `RESEND_API_KEY`/`RESEND_FROM_EMAIL`; sem essas variáveis o formulário não
+  envia e-mails em produção. Nenhum segredo foi incluído no repositório.
+- Validações: lint aprovado, 30 testes aprovados, build de produção aprovado e
+  `git diff --check` aprovado.
+- Deploy enviado ao Vercel (`dpl_AP6VkvARF7x6gvbkonmBKJMzGbC1`), mas a
+  confirmação externa retornou status `UNKNOWN`; publicação ainda não deve ser
+  considerada confirmada. URL gerada:
+  `https://app-pedidos-r7e5hop3s-gabrieltrzaskosm-7642s-projects.vercel.app`.
+
 ### 2026-08-30 — Redirecionamento da landing para conversão do dono
 
 - Removido o fundo animado/spotlight do hero; a primeira dobra agora usa fundo

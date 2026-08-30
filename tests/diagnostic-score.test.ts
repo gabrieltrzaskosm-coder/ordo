@@ -26,7 +26,8 @@ describe("calculateDiagnosticScore", () => {
     const result = calculateDiagnosticScore(hotAnswers);
 
     expect(result.adherence).toBe(100);
-    expect(result.profitPerspective).toBe(26);
+    expect(result.profitPerspectiveFirstMonth).toBe(26);
+    expect(result.profitPerspectiveSecondMonth).toBe(162);
     expect(result.lead).toBe("Lead Quente");
   });
 
@@ -34,7 +35,8 @@ describe("calculateDiagnosticScore", () => {
     const result = calculateDiagnosticScore(coldAnswers);
 
     expect(result.adherence).toBe(20);
-    expect(result.profitPerspective).toBe(8);
+    expect(result.profitPerspectiveFirstMonth).toBe(8);
+    expect(result.profitPerspectiveSecondMonth).toBe(50);
     expect(result.lead).toBe("Lead Frio");
   });
 });

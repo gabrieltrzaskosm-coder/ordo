@@ -13,7 +13,8 @@ export type DiagnosticAnswers = Partial<Record<ScoredField, string>>;
 
 export type DiagnosticAnalysis = {
   adherence: number;
-  profitPerspective: number;
+  profitPerspectiveFirstMonth: number;
+  profitPerspectiveSecondMonth: number;
   lead: `Lead ${LeadTemperature}`;
   breakdown: Record<ScoredField, LeadTemperature>;
 };
@@ -101,7 +102,8 @@ export function calculateDiagnosticScore(
 
   return {
     adherence,
-    profitPerspective: Math.round(4 + adherence * 0.22),
+    profitPerspectiveFirstMonth: Math.round(4 + adherence * 0.22),
+    profitPerspectiveSecondMonth: Math.round(50 + (adherence - 20) * 1.4),
     lead,
     breakdown,
   };

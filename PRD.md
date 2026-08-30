@@ -13,8 +13,9 @@
   de aumento de lucros.
 - Respostas Quentes recebem peso 100, Mornas recebem peso 60 e Frias recebem
   peso 20. A aderência é a média das sete respostas de qualificação.
-- A perspectiva exibida varia de 8% a 26% conforme a aderência. É apresentada
-  como estimativa inicial baseada nas respostas, não como promessa de resultado.
+- A perspectiva exibida em dois horizontes varia de 8% a 26% no primeiro mês e
+  de 50% a 162% no segundo mês conforme a aderência. É apresentada como
+  projeção inicial baseada nas respostas, não como promessa de resultado.
 - O e-mail de prospecção agora inclui classificação geral, percentuais e a
   classificação individual de cada resposta.
 - Adicionados testes unitários para os cenários totalmente Quente e totalmente

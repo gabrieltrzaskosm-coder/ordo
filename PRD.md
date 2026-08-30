@@ -18,6 +18,10 @@
   altura aproximada do cabeçalho fixo no celular.
 - Validações: lint aprovado e 30 testes aprovados. Build de produção em
   execução nesta sessão.
+- Deploy de produção enviado ao Vercel, que forneceu a URL de deployment, mas
+  a confirmação final ficou bloqueada: `vercel inspect` retornou status
+  `UNKNOWN` e o acompanhamento não avançou. Não declarar produção como
+  confirmada até nova verificação no painel/CLI.
 - Pendência: revisão visual em dispositivo real/viewport de 375px e avaliação
   de outras superfícies (Gestão, Cozinha e landing pública).
 

@@ -1,6 +1,10 @@
 "use server";
 
 import { z } from "zod";
+import {
+  calculateDiagnosticScore,
+  type DiagnosticAnalysis,
+} from "@/lib/diagnostic-score";
 
 const diagnosticSchema = z.object({
   restaurantName: z.string().trim().min(2, "Informe o nome do restaurante."),
@@ -18,8 +22,8 @@ const diagnosticSchema = z.object({
 });
 
 export type DiagnosticResult =
-  | { ok: true; message: string }
-  | { ok: false; message: string; fields?: Record<string, string> };
+  | { ok: true; message: string; analysis?: DiagnosticAnalysis }
+  | { ok: false; message: string; fields?: Record<string, string>; analysis?: DiagnosticAnalysis };
 
 export async function submitDiagnostic(
   formData: FormData,
@@ -40,33 +44,18 @@ export async function submitDiagnostic(
   // Campo invisível para reduzir envios automáticos sem criar fricção para o dono.
   if (parsed.data.website) return { ok: true, message: "Diagnóstico recebido." };
 
+  const analysis = calculateDiagnosticScore(parsed.data);
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     return {
       ok: false,
       message:
         "O formulário está temporariamente indisponível. Tente novamente em alguns minutos.",
+      analysis,
     };
   }
 
   const { restaurantName, ownerName, email, whatsapp, role, authority, profile, budget, need, waiters, goal } = parsed.data;
-  const hotSignals = [
-    role === "Dono",
-    authority === "Sim, a decisão é só minha",
-    need === "Aumentar as receitas e lucros",
-    waiters === "4 ou mais",
-  ];
-  const warmSignals = [
-    role === "CEO",
-    authority === "Tenho um sócio, decidimos juntos",
-    need === "Atender mais rápido e aumentar a demanda",
-    waiters === "2-3",
-  ];
-  const lead = hotSignals.some(Boolean)
-    ? "Lead Quente"
-    : warmSignals.some(Boolean)
-      ? "Lead Morno"
-      : "Lead em qualificação";
   const subject = `Formulário do Sistema ORDO - ${restaurantName}`;
   const text = [
     "Novo diagnóstico de lucro operacional — Ordo",
@@ -78,13 +67,24 @@ export async function submitDiagnostic(
     "",
     "QUALIFICAÇÃO",
     `Cargo: ${role}`,
-    `Classificação: ${lead}`,
+    `Classificação geral: ${analysis.lead}`,
+    `Aderência estimada ao ORDO: ${analysis.adherence}%`,
+    `Perspectiva estimada de aumento de lucros: ${analysis.profitPerspective}%`,
     `Perfil: ${profile}`,
     `Papel na decisão: ${authority}`,
     `Faixa de investimento: ${budget}`,
     `Principal desafio: ${need}`,
     `Garçons de salão: ${waiters}`,
     `Resultado desejado: ${goal}`,
+    "",
+    "CLASSIFICAÇÃO POR RESPOSTA",
+    `Cargo: ${analysis.breakdown.role}`,
+    `Decisão: ${analysis.breakdown.authority}`,
+    `Cenário: ${analysis.breakdown.profile}`,
+    `Peso da equipe: ${analysis.breakdown.budget}`,
+    `Desafio: ${analysis.breakdown.need}`,
+    `Garçons: ${analysis.breakdown.waiters}`,
+    `Resultado desejado: ${analysis.breakdown.goal}`,
   ].join("\n");
 
   try {
@@ -110,6 +110,7 @@ export async function submitDiagnostic(
         ok: false,
         message:
           "Não foi possível enviar agora. Tente novamente ou fale conosco por e-mail.",
+        analysis,
       };
     }
   } catch (error) {
@@ -117,11 +118,13 @@ export async function submitDiagnostic(
     return {
       ok: false,
       message: "Não foi possível enviar agora. Tente novamente em instantes.",
+      analysis,
     };
   }
 
   return {
     ok: true,
     message: "Diagnóstico recebido. Nossa equipe vai falar com você em breve.",
+    analysis,
   };
 }

@@ -6,6 +6,21 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Resultado automático de aderência do diagnóstico
+
+- Criada uma análise automática para aparecer ao final do formulário com o
+  percentual grande de “aderência para usar o ORDO” e uma perspectiva estimada
+  de aumento de lucros.
+- Respostas Quentes recebem peso 100, Mornas recebem peso 60 e Frias recebem
+  peso 20. A aderência é a média das sete respostas de qualificação.
+- A perspectiva exibida varia de 8% a 26% conforme a aderência. É apresentada
+  como estimativa inicial baseada nas respostas, não como promessa de resultado.
+- O e-mail de prospecção agora inclui classificação geral, percentuais e a
+  classificação individual de cada resposta.
+- Adicionados testes unitários para os cenários totalmente Quente e totalmente
+  Frio. Validações: lint aprovado, 32 testes aprovados, build de produção
+  aprovado e `git diff --check` aprovado.
+
 ### 2026-08-30 — Pergunta final orientada a resultado
 
 - Substituída a pergunta final sobre prazo de decisão por: “Qual resultado

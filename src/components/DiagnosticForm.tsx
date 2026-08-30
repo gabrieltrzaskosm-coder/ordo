@@ -220,6 +220,27 @@ export function DiagnosticForm() {
     setPending(false);
   }
 
+  if (result?.analysis) {
+    const analysis = result.analysis;
+
+    return (
+      <div className={`od-diagnostic-result ${result.ok ? "is-success" : "is-warning"}`} role="status" aria-live="polite">
+        <span className="od-result-kicker">Seu diagnóstico ORDO</span>
+        <strong className="od-result-score">{analysis.adherence}%</strong>
+        <h3>de aderência para usar o ORDO</h3>
+        <p className="od-result-highlight">
+          Seu negócio tem uma perspectiva estimada de <strong>{analysis.profitPerspective}%</strong> de aumento de lucros com o ORDO.
+        </p>
+        <p className="od-result-note">Essa é uma estimativa inicial baseada nas suas respostas, não uma promessa de resultado.</p>
+        {result.ok ? (
+          <p className="od-result-message">{result.message}</p>
+        ) : (
+          <p className="od-form-error" role="alert">{result.message}</p>
+        )}
+      </div>
+    );
+  }
+
   if (result?.ok) {
     return (
       <div className="od-form-success" role="status" aria-live="polite">

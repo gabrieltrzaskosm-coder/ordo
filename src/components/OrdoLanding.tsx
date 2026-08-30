@@ -608,6 +608,21 @@ const CSS = `
 .od-form-submit span { font-size: 21px; }
 .od-form-note { margin: -5px 0 0; color: #806b57; font-size: 11px; line-height: 1.4; text-align: center; }
 .od-form-error { margin: 0; border-radius: 10px; background: #fff0ed; padding: 10px 12px; color: #9b1c10; font-size: 13px; line-height: 1.4; }
+.od-diagnostic-result { display: flex; min-height: 360px; flex-direction: column; align-items: center; justify-content: center; gap: 10px; border: 1px solid #d8e8d9; border-radius: 24px; background: #f4fbf4; padding: 30px; text-align: center; }
+.od-diagnostic-result.is-warning { border-color: #ecdcc5; background: #fffaf3; }
+.od-result-kicker { color: #2f7d42; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.is-warning .od-result-kicker { color: #9a681f; }
+.od-result-score { color: #205b2d; font-size: clamp(64px, 10vw, 104px); line-height: .9; letter-spacing: -.07em; }
+.is-warning .od-result-score { color: #8a5b1d; }
+.od-diagnostic-result h3 { margin: 0; color: #205b2d; font-size: clamp(22px, 3vw, 30px); letter-spacing: -.03em; }
+.is-warning h3 { color: #754b16; }
+.od-result-highlight { max-width: 430px; margin: 8px 0 0; color: #386342; font-size: 16px; line-height: 1.45; }
+.od-result-highlight strong { color: #205b2d; }
+.is-warning .od-result-highlight, .is-warning .od-result-highlight strong { color: #754b16; }
+.od-result-note { max-width: 430px; margin: 0; color: #64806a; font-size: 11px; line-height: 1.45; }
+.is-warning .od-result-note { color: #8a704e; }
+.od-result-message { margin: 4px 0 0; color: #4d6f54; font-size: 13px; }
+.is-warning .od-form-error { margin-top: 4px; }
 .od-form-success { display: flex; min-height: 360px; flex-direction: column; align-items: center; justify-content: center; gap: 12px; border: 1px solid #d8e8d9; border-radius: 24px; background: #f4fbf4; padding: 30px; text-align: center; }
 .od-success-mark { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 50%; background: #2f7d42; color: #fff; font-size: 22px; }
 .od-form-success h3 { margin: 0; color: #205b2d; font-size: 24px; }

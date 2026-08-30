@@ -6,6 +6,16 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Exibição do resultado e diagnóstico do envio
+
+- Restaurados no resultado público o percentual de aderência e as projeções do
+  primeiro e do segundo mês, conforme solicitado para quem responde o formulário.
+- Confirmado no ambiente Production da Vercel que `RESEND_API_KEY` e
+  `RESEND_FROM_EMAIL` ainda não estão cadastradas. Por isso, os e-mails não
+  chegam ao destinatário, embora o resultado seja calculado localmente.
+- Validações: lint aprovado, 32 testes aprovados e build de produção aprovado.
+- Aguardando a chave do Resend para concluir o envio real de e-mails.
+
 ### 2026-08-30 — Resultado desacoplado do envio de e-mail
 
 - Ajustado o envio do diagnóstico para preparar a confirmação imediatamente no

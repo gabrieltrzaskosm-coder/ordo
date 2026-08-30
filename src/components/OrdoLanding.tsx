@@ -612,11 +612,20 @@ const CSS = `
 .od-diagnostic-result.is-warning { border-color: #ecdcc5; background: #fffaf3; }
 .od-result-kicker { color: #2f7d42; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
 .is-warning .od-result-kicker { color: #9a681f; }
+.od-result-score { color: #205b2d; font-size: clamp(64px, 10vw, 104px); line-height: .9; letter-spacing: -.07em; }
+.is-warning .od-result-score { color: #8a5b1d; }
 .od-diagnostic-result h3 { margin: 0; color: #205b2d; font-size: clamp(22px, 3vw, 30px); letter-spacing: -.03em; }
 .is-warning h3 { color: #754b16; }
 .od-result-highlight { max-width: 430px; margin: 8px 0 0; color: #386342; font-size: 16px; line-height: 1.45; }
 .od-result-highlight strong { color: #205b2d; }
 .is-warning .od-result-highlight, .is-warning .od-result-highlight strong { color: #754b16; }
+.od-result-projections { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: min(100%, 430px); margin-top: 6px; }
+.od-result-projections div { display: flex; flex-direction: column; gap: 3px; border: 1px solid #d8e8d9; border-radius: 14px; background: rgba(255,255,255,.62); padding: 12px 10px; }
+.od-result-projections strong { color: #205b2d; font-size: 25px; letter-spacing: -.04em; }
+.od-result-projections span { color: #64806a; font-size: 11px; }
+.is-warning .od-result-projections div { border-color: #ecdcc5; }
+.is-warning .od-result-projections strong { color: #754b16; }
+.is-warning .od-result-projections span { color: #8a704e; }
 .od-result-note { max-width: 430px; margin: 0; color: #64806a; font-size: 11px; line-height: 1.45; }
 .is-warning .od-result-note { color: #8a704e; }
 .od-result-message { margin: 4px 0 0; color: #4d6f54; font-size: 13px; }
@@ -654,6 +663,7 @@ const CSS = `
   .od-form-grid, .ol-metrics-list { grid-template-columns: 1fr; }
   .od-form-actions .od-form-submit { flex: 1; }
   .od-identity-grid { grid-template-columns: 1fr; }
+  .od-result-projections { grid-template-columns: 1fr; }
   .od-slide-question h4 { font-size: 26px; }
   .ol-hero-ctas { align-items: stretch; flex-direction: column; width: 100%; }
   .ol-cta-primary, .ol-cta-ghost { justify-content: center; }

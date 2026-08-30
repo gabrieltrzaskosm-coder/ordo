@@ -6,6 +6,16 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Verificação do link de produção
+
+- Verificado o deployment `dpl_AP6VkvARF7x6gvbkonmBKJMzGbC1` e a URL pública.
+- A URL responde com HTTP 200, mas ainda exibe a tela da Vercel “Deployment is
+  building”; o `vercel inspect` continua retornando `UNKNOWN`.
+- Para liberar a landing, é necessário concluir/recriar o deployment no Vercel
+  e confirmar o projeto/branch/build correto.
+- O envio do diagnóstico também depende de cadastrar no ambiente Production as
+  variáveis `RESEND_API_KEY` e `RESEND_FROM_EMAIL`, e então fazer novo deploy.
+
 ### 2026-08-30 — Landing orientada a lucro e diagnóstico BANT
 
 - Reposicionada a landing para falar diretamente com o dono do restaurante:

@@ -6,6 +6,20 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Métricas no hub de diagnóstico
+
+- Transformados os quatro pontos de “O diagnóstico olha para” em mensagens
+  numéricas: 7 minutos até o primeiro atendimento, 12 pedidos por hora no
+  pico, 36,5% da receita em equipe e 5% de margem antes de impostos.
+- Os números de atendimento e capacidade são referências ilustrativas para
+  orientar a conversa comercial; a interface informa que a medição real será
+  feita com os dados de cada restaurante.
+- Os percentuais de equipe e margem foram baseados em referências da National
+  Restaurant Association; não são metas nem padrão obrigatório para o Brasil.
+- Atualizado o texto de restaurantes médios e pequenos para “fazer mais com
+  equipes menores”.
+- Pendente: validação final em produção após o deploy.
+
 ### 2026-08-30 — FAQ e limpeza do hero
 
 - Removido do topo do hero o selo “Para donos de restaurantes”, deixando a

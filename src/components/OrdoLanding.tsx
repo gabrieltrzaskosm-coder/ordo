@@ -35,14 +35,14 @@ const DIFERENCIAIS = [
 
 const SEGMENTOS = [
   ["Restaurantes grandes", "A demanda já existe. O gargalo é a velocidade.", "Para salões cheios que precisam receber mais pedidos sem transformar cada pico em uma corrida da equipe."],
-  ["Restaurantes médios e pequenos", "A folha pesa. Cada contratação precisa se pagar.", "Para operações que precisam fazer mais com a equipe atual e proteger o lucro antes de contratar de novo."],
+  ["Restaurantes médios e pequenos", "A folha pesa. Cada contratação precisa se pagar.", "Para operações que precisam fazer mais com equipes menores."],
 ] as const;
 
 const METRICAS = [
-  ["Tempo até o pedido", "Quantos minutos passam entre o cliente sentar e o pedido chegar à cozinha?"],
-  ["Pedidos por hora", "Quantos pedidos sua equipe consegue absorver no pico sem criar fila?"],
-  ["Equipe sobre faturamento", "Quanto da receita é consumido por salários e encargos?"],
-  ["Tempo de fechamento", "Quanto tempo a equipe gasta para resolver a conta e liberar a mesa?"],
+  ["7 min até o primeiro atendimento", "Em uma operação sem ritmo, um cliente pode esperar cerca de 7 minutos para ser atendido em horas de pico."],
+  ["12 pedidos por hora no pico", "O diagnóstico mede quantos pedidos a equipe consegue absorver sem criar fila, retrabalho ou perda de mesas."],
+  ["36,5% da receita em equipe", "Em restaurantes de serviço completo, salários e benefícios representaram uma mediana de 36,5% das vendas em 2024."],
+  ["5% de margem antes de impostos", "Em uma operação típica, a margem é estreita. Ganhar velocidade e reduzir erros faz diferença no caixa."],
 ] as const;
 
 const IMPACTO = [
@@ -295,6 +295,7 @@ export function OrdoLanding() {
                 <div><strong>{title}</strong><p>{body}</p></div>
               </div>
             ))}
+            <p className="ol-metrics-note">Referências de operação para orientar o diagnóstico. A medição real considera os dados do seu restaurante.</p>
           </div>
         </div>
         <div className="ol-impact">
@@ -579,6 +580,7 @@ const CSS = `
 .ol-metric-number { color: #d41d0d; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .1em; }
 .ol-metric strong { display: block; font-size: 16px; }
 .ol-metric p { margin: 6px 0 0; color: #6b5136; font-size: 13px; line-height: 1.45; }
+.ol-metrics-note { grid-column: 1 / -1; margin: -4px 0 0; color: #806b57; font-size: 11px; line-height: 1.45; }
 .ol-impact { margin-top: 76px; padding-top: 34px; border-top: 1px solid #ece3d8; }
 .ol-impact-wrap { margin-top: 28px; overflow-x: auto; border: 1px solid #ece3d8; border-radius: 18px; background: #fff; }
 .ol-impact-table { width: 100%; min-width: 760px; border-collapse: collapse; text-align: left; }

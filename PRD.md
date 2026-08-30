@@ -21,6 +21,8 @@
 - Adicionados testes unitários para os cenários totalmente Quente e totalmente
   Frio. Validações: lint aprovado, 32 testes aprovados, build de produção
   aprovado e `git diff --check` aprovado.
+- Deploy de produção concluído com `dpl_6UkpJP8ckmzf6TPYoTkz3Q9LtCAd`, status
+  `READY`, alias `https://app-pedidos-seven.vercel.app` e verificação HTTP 200.
 - Deploy de produção concluído com `dpl_Cd8tnKU8D1zYUx7pd3f6KG8zmNoX`, status
   `READY`, alias `https://app-pedidos-seven.vercel.app` e verificação HTTP 200.
 

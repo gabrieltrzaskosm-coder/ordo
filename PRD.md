@@ -1524,6 +1524,34 @@ PR → Lint → Typecheck → Tests → Build → Preview (Vercel) → Review �
 
 ---
 
+# 49. Resumo da sessão — 2026-08-31 — Banner e base visual compartilhada de Gestão
+
+## Alterações
+
+- Criado o componente reutilizável `src/components/ui/banner.tsx`, com as
+  variantes `default` e `rainbow`, altura configurável e sem dependências
+  externas.
+- Inserida uma faixa de contexto no `GestaoShell`, compartilhada pelo hub e
+  por todas as subpáginas da área de Gestão.
+- A variante rainbow foi adaptada à paleta Ordo, com gradiente suave, ponto de
+  acento vermelho e contraste adequado para a faixa compacta.
+- Ajustado o espaçamento do conteúdo e da faixa em telas menores, mantendo o
+  comportamento responsivo existente da navegação.
+
+## Validações
+
+- `npm run lint` — aprovado.
+- `npm test` — aprovado: 32 testes em 3 arquivos.
+- `npm run build` — aprovado com Next.js 16.2.11.
+- `git diff --check` — aprovado.
+
+## Pendências
+
+- Refinar a hierarquia visual e os componentes específicos de cada subpágina
+  de Gestão na próxima rodada.
+
+---
+
 # 48. Resumo da sessão — 2026-08-30 — Redesign dos cards de Cases
 
 ## Mudanças aplicadas

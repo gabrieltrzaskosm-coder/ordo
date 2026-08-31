@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { signOut } from "@/app/login/actions";
+import { Banner } from "@/components/ui/banner";
 import { hasFeature, type Feature, type Plan } from "@/lib/plans";
 
 // Chrome da área de gestão: sidebar fixa (navegação numerada com efeito de
@@ -178,7 +179,15 @@ export function GestaoShell({
         </div>
       </aside>
 
-      <div className="gs-main">{children}</div>
+      <div className="gs-main">
+        <Banner
+          message="Operação em ordem. Acompanhe o ritmo do seu restaurante."
+          height="2rem"
+          variant="rainbow"
+          className="gs-banner"
+        />
+        <div className="gs-page-content">{children}</div>
+      </div>
     </div>
   );
 }
@@ -242,6 +251,18 @@ const GESTAO_CSS = `
 .gs-foot-user { margin: 8px 0 0; font-size: 11px; color: rgba(0,0,0,.38); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .gs-main { flex: 1; min-width: 0; padding: 34px 30px 90px; }
+.gs-page-content { min-width: 0; }
+.gs-banner { margin: -10px auto 24px; max-width: 760px; }
+
+/* Faixa partilhada pelo hub e por todas as sub-páginas. A variante rainbow é
+   uma adaptação sóbria do exemplo de referência, usando a paleta Ordo. */
+.ui-banner { position: relative; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: var(--banner-height, 2rem); overflow: hidden; border: 1px solid rgba(212,29,13,.14); border-radius: 999px; padding: 5px 14px; color: #191919; font-size: 11px; font-weight: 700; letter-spacing: .01em; line-height: 1.2; }
+.ui-banner::before { position: absolute; inset: 0; content: ""; background: rgba(255,255,255,.78); }
+.ui-banner-rainbow { background: linear-gradient(90deg, #f7c6bd 0%, #f8dfaa 34%, #d7e7d1 68%, #c8dceb 100%); }
+.ui-banner-default { background: #fff; }
+.ui-banner-mark, .ui-banner-message { position: relative; z-index: 1; }
+.ui-banner-mark { width: 6px; height: 6px; flex: 0 0 auto; border-radius: 999px; background: var(--gs-accent, #d41d0d); box-shadow: 0 0 0 4px rgba(212,29,13,.12); }
+
 
 /* ---- Hub (.gh-*) ---- */
 .gh-wrap { max-width: 760px; margin: 0 auto; animation: gsFade .5s ease both; }
@@ -283,7 +304,8 @@ const GESTAO_CSS = `
   .gs-tick { display: none; }
   .gs-foot { margin-top: 0; margin-left: auto; padding-top: 0; border-top: none; flex-direction: row; gap: 12px; align-items: center; }
   .gs-foot-user { display: none; }
-  .gs-main { padding: 20px 16px 80px; }
+  .gs-main { padding: 16px 16px 80px; }
+  .gs-banner { margin: 0 auto 18px; max-width: none; }
   .gh-metrics { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) {

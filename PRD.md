@@ -129,6 +129,12 @@
   de escrita. Pendência: vincular o projeto com `supabase link` usando project
   ref e senha do banco, ou fornecer uma `DATABASE_URL` administrativa, para
   executar dry-run e `db push` em uma janela de menor tráfego.
+- 2026-08-31 — Criação de acesso solicitada para `otium.sap@gmail.com`: a
+  verificação de login não alcançou o projeto Supabase por falha de resolução
+  DNS do host remoto. Nenhuma conta, senha, estabelecimento ou registo de staff
+  foi criado ou alterado. Repetir quando a conectividade com Supabase estiver
+  disponível, verificando primeiro se o e-mail já existe para não criar dados
+  duplicados.
 
 ## Histórico de sessões
 

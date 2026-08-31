@@ -86,6 +86,9 @@ export async function submitDiagnostic(
     `Resultado desejado: ${analysis.breakdown.goal}`,
   ].join("\n");
 
+  const resendController = new AbortController();
+  const resendTimeout = setTimeout(() => resendController.abort(), 12_000);
+
   try {
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -101,6 +104,7 @@ export async function submitDiagnostic(
         subject,
         text,
       }),
+      signal: resendController.signal,
       cache: "no-store",
     });
 
@@ -122,9 +126,14 @@ export async function submitDiagnostic(
     console.error("Erro de rede ao enviar diagnóstico", error);
     return {
       ok: false,
-      message: "Não foi possível enviar agora. Tente novamente em instantes.",
+      message:
+        error instanceof Error && error.name === "AbortError"
+          ? "O envio demorou mais que o esperado. Tente novamente."
+          : "Não foi possível enviar agora. Tente novamente em instantes.",
       analysis,
     };
+  } finally {
+    clearTimeout(resendTimeout);
   }
 
   return {

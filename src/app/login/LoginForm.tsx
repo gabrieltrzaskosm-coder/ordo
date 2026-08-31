@@ -10,7 +10,7 @@ const labelStyle: React.CSSProperties = {
   fontSize: 11,
   letterSpacing: ".2em",
   textTransform: "uppercase",
-  color: "rgba(255,255,255,.5)",
+  color: "rgba(25,25,25,.62)",
 };
 
 function Field({
@@ -47,12 +47,12 @@ function Field({
           boxSizing: "border-box",
           background: "transparent",
           border: "none",
-          borderBottom: `1px solid ${focus ? "#d9603a" : "rgba(255,255,255,.26)"}`,
+          borderBottom: `1px solid ${focus ? "#d41d0d" : "rgba(25,25,25,.24)"}`,
           borderRadius: 0,
           padding: "0 2px 13px",
           fontWeight: 300,
           fontSize: "clamp(16px,.95vw,18px)",
-          color: "#fff",
+          color: "#191919",
           outline: "none",
           transition: "border-color .25s ease",
         }}
@@ -97,19 +97,19 @@ export function LoginForm() {
             display: "flex",
             gap: 10,
             alignItems: "center",
-            border: "1px solid rgba(217,96,58,.4)",
-            borderLeft: "2px solid #d9603a",
-            background: "rgba(217,96,58,.08)",
+            border: "1px solid rgba(212,29,13,.28)",
+            borderLeft: "2px solid #d41d0d",
+            background: "rgba(212,29,13,.07)",
             padding: "11px 14px",
             marginTop: -6,
           }}
         >
-          <span className="font-mono-ui" style={{ fontSize: 12, color: "#e0764f" }}>
+          <span className="font-mono-ui" style={{ fontSize: 12, color: "#b01808" }}>
             !
           </span>
           <span
             className="font-mono-ui"
-            style={{ fontWeight: 300, fontSize: 12.5, color: "rgba(255,255,255,.82)", letterSpacing: ".03em" }}
+            style={{ fontWeight: 300, fontSize: 12.5, color: "rgba(25,25,25,.78)", letterSpacing: ".03em" }}
           >
             {state.error}
           </span>
@@ -132,9 +132,9 @@ export function LoginForm() {
           fontSize: "clamp(11px,.78vw,13px)",
           letterSpacing: ".24em",
           textTransform: "uppercase",
-          color: pending ? "rgba(255,255,255,.7)" : "#fff",
+          color: pending ? "rgba(255,255,255,.72)" : "#fff",
           cursor: pending ? "not-allowed" : "pointer",
-          background: pending ? "rgba(217,96,58,.4)" : "#d9603a",
+          background: pending ? "rgba(212,29,13,.5)" : "#d41d0d",
           transition: "background .25s ease",
         }}
       >

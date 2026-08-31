@@ -1510,6 +1510,33 @@ PR → Lint → Typecheck → Tests → Build → Preview (Vercel) → Review �
 
 ---
 
+# 52. Resumo da sessão — 2026-08-31 — Login claro e centralizado
+
+## Alterações
+
+- Removido o botão/link “Criar conta” do canto superior direito e também do
+  menu mobile da tela `/login`.
+- Centralizado horizontalmente o espaço de login na área principal da página.
+- Alterada a composição para o tema claro da Gestão: canvas `#f5f5f3`, texto
+  `#191919`, superfícies claras e acento vermelho `#d41d0d`.
+- Atualizados campos, labels, alertas, navegação, menu mobile, recuperação de
+  senha e rodapé para manter legibilidade no novo fundo.
+
+## Validações
+
+- `npm run lint` — aprovado.
+- `npm test` — aprovado: 32 testes em 3 arquivos.
+- `git diff --check` — aprovado.
+- `npm run build` — bloqueado novamente por indisponibilidade de download das
+  fontes Google em `fonts.gstatic.com`; sem erro relacionado à alteração.
+
+## Entrega
+
+- Código enviado para `main`; deploy de produção pendente até o build remoto
+  confirmar a compilação.
+
+---
+
 # 50. Resumo da sessão — 2026-08-31 — Fundo sólido no login
 
 ## Alterações

@@ -11,7 +11,7 @@ const LINKS = [
 ];
 
 const linkStyle: React.CSSProperties = {
-  color: "#fff",
+  color: "#191919",
   transition: "color .25s ease",
 };
 
@@ -47,7 +47,7 @@ export function LoginNav() {
             fontSize: "clamp(20px,1.75vw,28px)",
             letterSpacing: ".22em",
             lineHeight: 1,
-            color: "#fff",
+            color: "#191919",
           }}
         >
           ORDO
@@ -71,16 +71,6 @@ export function LoginNav() {
                 {l.label}
               </Link>
             ))}
-            <Link
-              href="/signup"
-              style={{
-                ...linkStyle,
-                border: "1px solid rgba(255,255,255,.26)",
-                padding: "11px 18px",
-              }}
-            >
-              Criar conta
-            </Link>
           </div>
 
           <button
@@ -93,8 +83,8 @@ export function LoginNav() {
               alignItems: "center",
               justifyContent: "center",
               background: "none",
-              border: "1px solid rgba(255,255,255,.26)",
-              color: "#fff",
+              border: "1px solid rgba(25,25,25,.24)",
+              color: "#191919",
               fontWeight: 400,
               fontSize: 12,
               letterSpacing: ".18em",
@@ -120,7 +110,7 @@ export function LoginNav() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "rgba(6,5,4,.95)",
+          background: "rgba(255,255,255,.96)",
           backdropFilter: "blur(26px) saturate(140%)",
           WebkitBackdropFilter: "blur(26px) saturate(140%)",
           transition: "clip-path .7s cubic-bezier(.16,1,.3,1),opacity .45s ease",
@@ -146,28 +136,12 @@ export function LoginNav() {
                 fontSize: "clamp(20px,5.5vw,26px)",
                 letterSpacing: ".14em",
                 textTransform: "uppercase",
-                color: "#fff",
+                color: "#191919",
               }}
             >
               {l.label}
             </Link>
           ))}
-          <Link
-            href="/signup"
-            onClick={() => setOpen(false)}
-            style={{
-              fontWeight: 400,
-              fontSize: "clamp(15px,4vw,18px)",
-              letterSpacing: ".22em",
-              textTransform: "uppercase",
-              color: "#fff",
-              padding: "16px 40px",
-              border: "1px solid rgba(255,255,255,.26)",
-              marginTop: 12,
-            }}
-          >
-            Criar conta
-          </Link>
         </div>
       </div>
     </>

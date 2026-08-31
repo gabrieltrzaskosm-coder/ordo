@@ -386,10 +386,9 @@ body {
 }
 
 /* =============================================================
-   Login (rota /login) — visual escuro/editorial próprio, ESCOPADO
-   a .ordo-login. Sora + JetBrains Mono; paleta quase-preta quente
-   com acento terracota. Animações congelam com prefers-reduced-motion
-   (regra global acima). O fundo é uma cor sólida para máxima legibilidade.
+   Login (rota /login) — visual claro/editorial próprio, ESCOPADO
+   a .ordo-login. Sora + JetBrains Mono; paleta neutra da Gestão
+   com acento vermelho. Animações congelam com prefers-reduced-motion.
    ============================================================= */
 .ordo-login {
   font-family: var(--font-sora), system-ui, sans-serif;
@@ -401,14 +400,14 @@ body {
   font-family: var(--font-jetbrains), ui-monospace, monospace;
 }
 .ordo-login ::selection {
-  background: rgba(217, 96, 58, 0.35);
+  background: rgba(212, 29, 13, 0.18);
 }
 .ordo-login input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(25, 25, 25, 0.45);
   transition: color 0.25s ease;
 }
 .ordo-login input:focus::placeholder {
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(25, 25, 25, 0.3);
 }
 
 @keyframes ordoSweep {

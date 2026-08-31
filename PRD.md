@@ -1371,6 +1371,27 @@ PR → Lint → Typecheck → Tests → Build → Preview (Vercel) → Review �
 - Deployment de produção Vercel: `dpl_GtJPj6tExmgAP8f9zHmVineYbgwF`, estado `READY`.
 - Domínio: `https://app-pedidos-seven.vercel.app`.
 
+---
+
+# 48. Resumo da sessão — 2026-08-30 — Redesign dos cards de Cases
+
+## Mudanças aplicadas
+
+- Os cards de Cases passaram a usar a fachada do restaurante como imagem de fundo em toda a área do card.
+- O título fica destacado no estado inicial e os dados do case são revelados com uma transição de hover ou foco no desktop.
+- O card ganhou foco por teclado, contorno visível e interação de inclinação preservada.
+- Em dispositivos touch, todos os dados permanecem visíveis imediatamente, sem depender de hover.
+- A animação respeita `prefers-reduced-motion`.
+
+## Validações e entrega
+
+- `npm run lint`, `npm test` (32 testes), `npm run build` e `git diff --check` — aprovados.
+- Browser QA desktop e mobile — aprovado; sem mensagens no console.
+- Commit: `0189ad5` (`Redesign cases cards`).
+- Push para `main` concluído.
+- Deployment de produção Vercel: `dpl_HzaKScRmByLgqquYC2B5KypxHdHP`, estado `READY`.
+- Domínio: `https://app-pedidos-seven.vercel.app`.
+
 ## Pendências para a próxima etapa
 
 - Corrigir os três apontamentos de acessibilidade observados na auditoria anterior: landmark `<main>`, contraste do número da primeira etapa e área de toque dos indicadores dos carrosséis.

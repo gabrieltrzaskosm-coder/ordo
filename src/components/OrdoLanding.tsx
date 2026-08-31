@@ -94,6 +94,7 @@ function ResultCaseCard({ result, index }: { result: ResultCase; index: number }
     <article
       ref={cardRef}
       className="ol-result-card"
+      tabIndex={0}
       onPointerMove={handlePointerMove}
       onPointerLeave={resetTilt}
       style={{ "--result-image-position": `${index * 25}%` } as React.CSSProperties}
@@ -118,7 +119,7 @@ function ResultCaseCard({ result, index }: { result: ResultCase; index: number }
           <span className="ol-sr-only">{result.metric}</span>
           <span>{result.metricLabel}</span>
         </div>
-        <h3>{result.title}</h3>
+        <h3 className="ol-result-title">{result.title}</h3>
         <p>{result.body}</p>
       </div>
     </article>
@@ -1004,12 +1005,19 @@ const CSS = `
 .ol-results-carousel { width: 100%; overflow: hidden; margin-top: 44px; }
 .ol-results-track { display: flex; width: 100%; }
 .ol-result-slide { flex: 0 0 33.333%; padding: 0 8px; }
-.ol-result-card { position: relative; min-height: 530px; overflow: hidden; border: 1px solid rgba(255,255,255,.24); border-radius: 20px; background: rgba(255,255,255,.1); -webkit-backdrop-filter: blur(15px); backdrop-filter: blur(15px); box-shadow: 0 15px 35px rgba(0,0,0,.2); transform: perspective(1000px) rotateX(var(--result-rotate-x, 0deg)) rotateY(var(--result-rotate-y, 0deg)) translateY(0); transition: border-color .45s ease, transform .45s cubic-bezier(.2,.8,.2,1), box-shadow .45s ease; will-change: transform; }
-.ol-result-card::before { position: absolute; inset: 0 auto 0 0; width: 50%; background: rgba(255,255,255,.05); content: ""; pointer-events: none; z-index: 1; }
+.ol-result-card { position: relative; display: flex; min-height: 530px; align-items: flex-end; overflow: hidden; border: 1px solid rgba(255,255,255,.24); border-radius: 20px; background: #17110c; box-shadow: 0 15px 35px rgba(0,0,0,.2); isolation: isolate; outline: none; transform: perspective(1000px) rotateX(var(--result-rotate-x, 0deg)) rotateY(var(--result-rotate-y, 0deg)) translateY(0); transition: border-color .45s ease, transform .45s cubic-bezier(.2,.8,.2,1), box-shadow .45s ease; will-change: transform; }
+.ol-result-card::before { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(23,16,12,.04) 0%, rgba(23,16,12,.08) 28%, rgba(23,16,12,.82) 72%, rgba(23,16,12,.98) 100%); content: ""; pointer-events: none; z-index: 1; transition: background .7s cubic-bezier(.19,1,.22,1); }
 .ol-result-card::after { position: absolute; inset: 1px; border: 1px solid rgba(255,255,255,.08); border-radius: 19px; content: ""; pointer-events: none; z-index: 3; }
-.ol-result-card:hover { border-color: rgba(255,255,255,.44); transform: perspective(1000px) rotateX(var(--result-rotate-x, 0deg)) rotateY(var(--result-rotate-y, 0deg)) translateY(-10px); box-shadow: 0 25px 50px rgba(0,0,0,.3); }
-.ol-result-image { position: absolute; top: 0; left: 0; width: 100%; height: 185px; background-image: linear-gradient(180deg, rgba(23,16,12,.04), rgba(23,16,12,.86)), url('/images/ordo-case-facade.png'); background-position: var(--result-image-position, 50%) center; background-size: cover; opacity: .9; }
-.ol-result-card-content { position: relative; z-index: 2; display: flex; min-height: 530px; flex-direction: column; padding: 210px 28px 28px; color: #fff; }
+.ol-result-card:hover, .ol-result-card:focus { border-color: rgba(255,255,255,.48); transform: perspective(1000px) rotateX(var(--result-rotate-x, 0deg)) rotateY(var(--result-rotate-y, 0deg)) translateY(-10px); box-shadow: 0 25px 50px rgba(0,0,0,.3); }
+.ol-result-card:focus-visible { outline: 2px solid #f5b400; outline-offset: 4px; }
+.ol-result-card:hover::before, .ol-result-card:focus::before { background: linear-gradient(to bottom, rgba(23,16,12,.1) 0%, rgba(23,16,12,.2) 34%, rgba(23,16,12,.78) 68%, rgba(23,16,12,.98) 100%); }
+.ol-result-image { position: absolute; inset: 0; width: 100%; height: 110%; background-image: url('/images/ordo-case-facade.png'); background-position: var(--result-image-position, 50%) center; background-size: cover; opacity: .92; transition: transform calc(var(--result-card-duration, 700ms) * 1.5) cubic-bezier(.19,1,.22,1); }
+.ol-result-card:hover .ol-result-image, .ol-result-card:focus .ol-result-image { transform: translateY(-4%) scale(1.04); }
+.ol-result-card-content { position: absolute; right: 0; bottom: 0; left: 0; z-index: 2; display: flex; min-height: 0; flex-direction: column; padding: 24px 26px 26px; color: #fff; transform: translateY(calc(100% - 6.6rem)); transition: transform 700ms cubic-bezier(.19,1,.22,1); }
+.ol-result-card-content > * { transition: opacity 700ms cubic-bezier(.19,1,.22,1), transform 700ms cubic-bezier(.19,1,.22,1); }
+.ol-result-card-content > *:not(.ol-result-title) { opacity: 0; transform: translateY(1.5rem); }
+.ol-result-card:hover .ol-result-card-content, .ol-result-card:focus .ol-result-card-content { transform: translateY(0); }
+.ol-result-card:hover .ol-result-card-content > *, .ol-result-card:focus .ol-result-card-content > * { opacity: 1; transform: translateY(0); }
 .ol-result-number { color: #f5b400; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .12em; }
 .ol-result-case { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 24px; }
 .ol-result-case strong { color: #fff; font-size: 14px; }
@@ -1026,7 +1034,7 @@ const CSS = `
   .ol-result-metric-count { color: transparent !important; position: relative; }
   .ol-result-metric-count::after { position: absolute; inset: 0; color: #f5b400; content: counter(result-count); }
 }
-.ol-result-card h3 { margin: 24px 0 8px; color: #fff; font-family: var(--font-instrument-serif), Georgia, serif; font-size: 27px; font-weight: 400; line-height: 1; }
+.ol-result-card h3 { margin: 24px 0 8px; color: #fff; font-family: var(--font-instrument-serif), Georgia, serif; font-size: 27px; font-weight: 400; line-height: 1.08; }
 .ol-result-card p { max-width: 280px; margin: 0; color: rgba(255,255,255,.72); font-size: 14px; line-height: 1.5; }
 .ol-results-controls { display: flex; align-items: center; gap: 14px; width: 100%; max-width: 1140px; margin-top: 18px; padding: 0 8px; }
 .ol-results-controls .ol-showcase-count { margin-left: 0; color: rgba(251,248,244,.62); }
@@ -1196,7 +1204,14 @@ const CSS = `
 @media (prefers-reduced-motion: reduce) {
   .ol-reveal { transition: none !important; }
   .ol-result-card { transform: none !important; transition: none !important; }
+  .ol-result-card-content, .ol-result-card-content > *, .ol-result-image { transition: none !important; }
   .ol-result-metric-count { --result-count: var(--result-target); animation: none !important; }
+}
+
+@media (hover: none) {
+  .ol-result-card { transform: none; }
+  .ol-result-card-content { transform: none; }
+  .ol-result-card-content > *:not(.ol-result-title) { opacity: 1; transform: none; }
 }
 
 @media (max-width: 760px) {
@@ -1243,8 +1258,9 @@ const CSS = `
   .ol-result-slide { flex-basis: 100%; }
   .ol-result-slide:not(:first-child) { display: none; }
   .ol-result-card { min-height: 465px; }
-  .ol-result-image { height: 160px; }
-  .ol-result-card-content { min-height: 465px; padding: 184px 24px 24px; }
+  .ol-result-image { height: 110%; }
+  .ol-result-card-content { min-height: 0; padding: 24px; transform: none; }
+  .ol-result-card-content > *:not(.ol-result-title) { opacity: 1; transform: none; }
   .ol-result-case { margin-top: 20px; }
   .ol-result-metric { margin-top: 24px; }
   .ol-result-card h3 { margin-top: 20px; font-size: 29px; }

@@ -1360,9 +1360,18 @@ PR → Lint → Typecheck → Tests → Build → Preview (Vercel) → Review �
 - `npm test` — aprovado: 32 testes em 3 arquivos.
 - `npm run build` — aprovado com Next.js 16.2.11.
 - `git diff --check` — aprovado.
+- Navegador no domínio de produção — aprovado: pop-up abriu, foco inicial caiu na primeira opção, a leitura preliminar foi personalizada e o foco da etapa intermediária caiu em “Continuar”.
+- Console do navegador — sem mensagens.
 - Nenhum lead real foi enviado durante a validação.
+
+## Entrega
+
+- Commit: `33d64ea` (`Improve diagnostic conversion flow`).
+- Push para `main` concluído.
+- Deployment de produção Vercel: `dpl_14TqidwjxdFnY1zsxGgThaVu3C5Y`, estado `READY`.
+- Domínio: `https://app-pedidos-seven.vercel.app`.
 
 ## Pendências para a próxima etapa
 
 - Corrigir os três apontamentos de acessibilidade observados na auditoria anterior: landmark `<main>`, contraste do número da primeira etapa e área de toque dos indicadores dos carrosséis.
-- Fazer a validação visual final do fluxo publicado e acompanhar a entrega real do e-mail no ambiente de produção.
+- Acompanhar a entrega real do e-mail no ambiente de produção com um envio autorizado.

@@ -182,6 +182,19 @@ function getOpportunityPreview(need: string) {
   }
 }
 
+function getPotentialLabel(lead?: string) {
+  switch (lead) {
+    case "Lead Quente":
+      return "Alto";
+    case "Lead Morno":
+      return "Médio";
+    case "Lead Frio":
+      return "Inicial";
+    default:
+      return "Em avaliação";
+  }
+}
+
 export function DiagnosticForm() {
   const formRef = useRef<HTMLFormElement>(null);
   const [stepIndex, setStepIndex] = useState(0);
@@ -288,7 +301,7 @@ export function DiagnosticForm() {
       console.error("Erro ao registrar o diagnóstico", submissionError);
       setResult({
         ok: false,
-        message: "Sua análise foi preparada, mas não conseguimos registrar o envio agora.",
+        message: "Não conseguimos registrar o envio agora. Tente novamente.",
         analysis: localAnalysis,
       });
     } finally {
@@ -305,22 +318,12 @@ export function DiagnosticForm() {
         <span className="od-success-mark" aria-hidden="true">✓</span>
         {analysis ? (
           <>
-            <strong className="od-result-score">{analysis.adherence}%</strong>
-            <h3>de aderência estimada ao ORDO</h3>
+            <strong className="od-result-score">{getPotentialLabel(analysis.lead)}</strong>
+            <h3>potencial estimado de melhoria</h3>
             <p className="od-result-highlight">
-              Seu cenário indica uma oportunidade de melhorar o resultado conforme a operação ganha ritmo e reduz retrabalho.
+              Suas respostas indicam espaço para ganhar ritmo, reduzir retrabalho e proteger a margem da operação.
             </p>
-            <div className="od-result-projections" aria-label="Perspectiva estimada de aumento de lucros">
-              <div>
-                <strong>{analysis.profitPerspectiveFirstMonth}%</strong>
-                <span>no primeiro mês</span>
-              </div>
-              <div>
-                <strong>{analysis.profitPerspectiveSecondMonth}%</strong>
-                <span>no segundo mês</span>
-              </div>
-            </div>
-            <p className="od-result-note">Estimativa inicial baseada nas suas respostas, não uma promessa de resultado.</p>
+            <p className="od-result-note">Os percentuais e a simulação financeira serão apresentados pela equipe comercial com base nos dados reais do seu restaurante.</p>
           </>
         ) : (
           <>

@@ -1375,3 +1375,27 @@ PR → Lint → Typecheck → Tests → Build → Preview (Vercel) → Review �
 
 - Corrigir os três apontamentos de acessibilidade observados na auditoria anterior: landmark `<main>`, contraste do número da primeira etapa e área de toque dos indicadores dos carrosséis.
 - Acompanhar a entrega real do e-mail no ambiente de produção com um envio autorizado.
+
+---
+
+# 46. Resumo da sessão — 2026-08-30 — Ajustes da auditoria
+
+## Mudanças aplicadas
+
+- O resultado do diagnóstico deixou de exibir percentuais automáticos e passou a mostrar apenas “Alto”, “Médio” ou “Inicial” como potencial estimado de melhoria.
+- Os percentuais derivados da fórmula fixa também foram removidos do e-mail operacional; a equipe recebe a classificação do lead e as respostas para construir a projeção comercial com dados reais.
+- O envio continua dependendo da confirmação da Server Action; em falha, o formulário permanece preenchido e oferece “Tentar novamente”.
+- A landing passou a ter landmark `<main>`, contraste corrigido no número do primeiro card do diagnóstico e áreas de toque de 24 px nos indicadores dos carrosséis.
+- O item “Diagnóstico” do menu lateral agora abre diretamente o pop-up do questionário.
+- O rótulo de `budget` no e-mail foi corrigido para “Peso da equipe na receita”, incluindo a mensagem de validação correspondente.
+
+## Validações executadas
+
+- `npm run lint` — aprovado.
+- `npm test` — aprovado: 32 testes em 3 arquivos.
+- `npm run build` — aprovado com Next.js 16.2.11.
+- `git diff --check` — aprovado.
+
+## Pendência
+
+- Fazer um envio real autorizado para confirmar a entrega do e-mail após as mudanças, sem usar dados de teste de terceiros.

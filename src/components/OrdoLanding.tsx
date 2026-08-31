@@ -438,7 +438,7 @@ export function OrdoLanding() {
               key={item.id}
               href={"#" + item.id}
               data-nav
-              onClick={scrollTo(item.id)}
+              onClick={item.id === "contato" ? openDiagnostic : scrollTo(item.id)}
               className={"ol-nav" + (i === active ? " is-active" : "")}
             >
               <span className="ol-nav-tick" />
@@ -449,6 +449,7 @@ export function OrdoLanding() {
         </div>
       </nav>
 
+      <main id="main-content">
       {/* ===== Hero fixo ===== */}
       <section id="inicio" className="ol-hero">
         <div className="ol-hero-content">
@@ -801,6 +802,9 @@ export function OrdoLanding() {
           </div>
         </section>
 
+      </section>
+      </main>
+
         <div className="ol-footer">
           <span className="ol-footer-brand">
             Ordo<span className="ol-amber-dot">.</span>
@@ -814,7 +818,6 @@ export function OrdoLanding() {
             {`© ${new Date().getFullYear()} Otium · Operação à mesa por QR code`}
           </span>
         </div>
-      </section>
     </div>
   );
 }
@@ -984,8 +987,10 @@ const CSS = `
 .ol-showcase-arrow { display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid #d9cabb; border-radius: 50%; background: #fff; color: #2a1c10; cursor: pointer; font-size: 18px; transition: border-color .2s ease, background .2s ease, transform .2s ease; }
 .ol-showcase-arrow:hover { border-color: #d41d0d; background: #fff1ee; transform: translateY(-1px); }
 .ol-showcase-dots { display: flex; align-items: center; gap: 6px; }
-.ol-showcase-dots button { width: 7px; height: 7px; border: 0; border-radius: 50%; background: #d9cabb; cursor: pointer; padding: 0; transition: background .2s ease, transform .2s ease; }
-.ol-showcase-dots button.is-active { background: #d41d0d; transform: scale(1.35); }
+.ol-showcase-dots button { display: grid; width: 24px; height: 24px; place-items: center; border: 0; border-radius: 50%; background: transparent; cursor: pointer; padding: 0; }
+.ol-showcase-dots button::before { width: 7px; height: 7px; border-radius: 50%; background: #d9cabb; content: ""; transition: background .2s ease, transform .2s ease; }
+.ol-showcase-dots button.is-active::before { background: #d41d0d; transform: scale(1.35); }
+.ol-showcase-dots button:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 .ol-showcase-count { margin-left: auto; color: #806b57; font-family: ui-monospace, monospace; font-size: 10px; }
 
 /* Cases */
@@ -1101,6 +1106,7 @@ const CSS = `
 .ol-diagnostic-step:nth-child(2) { margin-top: 24px; }
 .ol-diagnostic-step:first-child { border-color: #2a1c10; background: #2a1c10; color: #fbf8f4; }
 .ol-diagnostic-step-number { color: #d41d0d; font-family: ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: .14em; }
+.ol-diagnostic-step:first-child .ol-diagnostic-step-number { color: #ff8a7d; }
 .ol-diagnostic-step h3 { max-width: 210px; margin: auto 0 12px; color: #2a1c10; font-size: 21px; line-height: 1.12; letter-spacing: -.02em; }
 .ol-diagnostic-step p { margin: 0; color: #6b5136; font-size: 14px; line-height: 1.55; }
 .ol-diagnostic-step:first-child h3 { color: #fbf8f4; }

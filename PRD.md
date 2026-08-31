@@ -1451,6 +1451,40 @@ Eu não iniciaria aquisição paga em escala antes dos ajustes de confiança e m
 
 ---
 
+# 50. Encerramento da sessão — 2026-08-30
+
+## Resumo executivo
+
+- A landing page ficou organizada para prospecção do dono de restaurante, com proposta centrada em mais ritmo operacional, menos equipe e maior margem.
+- O fluxo de diagnóstico foi transferido para modal centralizado, com nove etapas, animações, foco inicial acessível, validação, classificação qualitativa e retry quando o envio falha.
+- Foram estruturados os hubs de Diferenciais, Cases, Como Funciona, Planos, Diagnóstico e FAQ, além de CTAs distribuídos ao longo da página.
+- O menu lateral ficou numerado de 01 a 07, com “Diagnóstico” na linha 06 e “FAQ” na linha 07.
+- O envio do diagnóstico está configurado para `otium.sap@gmail.com`, com assunto `Formulário do Sistema ORDO - [NOME DO RESTAURANTE]`.
+
+## Fechamento técnico
+
+- `npm run lint` — aprovado.
+- `npm test` — aprovado: 32 testes.
+- `npm run build` — aprovado com Next.js 16.2.11.
+- `git diff --check` — aprovado.
+- Lighthouse desktop e mobile — 100 em Accessibility, Best Practices, SEO e Agentic Browsing.
+- Browser QA — sem erros de console, sem falhas de rede e sem overflow horizontal em 375 px.
+- Produção — deployment `dpl_6wY1zd7k52nhLUX3jGDh4m1Qu4JH` em estado `READY`.
+
+## Pendências para a próxima sessão
+
+1. Substituir os Cases inventados por resultados autorizados ou identificá-los claramente como simulações.
+2. Revisar a afirmação “O único sistema...” conforme as evidências comerciais disponíveis.
+3. Adicionar fontes ou metodologia às métricas operacionais apresentadas na landing.
+4. Instrumentar o funil de conversão e os abandonos do diagnóstico.
+5. Fazer um envio autorizado para validar a entrega end-to-end no Resend.
+
+## Estado final
+
+Sessão encerrada com o produto tecnicamente estável e pronto para QA comercial controlado. O próximo ciclo deve priorizar confiança da prova comercial e mensuração de conversão antes de escalar aquisição.
+
+---
+
 # 46. Resumo da sessão — 2026-08-30 — Ajustes da auditoria
 
 ## Mudanças aplicadas

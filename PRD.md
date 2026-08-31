@@ -14,7 +14,9 @@
   a linha 07, mantendo o diagnóstico apontando para a seção `contato`.
 - Validações: lint aprovado, 32 testes aprovados, build de produção aprovado e
   `git diff --check` aprovado.
-- Pendente: commit, push e novo deploy de produção.
+- Deploy de produção concluído na Vercel: `dpl_5yF2jzGu8wDTdyNeR7aPJLqJcMHT`,
+  status `READY`; domínio validado com HTTP 200, “Diagnóstico” está na linha
+  06, “FAQ” na linha 07 e a frase removida não aparece no HTML.
 
 ### 2026-08-30 — Fluxo visual do Diagnóstico ORDO
 

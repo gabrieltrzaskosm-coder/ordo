@@ -945,7 +945,7 @@ const CSS = `
 .ol-faq-answer { max-width: 760px; margin: -4px 54px 24px 4px; color: #6b5136; font-size: 16px; line-height: 1.6; }
 
 /* Diagnóstico aberto pelos CTAs */
-.ol-diagnostic-dialog { width: min(calc(100% - 32px), 860px); max-width: none; max-height: calc(100dvh - 32px); overflow: hidden; border: 0; border-radius: 24px; background: #fff; color: #2a1c10; padding: 0; box-shadow: 0 28px 90px rgba(42,28,16,.3); }
+.ol-diagnostic-dialog { position: fixed; top: 50%; left: 50%; width: min(calc(100% - 32px), 860px); max-width: none; max-height: calc(100dvh - 32px); margin: 0; overflow: hidden; transform: translate(-50%, -50%); border: 0; border-radius: 24px; background: #fff; color: #2a1c10; padding: 0; box-shadow: 0 28px 90px rgba(42,28,16,.3); }
 .ol-diagnostic-dialog::backdrop { background: rgba(23,16,12,.68); backdrop-filter: blur(5px); }
 .ol-diagnostic-dialog-inner { max-height: calc(100dvh - 32px); overflow-y: auto; padding: 34px; }
 .ol-diagnostic-dialog-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 22px; }

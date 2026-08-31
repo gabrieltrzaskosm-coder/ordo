@@ -6,6 +6,14 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Centralização do modal de diagnóstico
+
+- Ajustado o pop-up do questionário para ficar explicitamente centralizado no
+  viewport, tanto na horizontal quanto na vertical.
+- Mantidos o limite de altura, o scroll interno e a adaptação para telas
+  pequenas.
+- Pendente: validação final em produção após o deploy.
+
 ### 2026-08-30 — Diagnóstico em modal com transição animada
 
 - Os CTAs “Fazer diagnóstico grátis” agora abrem o questionário em um modal

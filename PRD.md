@@ -6,6 +6,16 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Ajuste da navegação e dos cases
+
+- Removida da seção “Resultados” a frase de observação sobre cases
+  ilustrativos, conforme solicitado.
+- Reordenado o menu lateral: “Diagnóstico” passou para a linha 06 e “FAQ” para
+  a linha 07, mantendo o diagnóstico apontando para a seção `contato`.
+- Validações: lint aprovado, 32 testes aprovados, build de produção aprovado e
+  `git diff --check` aprovado.
+- Pendente: commit, push e novo deploy de produção.
+
 ### 2026-08-30 — Fluxo visual do Diagnóstico ORDO
 
 - Removido o formulário da seção pública “Diagnóstico Ordo”; o questionário

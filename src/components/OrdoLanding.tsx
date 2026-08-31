@@ -21,8 +21,8 @@ const NAV = [
   { id: "resultados", label: "Resultados" },
   { id: "como", label: "Como Funciona" },
   { id: "planos", label: "Planos" },
+  { id: "contato", label: "Diagnóstico" },
   { id: "faq", label: "FAQ" },
-  { id: "contato", label: "Contato" },
 ] as const;
 
 const SEGMENTOS = [
@@ -487,7 +487,6 @@ export function OrdoLanding() {
             <span className="ol-eyebrow ol-eyebrow-red">Resultados</span>
             <h2 id="results-title" className="ol-h2">Cases de quem trocou esforço por margem.</h2>
             <p>Veja como diferentes operações podem transformar velocidade, equipe e clareza em mais lucro com o Ordo.</p>
-            <span className="ol-results-note">Cases ilustrativos para apresentação comercial. Os resultados reais variam conforme a operação.</span>
           </div>
           <div className="ol-results-carousel">
             <div className="ol-results-track" aria-live="polite">
@@ -918,7 +917,6 @@ const CSS = `
 .ol-results-head { max-width: 720px; text-align: center; }
 .ol-results-head .ol-h2 { margin-top: 14px; }
 .ol-results-head p { max-width: 580px; margin: 18px auto 0; color: #6b5136; font-size: 16px; line-height: 1.55; }
-.ol-results-note { display: block; max-width: 560px; margin: 14px auto 0; color: #9a8067; font-size: 11px; line-height: 1.45; }
 .ol-results-carousel { width: 100%; overflow: hidden; margin-top: 44px; }
 .ol-results-track { display: flex; width: 100%; }
 .ol-result-slide { flex: 0 0 33.333%; padding: 0 8px; }

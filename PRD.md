@@ -1339,3 +1339,30 @@ PR → Lint → Typecheck → Tests → Build → Preview (Vercel) → Review �
 * **RLS:** Row-Level Security (Postgres) — isolamento por estabelecimento.
 * **Server Action:** função de servidor Next.js (`"use server"`) usada em vez de REST.
 * **Realtime:** propagação de mudanças via canais Supabase.
+
+---
+
+# 45. Resumo da sessão — 2026-08-30
+
+## Fluxo do diagnóstico de conversão
+
+- O questionário passou a começar pelo problema de maior impacto no lucro, antes da identificação do lead.
+- Foi incluída uma etapa intermediária de leitura preliminar, contextualizada pela resposta sobre o principal desafio.
+- A identificação agora aparece depois da entrega inicial de valor, seguida pelas perguntas de qualificação e pelo resultado final.
+- O fluxo passou a ter 9 etapas, com progresso acessível e foco automático no primeiro controle de cada etapa.
+- As opções passaram a usar `fieldset` e legenda acessível; o cartão de oportunidade respeita a preferência de movimento reduzido já aplicada ao restante da landing page.
+- O resultado só é exibido depois da resposta da Server Action. Falhas de envio mantêm as respostas preenchidas e exibem a ação “Tentar novamente”.
+- A linguagem do resultado foi ajustada para tratar aderência e perspectiva de lucro como estimativas, não como promessa.
+
+## Validações executadas
+
+- `npm run lint` — aprovado.
+- `npm test` — aprovado: 32 testes em 3 arquivos.
+- `npm run build` — aprovado com Next.js 16.2.11.
+- `git diff --check` — aprovado.
+- Nenhum lead real foi enviado durante a validação.
+
+## Pendências para a próxima etapa
+
+- Corrigir os três apontamentos de acessibilidade observados na auditoria anterior: landmark `<main>`, contraste do número da primeira etapa e área de toque dos indicadores dos carrosséis.
+- Fazer a validação visual final do fluxo publicado e acompanhar a entrega real do e-mail no ambiente de produção.

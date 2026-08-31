@@ -297,7 +297,16 @@ function DiagnosticDialog({
     const dialog = dialogRef.current;
     if (!dialog) return;
 
-    if (open && !dialog.open) dialog.showModal();
+    if (open && !dialog.open) {
+        dialog.showModal();
+        window.requestAnimationFrame(() => {
+          dialog
+            .querySelector<HTMLElement>(
+            ".od-slide.is-active input:not(.od-honeypot), .od-form-actions .od-form-submit:not([disabled])",
+          )
+            ?.focus();
+      });
+    }
     if (!open && dialog.open) dialog.close();
   }, [open]);
 
@@ -1117,6 +1126,8 @@ const CSS = `
 .od-slide-question h4 { margin: 0; color: #2a1c10; font-size: clamp(24px, 3vw, 34px); line-height: 1.08; letter-spacing: -.03em; }
 .od-slide-question p { margin: 8px 0 0; color: #806b57; font-size: 13px; line-height: 1.4; }
 .od-identity-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.od-option-fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+.od-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .od-option-list { display: flex; flex-direction: column; gap: 10px; }
 .od-option { display: flex; flex-direction: row; align-items: center; gap: 12px; min-height: 52px; border: 1px solid #d9cabb; border-radius: 14px; background: #fff; padding: 10px 13px; color: #2a1c10; cursor: pointer; font-size: 14px; font-weight: 600; transition: border-color .2s ease, background .2s ease, transform .2s ease; }
 .od-option:hover { border-color: #d41d0d; transform: translateX(2px); }
@@ -1124,6 +1135,11 @@ const CSS = `
 .od-option input { width: 17px; height: 17px; accent-color: #d41d0d; }
 .od-option span { flex: 1; }
 .od-option i { color: #d41d0d; font-size: 18px; font-style: normal; }
+.od-insight-card { display: flex; flex-direction: column; gap: 10px; border: 1px solid #e9cf8b; border-radius: 18px; background: #fffaf0; padding: 24px; }
+.od-insight-kicker { color: #9a681f; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.od-insight-card strong { color: #754b16; font-size: clamp(22px, 3vw, 30px); line-height: 1.12; letter-spacing: -.03em; }
+.od-insight-card p { margin: 0; color: #6b5136; font-size: 15px; line-height: 1.5; }
+.od-insight-note { margin-top: 6px; color: #8a704e; font-size: 12px; line-height: 1.4; }
 .od-form-actions { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
 .od-form-actions .od-form-submit { flex: 0 1 260px; }
 .od-form-back { min-height: 52px; border: 1px solid #d9cabb; border-radius: 999px; background: transparent; padding: 0 20px; color: #6b5136; cursor: pointer; font: inherit; font-size: 14px; font-weight: 700; }
@@ -1133,7 +1149,9 @@ const CSS = `
 .od-form-submit:disabled { cursor: wait; opacity: .65; }
 .od-form-submit span { font-size: 21px; }
 .od-form-note { margin: -5px 0 0; color: #806b57; font-size: 11px; line-height: 1.4; text-align: center; }
-.od-form-error { margin: 0; border-radius: 10px; background: #fff0ed; padding: 10px 12px; color: #9b1c10; font-size: 13px; line-height: 1.4; }
+.od-form-error { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0; border-radius: 10px; background: #fff0ed; padding: 10px 12px; color: #9b1c10; font-size: 13px; line-height: 1.4; }
+.od-form-retry { flex: none; border: 0; padding: 0; background: transparent; color: #9b1c10; cursor: pointer; font: inherit; font-size: 13px; font-weight: 700; text-decoration: underline; }
+.od-form-retry:hover { color: #6f130b; }
 .od-diagnostic-result { display: flex; min-height: 360px; flex-direction: column; align-items: center; justify-content: center; gap: 10px; border: 1px solid #d8e8d9; border-radius: 24px; background: #f4fbf4; padding: 30px; text-align: center; }
 .od-diagnostic-result.is-warning { border-color: #ecdcc5; background: #fffaf3; }
 .od-result-kicker { color: #2f7d42; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
@@ -1197,6 +1215,7 @@ const CSS = `
   .ol-diagnostic-steps { grid-template-columns: 1fr; }
   .ol-diagnostic-step:nth-child(2) { margin-top: 0; }
   .od-form { padding: 22px 18px; }
+  .od-form-error { align-items: flex-start; flex-direction: column; }
 }
 
 @media (max-width: 480px) {

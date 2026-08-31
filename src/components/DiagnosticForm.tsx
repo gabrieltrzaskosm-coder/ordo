@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   submitDiagnostic,
   type DiagnosticResult,
@@ -36,7 +36,7 @@ type Step = {
   key: string;
   question: string;
   description?: string;
-  type: "text" | "email" | "tel" | "options" | "identity";
+  type: "text" | "email" | "tel" | "options" | "identity" | "insight";
   placeholder?: string;
   autoComplete?: string;
   options?: Option[];
@@ -45,9 +45,26 @@ type Step = {
 
 const STEPS: Step[] = [
   {
+    key: "need",
+    question: "Qual problema mais impacta o lucro do seu restaurante hoje?",
+    type: "options",
+    options: [
+      { label: "Atender mais rápido e aumentar a demanda" },
+      { label: "Aumentar as receitas e lucros" },
+      { label: "Ter mais clareza sobre vendas e lucros" },
+      { label: "Evitar erros e retrabalhos nos pedidos" },
+    ],
+  },
+  {
+    key: "opportunity",
+    question: "Já identificamos uma oportunidade para a sua operação.",
+    description: "Essa é uma leitura inicial. As próximas respostas mostram o tamanho real do potencial.",
+    type: "insight",
+  },
+  {
     key: "identity",
-    question: "Antes de começar, conte quem está por trás da operação.",
-    description: "Esses dados nos ajudam a preparar um diagnóstico para o seu restaurante.",
+    question: "Onde devemos enviar sua leitura inicial?",
+    description: "Agora que você já viu a oportunidade, deixe seus dados para receber o diagnóstico completo.",
     type: "identity",
     fields: [
       {
@@ -117,17 +134,6 @@ const STEPS: Step[] = [
     ],
   },
   {
-    key: "need",
-    question: "Qual é o maior desafio agora?",
-    type: "options",
-    options: [
-      { label: "Atender mais rápido e aumentar a demanda" },
-      { label: "Aumentar as receitas e lucros" },
-      { label: "Ter mais clareza sobre vendas e lucros" },
-      { label: "Evitar erros e retrabalhos nos pedidos" },
-    ],
-  },
-  {
     key: "waiters",
     question: "Quantos garçons de salão você tem hoje?",
     type: "options",
@@ -146,15 +152,60 @@ const STEPS: Step[] = [
   },
 ];
 
+function getOpportunityPreview(need: string) {
+  switch (need) {
+    case "Atender mais rápido e aumentar a demanda":
+      return {
+        title: "Seu maior ganho pode estar no ritmo do salão.",
+        body: "Quando o cliente começa o pedido sozinho, a equipe ganha tempo para servir mais mesas nos horários de pico.",
+      };
+    case "Aumentar as receitas e lucros":
+      return {
+        title: "Existe uma oportunidade direta de recuperar margem.",
+        body: "Vamos cruzar o ritmo dos pedidos, a equipe e os horários de pico para encontrar onde o caixa pode melhorar.",
+      };
+    case "Ter mais clareza sobre vendas e lucros":
+      return {
+        title: "Antes de cortar custos, precisamos enxergar o que vende.",
+        body: "O diagnóstico organiza os dados da operação para mostrar quais decisões podem proteger sua margem.",
+      };
+    case "Evitar erros e retrabalhos nos pedidos":
+      return {
+        title: "Menos retrabalho pode liberar lucro sem aumentar a equipe.",
+        body: "Pedidos mais completos chegam à cozinha em tempo real e reduzem correções, idas e voltas.",
+      };
+    default:
+      return {
+        title: "Vamos encontrar o ponto de maior impacto.",
+        body: "Responda mais algumas perguntas para transformar essa primeira leitura em um diagnóstico do seu restaurante.",
+      };
+  }
+}
+
 export function DiagnosticForm() {
   const formRef = useRef<HTMLFormElement>(null);
   const [stepIndex, setStepIndex] = useState(0);
   const [result, setResult] = useState<DiagnosticResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [selectedNeed, setSelectedNeed] = useState("");
   const currentStep = STEPS[stepIndex];
 
+  useEffect(() => {
+    const firstControl = formRef.current?.querySelector<HTMLElement>(
+      ".od-slide.is-active input:not(.od-honeypot)",
+    ) ?? formRef.current?.querySelector<HTMLElement>(
+      ".od-form-actions .od-form-submit:not([disabled])",
+    );
+    firstControl?.focus();
+  }, [stepIndex]);
+
   function validateCurrentStep() {
+    if (currentStep.type === "insight") {
+      setError(null);
+      return true;
+    }
+
     if (currentStep.type === "identity") {
       for (const field of currentStep.fields ?? []) {
         const control = formRef.current?.elements.namedItem(field.key);
@@ -227,12 +278,6 @@ export function DiagnosticForm() {
       goal: String(formData.get("goal") ?? ""),
     });
 
-    setResult({
-      ok: true,
-      message: "Suas respostas foram registradas.",
-      analysis: localAnalysis,
-    });
-
     try {
       const response = await submitDiagnostic(formData);
       setResult({
@@ -251,7 +296,7 @@ export function DiagnosticForm() {
     }
   }
 
-  if (result) {
+  if (result?.ok) {
     const analysis = result.analysis;
 
     return (
@@ -261,9 +306,9 @@ export function DiagnosticForm() {
         {analysis ? (
           <>
             <strong className="od-result-score">{analysis.adherence}%</strong>
-            <h3>de aderência para usar o ORDO</h3>
+            <h3>de aderência estimada ao ORDO</h3>
             <p className="od-result-highlight">
-              Seu negócio tem uma perspectiva estimada de aumento de lucros com o ORDO, conforme a operação ganha ritmo e reduz custos de equipe.
+              Seu cenário indica uma oportunidade de melhorar o resultado conforme a operação ganha ritmo e reduz retrabalho.
             </p>
             <div className="od-result-projections" aria-label="Perspectiva estimada de aumento de lucros">
               <div>
@@ -283,27 +328,23 @@ export function DiagnosticForm() {
             <p className="od-result-highlight">Suas respostas foram registradas e nossa equipe vai preparar a análise da sua operação.</p>
           </>
         )}
-        {result.ok ? (
-          <p className="od-result-message">{result.message}</p>
-        ) : (
-          <p className="od-form-error" role="alert">{result.message}</p>
-        )}
+        <p className="od-result-message">{result.message}</p>
       </div>
     );
   }
 
   return (
-    <form ref={formRef} action={submit} className="od-form">
+    <form ref={formRef} action={submit} className="od-form" aria-describedby={error || (result && !result.ok) ? "diagnostic-form-error" : undefined}>
       <div className="od-form-heading">
         <span className="od-form-kicker">Diagnóstico gratuito · 2 minutos</span>
         <div className="od-form-progress" aria-live="polite">
           <span>Passo {stepIndex + 1} de {STEPS.length}</span>
-          <span className="od-form-progress-track" aria-hidden="true">
+          <span className="od-form-progress-track" role="progressbar" aria-valuemin={1} aria-valuemax={STEPS.length} aria-valuenow={stepIndex + 1} aria-label={`Passo ${stepIndex + 1} de ${STEPS.length}`}>
             <span style={{ width: `${((stepIndex + 1) / STEPS.length) * 100}%` }} />
           </span>
         </div>
         <h3>Descubra onde seu restaurante está perdendo ritmo e lucro.</h3>
-        <p>Começamos com seus dados. Depois, uma pergunta por vez para encontrar onde o Ordo pode aliviar sua operação.</p>
+        <p>Começamos pelo principal desafio. Depois, uma pergunta por vez para encontrar onde o Ordo pode aliviar sua operação.</p>
       </div>
 
       <div className="od-carousel" aria-live="polite">
@@ -317,7 +358,7 @@ export function DiagnosticForm() {
             <div className="od-slide-question">
               <span className="od-slide-number">{String(index + 1).padStart(2, "0")}</span>
               <div>
-                <h4>{step.question}</h4>
+                <h4 id={`diagnostic-question-${step.key}`}>{step.question}</h4>
                 {step.description && <p>{step.description}</p>}
               </div>
             </div>
@@ -329,6 +370,7 @@ export function DiagnosticForm() {
                     {field.label}
                     <input
                       className={inputClass}
+                      id={field.key}
                       name={field.key}
                       type={field.type}
                       required
@@ -339,21 +381,40 @@ export function DiagnosticForm() {
                   </label>
                 ))}
               </div>
-            ) : step.type === "options" ? (
-              <div className="od-option-list">
-                {step.options?.map((option, optionIndex) => (
-                  <label className="od-option" key={option.label}>
-                    <input
-                      type="radio"
-                      name={step.key}
-                      value={option.label}
-                      required={optionIndex === 0}
-                    />
-                    <span>{option.label}</span>
-                    <i aria-hidden="true">→</i>
-                  </label>
-                ))}
+            ) : step.type === "insight" ? (
+              <div className="od-insight-card" role="status" aria-live="polite">
+                {(() => {
+                  const preview = getOpportunityPreview(selectedNeed);
+                  return (
+                    <>
+                      <span className="od-insight-kicker">Leitura preliminar</span>
+                      <strong>{preview.title}</strong>
+                      <p>{preview.body}</p>
+                      <span className="od-insight-note">Agora vamos medir o tamanho dessa oportunidade no seu restaurante.</span>
+                    </>
+                  );
+                })()}
               </div>
+            ) : step.type === "options" ? (
+              <fieldset className="od-option-fieldset" aria-labelledby={`diagnostic-question-${step.key}`}>
+                <legend className="od-sr-only">{step.question}</legend>
+                <div className="od-option-list">
+                  {step.options?.map((option, optionIndex) => (
+                    <label className="od-option" key={option.label} htmlFor={`${step.key}-${optionIndex}`}>
+                      <input
+                        id={`${step.key}-${optionIndex}`}
+                        type="radio"
+                        name={step.key}
+                        value={option.label}
+                        required={optionIndex === 0}
+                        onChange={step.key === "need" ? (event) => setSelectedNeed(event.target.value) : undefined}
+                      />
+                      <span>{option.label}</span>
+                      <i aria-hidden="true">→</i>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
             ) : (
               <input
                 className={inputClass}
@@ -371,7 +432,16 @@ export function DiagnosticForm() {
 
       <input className="od-honeypot" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" />
 
-      {error && <p className="od-form-error" role="alert">{error}</p>}
+      {(error || (result && !result.ok)) && (
+        <div id="diagnostic-form-error" className="od-form-error" role="alert">
+          <span>{error ?? (result && !result.ok ? result.message : "")}</span>
+          {result && !result.ok && !pending && (
+            <button className="od-form-retry" type="button" onClick={() => { setResult(null); setError(null); }}>
+              Tentar novamente
+            </button>
+          )}
+        </div>
+      )}
 
       <div className="od-form-actions">
         {stepIndex > 0 ? (

@@ -18,7 +18,8 @@
   social real.
 - Validações: lint aprovado, 32 testes aprovados, build de produção aprovado e
   `git diff --check` aprovado.
-- Pendente: commit, push e novo deploy de produção.
+- Deploy de produção concluído na Vercel: `dpl_DLJySXehh5k6hFuKtqCHsFJBkVsn`,
+  status `READY`; domínio validado com HTTP 200 e cases presentes no HTML.
 
 ### 2026-08-30 — Centralização do modal de diagnóstico
 

@@ -6,6 +6,18 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Fluxo visual do Diagnóstico ORDO
+
+- Removido o formulário da seção pública “Diagnóstico Ordo”; o questionário
+  continua disponível no modal acionado pelos CTAs “Fazer diagnóstico grátis”.
+- Criado um passo a passo visual com três cards: responder às perguntas, receber
+  uma avaliação personalizada e alinhar os próximos passos.
+- Refinada a copy para explicar que a equipe analisa o cenário e recomenda o
+  plano mais adequado aos processos e objetivos do restaurante.
+- Validações: lint aprovado, 32 testes aprovados, build de produção aprovado e
+  `git diff --check` aprovado.
+- Pendente: commit, push e novo deploy de produção.
+
 ### 2026-08-30 — Cases ilustrativos na seção Resultados
 
 - Substituídos os benefícios genéricos do carrossel “Resultados” por cinco

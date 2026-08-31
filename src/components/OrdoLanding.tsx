@@ -116,6 +116,12 @@ const PASSOS = [
   ["5", "Pedido entregue ao cliente", "A equipe foca em servir. O pagamento continua sendo feito na mesa, com o atendente."],
 ] as const;
 
+const DIAGNOSTICO_PASSOS = [
+  ["01", "Responda às perguntas", "Conte como seu restaurante funciona hoje: equipe, ritmo do salão e principais desafios. Leva poucos minutos e nos dá o contexto certo para começar."],
+  ["02", "Receba uma avaliação personalizada", "Nossa equipe analisa suas respostas e indica o plano que melhor se encaixa nos processos, no momento e nos objetivos do seu restaurante."],
+  ["03", "Alinhe os próximos passos", "Entraremos em contato para apresentar os resultados, explicar o plano indicado e mostrar como levar sua operação a outro patamar."],
+] as const;
+
 const PLANOS = [
   {
     name: "Basic",
@@ -677,14 +683,28 @@ export function OrdoLanding() {
           <div className="ol-reveal ol-contato-head">
             <span className="ol-eyebrow ol-eyebrow-red">Diagnóstico Ordo</span>
             <h2 className="ol-h2 ol-h2-big">
-              Seu próximo ganho pode estar na operação.
+              Do primeiro dado ao próximo ganho.
             </h2>
             <p className="ol-contato-sub">
-              Conte como seu restaurante funciona hoje. Vamos identificar onde
-              reduzir esforço, acelerar o atendimento e proteger sua margem.
+              Em três passos, entendemos a operação do seu restaurante e mostramos
+              onde o Ordo pode gerar mais ritmo e margem.
             </p>
           </div>
-          <DiagnosticForm />
+          <div className="ol-diagnostic-steps" aria-label="Etapas do diagnóstico Ordo">
+            {DIAGNOSTICO_PASSOS.map(([number, title, body]) => (
+              <article key={number} className="ol-diagnostic-step">
+                <span className="ol-diagnostic-step-number">{number}</span>
+                <h3>{title}</h3>
+                <p>{body}</p>
+              </article>
+            ))}
+          </div>
+          <div className="ol-section-cta ol-diagnostic-cta">
+            <p>Pronto para descobrir onde recuperar margem?</p>
+            <a href="#contato" onClick={openDiagnostic} className="ol-cta-primary">
+              Fazer diagnóstico grátis<span className="ol-arrow">→</span>
+            </a>
+          </div>
         </div>
 
         {/* ===== FAQ ===== */}
@@ -982,6 +1002,16 @@ const CSS = `
 .ol-contato-layout { max-width: 820px; margin: 0 auto; display: flex; flex-direction: column; gap: 42px; align-items: center; }
 .ol-contato-head { max-width: 720px; display: flex; flex-direction: column; align-items: center; gap: 26px; text-align: center; }
 .ol-contato-sub { margin: 0; max-width: 600px; font-size: 17px; line-height: 1.5; color: #6b5136; }
+.ol-diagnostic-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; width: 100%; text-align: left; }
+.ol-diagnostic-step { display: flex; min-height: 276px; flex-direction: column; align-items: flex-start; border: 1px solid #ece3d8; border-radius: 20px; background: #fbf8f4; padding: 26px; }
+.ol-diagnostic-step:nth-child(2) { margin-top: 24px; }
+.ol-diagnostic-step:first-child { border-color: #2a1c10; background: #2a1c10; color: #fbf8f4; }
+.ol-diagnostic-step-number { color: #d41d0d; font-family: ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: .14em; }
+.ol-diagnostic-step h3 { max-width: 210px; margin: auto 0 12px; color: #2a1c10; font-size: 21px; line-height: 1.12; letter-spacing: -.02em; }
+.ol-diagnostic-step p { margin: 0; color: #6b5136; font-size: 14px; line-height: 1.55; }
+.ol-diagnostic-step:first-child h3 { color: #fbf8f4; }
+.ol-diagnostic-step:first-child p { color: rgba(251,248,244,.7); }
+.ol-diagnostic-cta { width: 100%; margin-top: 8px; }
 .od-form { width: 100%; display: flex; flex-direction: column; gap: 18px; padding: 30px; border: 1px solid #ece3d8; border-radius: 24px; background: #fbf8f4; }
 .od-form-heading { margin-bottom: 4px; }
 .od-form-kicker { color: #d41d0d; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
@@ -1077,6 +1107,8 @@ const CSS = `
   .ol-segment-grid, .ol-metrics, .ol-contato-layout { grid-template-columns: 1fr; }
   .ol-metrics { gap: 30px; }
   .ol-contato-layout { gap: 38px; }
+  .ol-diagnostic-steps { grid-template-columns: 1fr; }
+  .ol-diagnostic-step:nth-child(2) { margin-top: 0; }
   .od-form { padding: 22px 18px; }
 }
 

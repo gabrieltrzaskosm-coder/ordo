@@ -19,7 +19,9 @@
   `public/images/ordo-case-facade.png` para dar identidade visual aos cases.
 - Validações: lint aprovado, 32 testes aprovados, build de produção aprovado e
   `git diff --check` aprovado.
-- Pendente: commit, push e novo deploy de produção.
+- Deploy de produção concluído na Vercel: `dpl_HcwBc62Etc5bBmgfuVctoUqwEKgX`,
+  status `READY`; domínio e imagem de fachada validados com HTTP 200 e cards
+  com efeito visual presentes no HTML.
 
 ### 2026-08-30 — Ajuste da navegação e dos cases
 

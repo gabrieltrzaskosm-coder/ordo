@@ -1407,3 +1407,26 @@ PR → Lint → Typecheck → Tests → Build → Preview (Vercel) → Review �
 - Deployment de produção Vercel: `dpl_2jKUcH7Qtvx9sB7dfT5k9EYeThHa`, estado `READY`.
 - Lighthouse no domínio de produção: desktop e mobile com acessibilidade 100, boas práticas 100, SEO 100 e agentic browsing 100; 51 auditorias aprovadas e nenhuma falha.
 - Browser QA: o item “Diagnóstico” abriu o pop-up diretamente e o questionário iniciou com foco na primeira opção.
+
+---
+
+# 47. Resumo da sessão — 2026-08-30 — Correção do envio no passo final
+
+## Diagnóstico
+
+- A jornada foi reproduzida até o passo 09 sem submissão: a pergunta final e o botão “Quero meu diagnóstico” estavam habilitados.
+- O ponto de risco estava na chamada ao Resend, que não possuía tempo-limite; uma resposta pendente podia manter o estado “Enviando diagnóstico…” indefinidamente.
+
+## Correção e validação
+
+- A chamada ao Resend passou a usar `AbortController` com timeout de 12 segundos.
+- Timeout ou erro de rede agora retorna uma mensagem recuperável e mantém o botão “Tentar novamente”.
+- `npm run lint`, `npm test` (32 testes), `npm run build` e `git diff --check` — aprovados.
+- Nenhum envio real foi feito durante a investigação.
+
+## Entrega
+
+- Commit: `a4c088c` (`Prevent diagnostic submission from hanging`).
+- Push para `main` concluído.
+- Deployment de produção Vercel: `dpl_BuQQpT8MMN2Kp5oGy3unWQPXU6X7`, estado `READY`.
+- Domínio: `https://app-pedidos-seven.vercel.app`.

@@ -1492,6 +1492,18 @@ PR → Lint → Typecheck → Tests → Build → Preview (Vercel) → Review �
 
 ---
 
+# 51. Resumo da sessão — 2026-08-31 — Deploy do login com fundo sólido
+
+## Entrega
+
+- Novo deploy de produção executado após a falha temporária de download das
+  fontes.
+- Deploy Vercel: `Aqy7P3VVpvxJdcrE3kReFqJR5woo`, estado `READY`.
+- Alias de produção atualizado: `https://app-pedidos-seven.vercel.app`.
+- Rota `/login` validada com HTTP 200 e HTML contendo o fundo sólido `#0a0807`.
+
+---
+
 # 50. Resumo da sessão — 2026-08-31 — Fundo sólido no login
 
 ## Alterações

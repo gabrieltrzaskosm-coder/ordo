@@ -1477,6 +1477,9 @@ PR → Lint → Typecheck → Tests → Build → Preview (Vercel) → Review �
 - `npm test` — aprovado: 32 testes em 3 arquivos.
 - `npm run build` — aprovado com Next.js 16.2.11.
 - `git diff --check` — aprovado.
+- Deploy de produção concluído na Vercel: `dpl_DAwn7Hhw9uvyk4132eXXBvkewC6R`,
+  estado `READY`; alias `https://app-pedidos-seven.vercel.app` validado com
+  HTTP 200.
 - Navegador no domínio de produção — aprovado: pop-up abriu, foco inicial caiu na primeira opção, a leitura preliminar foi personalizada e o foco da etapa intermediária caiu em “Continuar”.
 - Console do navegador — sem mensagens.
 - Nenhum lead real foi enviado durante a validação.

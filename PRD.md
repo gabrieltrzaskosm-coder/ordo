@@ -4,6 +4,111 @@
 **Responsável:** Gabriel Trzaskos
 **Data:** 2026-08-10
 
+### 2026-08-31 — Auditoria das páginas do sistema de gestão
+
+- Escopo auditado: shell e navegação de Gestão, hub, menu/editor de prato,
+  mesas/QR, equipe, pagamentos, faturamento, financeiro, insights, estoque,
+  ingredientes, plano e Ordo IA.
+- Skills e referências usadas: `ui-ux-pro-max` para performance/UI de React e
+  dashboards; `design-taste-frontend` como referência de consistência visual e
+  estados de interação; documentação local do Next.js 16 para App Router,
+  Server/Client Components, client cache, loading UI e acessibilidade.
+- Validações executadas: `npm run lint` aprovado; `npm test` aprovado com 3
+  arquivos e 32 testes; `npm run build` aprovado com TypeScript e 16 páginas
+  estáticas geradas. Não foi executado teste de rede contra Supabase nem
+  medição de browser com dados reais nesta sessão.
+
+#### Achados de performance
+
+- **P0 — Ordo IA repete leituras amplas.** `getStockAlerts`,
+  `getIngredientForecast` e `getDemandForecast` fazem varreduras independentes
+  de pedidos/itens/receitas; o uso de ingredientes ainda encadeia consultas de
+  receitas, pedidos, linhas e extras. Em bases maiores, `/gestao/ia` tende a
+  ser a página mais lenta. Consolidar uma leitura/agregação compartilhada,
+  limitar colunas/linhas e considerar agregados SQL.
+- **P0 — Relatórios agregam no servidor após trazer linhas brutas.**
+  `getRangeMetrics` lê pedidos e itens de todo o intervalo, e a comparação
+  customizada executa mais duas métricas em sequência. Financeiro e Insights
+  podem chegar a seis leituras pesadas em uma navegação. Priorizar agregação no
+  banco, cache curto por estabelecimento/período e execução paralela de `a`/`b`.
+- **P1 — QR Codes são calculados em toda renderização de Mesas.**
+  `QRCode.toDataURL` roda uma vez por mesa e os data URLs completos são enviados
+  ao Client Component. Isso aumenta CPU e payload conforme o salão cresce.
+  Gerar sob demanda para a mesa selecionada, usar rota de imagem/endpoint ou
+  persistir apenas o token e renderizar no cliente.
+- **P1 — CRUDs revalidam sem atualizar explicitamente a árvore local.** Menu,
+  mesas, equipe, ingredientes e estoque usam Server Actions, mas a maioria só
+  altera o estado otimista ou mostra erro. A consistência após mutações depende
+  de nova navegação/refresh. Definir estratégia única: atualização local +
+  `router.refresh` controlado, ou revalidação com estado de confirmação.
+- **P1 — Falta `loading.tsx` no grupo `/gestao`.** Não há fallback de rota para
+  navegações dinâmicas. O usuário vê a tela anterior sem indicação clara durante
+  auth/BD; adicionar skeleton contextual para shell, KPIs, tabelas e editor.
+- **P2 — Efeitos de ponteiro fazem trabalho por evento.** A sidebar e o hub
+  fazem `getBoundingClientRect`/query de elementos e escrevem estilos durante
+  `pointermove`; o hub também aplica tilt, shadow e glow em todos os cards.
+  Restringir a desktop/coarse pointer, usar `requestAnimationFrame` com último
+  evento e evitar `will-change` permanente nos cards.
+- **P2 — Todas as páginas são marcadas `force-dynamic`.** A autenticação por
+  cookies já torna as rotas privadas dinâmicas; revisar essa declaração junto
+  de Cache Components/segmentação para permitir shell estático e dados
+  streamados, sem cachear dados privados indevidamente.
+- **P2 — Fontes são declaradas no Root Layout globalmente.** Geist, Bricolage,
+  Instrument Serif, Manrope, Barlow, Barlow Semi Condensed, Sora e JetBrains
+  Mono são carregadas/propagadas para toda a aplicação, embora Gestão use
+  Manrope e as demais áreas tenham necessidades diferentes. Isolar fontes por
+  layout pode reduzir CSS e requests iniciais.
+
+#### Achados de design, UI e acessibilidade
+
+- **P0 — Contraste de texto secundário provavelmente falha WCAG AA.** O shell
+  usa `rgba(0,0,0,.42/.45/.5)` sobre fundos claros em navegação, labels de KPI e
+  textos auxiliares; esses tons ficam abaixo de 4.5:1 para texto normal.
+  Centralizar tokens de muted e medir todos os pares antes do redesign.
+- **P1 — Navegação não escala bem no mobile.** Em até 900 px a sidebar vira uma
+  faixa horizontal com dez destinos, rolagem lateral e rodapé concorrendo pelo
+  mesmo espaço. Falta uma hierarquia explícita para destinos principais e
+  secundários; considerar menu compacto/drawer ou tabs por contexto.
+- **P1 — Formulários usam placeholder como rótulo em vários fluxos.** Menu,
+  mesas, equipe, ingredientes, editor de prato e comparação têm inputs sem
+  `<label>` visível associado. Isso piora leitura, autofill e acessibilidade;
+  labels devem ficar acima dos campos e erros abaixo deles.
+- **P1 — Tabelas não têm contenção responsiva consistente.** Financeiro,
+  comparação e IA renderizam `table` dentro de containers com
+  `overflow-hidden`; em telas estreitas podem comprimir conteúdo ou cortar
+  colunas. Adicionar wrapper com rolagem horizontal, `caption`/headers e
+  alternativa mobile quando necessário.
+- **P1 — Sistema visual está inconsistente entre hub e subpáginas.** O hub usa
+  CSS inline próprio, raios 20–22 px, sombras e vermelho fixo; subpáginas usam
+  tokens Tailwind remapeados e dezenas de combinações de raio/sombra. Definir
+  tokens únicos para superfície, raio, espaçamento, estados e densidade.
+- **P2 — Hierarquia e densidade podem ser melhoradas.** O hub tem três KPIs,
+  nota explicativa separada e uma grade de módulos; páginas de análise repetem
+  cards, títulos e sombras. Um layout de dados mais plano, com agrupamento por
+  prioridade e menos contêineres, reduziria ruído e altura de rolagem.
+- **P2 — Estados de erro, vazio e pendência são incompletos.** Há bons vazios
+  pontuais e erros locais, mas falta skeleton de carregamento, `aria-live` para
+  confirmação/erro e confirmação antes de exclusões destrutivas em mesas/equipe.
+  Padronizar estados para todas as ações.
+- **P2 — Ícones SVG são desenhados localmente em vários componentes.** O hub e
+  outros módulos repetem paths inline; adotar uma família de ícones consistente
+  ou um conjunto interno documentado reduz variação e facilita acessibilidade.
+
+#### Ordem recomendada para a próxima fase
+
+1. Medir navegação real (TTFB, duração das queries, payload RSC, JS hidratado e
+   interação) com um estabelecimento pequeno, médio e grande.
+2. Corrigir arquitetura de dados de IA e relatórios; incluir índices/consultas
+   agregadas e cache seguro por estabelecimento.
+3. Adicionar `loading.tsx`, estados `aria-live` e otimização dos QR Codes.
+4. Consolidar design tokens e refazer navegação mobile, formulários e tabelas.
+5. Reavaliar microinterações somente depois de estabilizar os tempos reais.
+
+- **Veredito da auditoria:** `NEEDS PERFORMANCE + UI REFACTOR`. O sistema está
+  compilável e funcional em nível estrutural, mas há gargalos de dados e
+  inconsistências de UI suficientes para justificar uma rodada dedicada antes
+  de expandir as páginas.
+
 ## Histórico de sessões
 
 ### 2026-08-30 — Auditoria de design, conversão e UX da landing

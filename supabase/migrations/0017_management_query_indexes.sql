@@ -6,6 +6,10 @@
 -- mas não a combinação usada pela aplicação.
 -- =============================================================
 
+-- Não prolonga bloqueios de escrita caso a base esteja ocupada; nesse cenário,
+-- a migration falha e pode ser repetida numa janela de menor tráfego.
+set lock_timeout = '5s';
+
 create index orders_establishment_created_idx
   on orders(establishment_id, created_at);
 

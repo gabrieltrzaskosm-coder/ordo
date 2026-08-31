@@ -120,6 +120,15 @@
 - Commit e publicação: documentação e lote de backend publicados no commit
   `f4d042e`; deployment Vercel `dpl_8Eb4m56XLNqb4X5bkGJdEtXheBBq` em estado
   `READY`, com alias `https://app-pedidos-seven.vercel.app`.
+- 2026-08-31 — Aplicação da migration `0017`: a CLI local não estava instalada,
+  então foi usada a versão efêmera 2.116.0. O `db push --linked --dry-run`
+  confirmou que o repositório não está vinculado a um projeto remoto. As
+  variáveis disponíveis contêm URL/chaves de API, mas não uma credencial de
+  banco apta para DDL; a service role não é suficiente para aplicar índices.
+  A migration recebeu `lock_timeout = '5s'` para falhar sem prolongar bloqueios
+  de escrita. Pendência: vincular o projeto com `supabase link` usando project
+  ref e senha do banco, ou fornecer uma `DATABASE_URL` administrativa, para
+  executar dry-run e `db push` em uma janela de menor tráfego.
 
 ## Histórico de sessões
 

@@ -6,6 +6,19 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Animação de crescimento dos indicadores
+
+- Adicionada interação de contagem progressiva aos números dos cards de
+  “Cases”: os valores começam em zero e crescem até o resultado final quando o
+  card entra no viewport.
+- Mantidos os sinais de variação e o percentual fora da contagem para leitura
+  imediata, com valor completo disponível para tecnologias assistivas.
+- O efeito respeita `prefers-reduced-motion` e mantém fallback estático para
+  navegadores sem suporte à propriedade CSS animada.
+- Validações: lint aprovado, 32 testes aprovados, build de produção aprovado e
+  `git diff --check` aprovado.
+- Pendente: commit, push e novo deploy de produção.
+
 ### 2026-08-30 — FAQ compacto e cases com efeito visual
 
 - Reduzido o espaçamento vertical do hub “FAQ” para uma apresentação mais

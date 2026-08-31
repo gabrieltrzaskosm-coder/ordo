@@ -49,6 +49,27 @@ type ResultCase = (typeof RESULTADOS)[number];
 
 function ResultCaseCard({ result, index }: { result: ResultCase; index: number }) {
   const cardRef = useRef<HTMLElement>(null);
+  const metricMatch = result.metric.match(/^([+−-]?)(\d+)(.*)$/);
+  const metricSign = metricMatch?.[1] ?? "";
+  const metricValue = metricMatch?.[2] ?? result.metric;
+  const metricSuffix = metricMatch?.[3] ?? "";
+
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        card.classList.add("is-visible");
+        observer.disconnect();
+      },
+      { threshold: 0.35 }
+    );
+
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, []);
 
   const handlePointerMove = (event: React.PointerEvent<HTMLElement>) => {
     if (event.pointerType !== "mouse" || !cardRef.current) return;
@@ -89,7 +110,12 @@ function ResultCaseCard({ result, index }: { result: ResultCase; index: number }
           <span>{result.segment}</span>
         </div>
         <div className="ol-result-metric">
-          <strong>{result.metric}</strong>
+          <strong className="ol-result-metric-value" aria-hidden="true">
+            <span>{metricSign}</span>
+            <span className="ol-result-metric-count" style={{ "--result-target": metricValue } as React.CSSProperties}>{metricValue}</span>
+            <span>{metricSuffix}</span>
+          </strong>
+          <span className="ol-sr-only">{result.metric}</span>
           <span>{result.metricLabel}</span>
         </div>
         <h3>{result.title}</h3>
@@ -954,6 +980,7 @@ const CSS = `
 .ol-showcase-count { margin-left: auto; color: #806b57; font-family: ui-monospace, monospace; font-size: 10px; }
 
 /* Resultados */
+@property --result-count { syntax: "<integer>"; initial-value: 0; inherits: false; }
 .ol-results { position: relative; isolation: isolate; overflow: hidden; background: radial-gradient(circle at 8% 18%, rgba(212,29,13,.25), transparent 28%), radial-gradient(circle at 92% 76%, rgba(245,180,0,.14), transparent 30%), #2a1c10; padding: clamp(74px, 10vw, 126px) 32px; }
 .ol-results-inner { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
 .ol-results-head { max-width: 720px; text-align: center; }
@@ -974,8 +1001,17 @@ const CSS = `
 .ol-result-case strong { color: #fff; font-size: 14px; }
 .ol-result-case span { color: rgba(255,255,255,.6); font-size: 10px; text-align: right; text-transform: uppercase; letter-spacing: .08em; }
 .ol-result-metric { display: flex; align-items: baseline; gap: 8px; margin-top: 28px; }
-.ol-result-metric strong { color: #f5b400; font-size: clamp(40px, 4vw, 54px); font-weight: 700; letter-spacing: -.06em; line-height: .9; }
+.ol-result-metric-value { display: inline-flex; align-items: baseline; color: #f5b400; font-size: clamp(40px, 4vw, 54px); font-weight: 700; letter-spacing: -.06em; line-height: .9; }
+.ol-result-metric-count { display: inline-block; min-width: 1.15ch; counter-reset: result-count var(--result-count, 0); }
+.ol-result-card.is-visible .ol-result-metric-count { animation: ol-count-up 1.4s cubic-bezier(.16,1,.3,1) both; }
+.ol-result-metric-value > span:last-child { letter-spacing: -.03em; }
 .ol-result-metric span { max-width: 110px; color: rgba(255,255,255,.72); font-size: 11px; line-height: 1.2; }
+.ol-result-metric-value > span { max-width: none; color: inherit; font-size: inherit; line-height: inherit; }
+.ol-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; padding: 0; margin: -1px; border: 0; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+@supports (property: --result-count) {
+  .ol-result-metric-count { color: transparent !important; position: relative; }
+  .ol-result-metric-count::after { position: absolute; inset: 0; color: #f5b400; content: counter(result-count); }
+}
 .ol-result-card h3 { margin: 24px 0 8px; color: #fff; font-family: var(--font-instrument-serif), Georgia, serif; font-size: 27px; font-weight: 400; line-height: 1; }
 .ol-result-card p { max-width: 280px; margin: 0; color: rgba(255,255,255,.72); font-size: 14px; line-height: 1.5; }
 .ol-results-controls { display: flex; align-items: center; gap: 14px; width: 100%; max-width: 1140px; margin-top: 18px; padding: 0 8px; }
@@ -1039,6 +1075,10 @@ const CSS = `
 @keyframes od-slide-in {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+@keyframes ol-count-up {
+  from { --result-count: 0; }
+  to { --result-count: var(--result-target); }
 }
 .od-slide.is-active { animation: od-slide-in .3s ease both; }
 
@@ -1132,6 +1172,7 @@ const CSS = `
 @media (prefers-reduced-motion: reduce) {
   .ol-reveal { transition: none !important; }
   .ol-result-card { transform: none !important; transition: none !important; }
+  .ol-result-metric-count { --result-count: var(--result-target); animation: none !important; }
 }
 
 @media (max-width: 760px) {

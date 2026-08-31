@@ -45,6 +45,60 @@ const RESULTADOS = [
   { restaurant: "Ponto da Praça", segment: "Gestão do lucro", metric: "+26%", metricLabel: "de margem estimada", title: "Decisão com clareza", body: "O dono identificou os horários e itens que mais recuperavam margem para agir rápido." },
 ] as const;
 
+type ResultCase = (typeof RESULTADOS)[number];
+
+function ResultCaseCard({ result, index }: { result: ResultCase; index: number }) {
+  const cardRef = useRef<HTMLElement>(null);
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLElement>) => {
+    if (event.pointerType !== "mouse" || !cardRef.current) return;
+
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    const multiplier = 7;
+    const rotateY = (x / rect.width - 0.5) * multiplier;
+    const rotateX = (y / rect.height - 0.5) * -multiplier;
+
+    cardRef.current.style.setProperty("--result-rotate-x", `${rotateX}deg`);
+    cardRef.current.style.setProperty("--result-rotate-y", `${rotateY}deg`);
+  };
+
+  const resetTilt = () => {
+    cardRef.current?.style.setProperty("--result-rotate-x", "0deg");
+    cardRef.current?.style.setProperty("--result-rotate-y", "0deg");
+  };
+
+  return (
+    <article
+      ref={cardRef}
+      className="ol-result-card"
+      onPointerMove={handlePointerMove}
+      onPointerLeave={resetTilt}
+      style={{ "--result-image-position": `${index * 25}%` } as React.CSSProperties}
+    >
+      <div
+        className="ol-result-image"
+        role="img"
+        aria-label={`Fachada do restaurante ${result.restaurant}`}
+      />
+      <div className="ol-result-card-content">
+        <span className="ol-result-number">0{index + 1}</span>
+        <div className="ol-result-case">
+          <strong>{result.restaurant}</strong>
+          <span>{result.segment}</span>
+        </div>
+        <div className="ol-result-metric">
+          <strong>{result.metric}</strong>
+          <span>{result.metricLabel}</span>
+        </div>
+        <h3>{result.title}</h3>
+        <p>{result.body}</p>
+      </div>
+    </article>
+  );
+}
+
 type ShowcaseType = (typeof SHOWCASE)[number]["type"];
 
 function ShowcaseVisual({ type }: { type: ShowcaseType }) {
@@ -492,19 +546,7 @@ export function OrdoLanding() {
             <div className="ol-results-track" aria-live="polite">
               {visibleResults.map(({ index, result }, offset) => (
                 <article key={`${index}-${offset}`} className="ol-result-slide">
-                  <div className="ol-result-card">
-                    <span className="ol-result-number">0{index + 1}</span>
-                    <div className="ol-result-case">
-                      <strong>{result.restaurant}</strong>
-                      <span>{result.segment}</span>
-                    </div>
-                    <div className="ol-result-metric">
-                      <strong>{result.metric}</strong>
-                      <span>{result.metricLabel}</span>
-                    </div>
-                    <h3>{result.title}</h3>
-                    <p>{result.body}</p>
-                  </div>
+                  <ResultCaseCard result={result} index={index} />
                 </article>
               ))}
             </div>
@@ -912,27 +954,32 @@ const CSS = `
 .ol-showcase-count { margin-left: auto; color: #806b57; font-family: ui-monospace, monospace; font-size: 10px; }
 
 /* Resultados */
-.ol-results { background: #fbf8f4; padding: clamp(74px, 10vw, 126px) 32px; }
-.ol-results-inner { max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
+.ol-results { position: relative; isolation: isolate; overflow: hidden; background: radial-gradient(circle at 8% 18%, rgba(212,29,13,.25), transparent 28%), radial-gradient(circle at 92% 76%, rgba(245,180,0,.14), transparent 30%), #2a1c10; padding: clamp(74px, 10vw, 126px) 32px; }
+.ol-results-inner { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
 .ol-results-head { max-width: 720px; text-align: center; }
 .ol-results-head .ol-h2 { margin-top: 14px; }
-.ol-results-head p { max-width: 580px; margin: 18px auto 0; color: #6b5136; font-size: 16px; line-height: 1.55; }
+.ol-results-head .ol-h2 { color: #fbf8f4; }
+.ol-results-head p { max-width: 580px; margin: 18px auto 0; color: rgba(251,248,244,.72); font-size: 16px; line-height: 1.55; }
 .ol-results-carousel { width: 100%; overflow: hidden; margin-top: 44px; }
 .ol-results-track { display: flex; width: 100%; }
 .ol-result-slide { flex: 0 0 33.333%; padding: 0 8px; }
-.ol-result-card { position: relative; min-height: 350px; border: 1px solid #e7ddd2; border-radius: 20px; background: #fff; padding: 28px; transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease; }
-.ol-result-card:hover { border-color: #d41d0d; transform: translateY(-2px); box-shadow: 0 14px 32px rgba(42,28,16,.09); }
-.ol-result-number { color: #d41d0d; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .12em; }
+.ol-result-card { position: relative; min-height: 530px; overflow: hidden; border: 1px solid rgba(255,255,255,.24); border-radius: 20px; background: rgba(255,255,255,.1); box-shadow: 0 15px 35px rgba(0,0,0,.2); transform: perspective(1000px) rotateX(var(--result-rotate-x, 0deg)) rotateY(var(--result-rotate-y, 0deg)) translateY(0); transition: border-color .45s ease, transform .45s cubic-bezier(.2,.8,.2,1), box-shadow .45s ease; will-change: transform; }
+.ol-result-card::before { position: absolute; inset: 0 auto 0 0; width: 50%; background: rgba(255,255,255,.05); content: ""; pointer-events: none; z-index: 1; }
+.ol-result-card::after { position: absolute; inset: 1px; border: 1px solid rgba(255,255,255,.08); border-radius: 19px; content: ""; pointer-events: none; z-index: 3; }
+.ol-result-card:hover { border-color: rgba(255,255,255,.44); transform: perspective(1000px) rotateX(var(--result-rotate-x, 0deg)) rotateY(var(--result-rotate-y, 0deg)) translateY(-10px); box-shadow: 0 25px 50px rgba(0,0,0,.3); }
+.ol-result-image { position: absolute; top: 0; left: 0; width: 100%; height: 185px; background-image: linear-gradient(180deg, rgba(23,16,12,.04), rgba(23,16,12,.86)), url('/images/ordo-case-facade.png'); background-position: var(--result-image-position, 50%) center; background-size: cover; opacity: .9; }
+.ol-result-card-content { position: relative; z-index: 2; display: flex; min-height: 530px; flex-direction: column; padding: 210px 28px 28px; color: #fff; }
+.ol-result-number { color: #f5b400; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .12em; }
 .ol-result-case { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 24px; }
-.ol-result-case strong { color: #2a1c10; font-size: 14px; }
-.ol-result-case span { color: #9a8067; font-size: 10px; text-align: right; text-transform: uppercase; letter-spacing: .08em; }
+.ol-result-case strong { color: #fff; font-size: 14px; }
+.ol-result-case span { color: rgba(255,255,255,.6); font-size: 10px; text-align: right; text-transform: uppercase; letter-spacing: .08em; }
 .ol-result-metric { display: flex; align-items: baseline; gap: 8px; margin-top: 28px; }
-.ol-result-metric strong { color: #d41d0d; font-size: clamp(40px, 4vw, 54px); font-weight: 700; letter-spacing: -.06em; line-height: .9; }
-.ol-result-metric span { max-width: 110px; color: #6b5136; font-size: 11px; line-height: 1.2; }
-.ol-result-card h3 { margin: 24px 0 8px; color: #2a1c10; font-family: var(--font-instrument-serif), Georgia, serif; font-size: 27px; font-weight: 400; line-height: 1; }
-.ol-result-card p { max-width: 280px; margin: 0; color: #6b5136; font-size: 14px; line-height: 1.5; }
+.ol-result-metric strong { color: #f5b400; font-size: clamp(40px, 4vw, 54px); font-weight: 700; letter-spacing: -.06em; line-height: .9; }
+.ol-result-metric span { max-width: 110px; color: rgba(255,255,255,.72); font-size: 11px; line-height: 1.2; }
+.ol-result-card h3 { margin: 24px 0 8px; color: #fff; font-family: var(--font-instrument-serif), Georgia, serif; font-size: 27px; font-weight: 400; line-height: 1; }
+.ol-result-card p { max-width: 280px; margin: 0; color: rgba(255,255,255,.72); font-size: 14px; line-height: 1.5; }
 .ol-results-controls { display: flex; align-items: center; gap: 14px; width: 100%; max-width: 1140px; margin-top: 18px; padding: 0 8px; }
-.ol-results-controls .ol-showcase-count { margin-left: 0; }
+.ol-results-controls .ol-showcase-count { margin-left: 0; color: rgba(251,248,244,.62); }
 .ol-results-inner > .ol-cta-primary { margin-top: 30px; }
 
 /* Como funciona */
@@ -1084,6 +1131,7 @@ const CSS = `
 
 @media (prefers-reduced-motion: reduce) {
   .ol-reveal { transition: none !important; }
+  .ol-result-card { transform: none !important; transition: none !important; }
 }
 
 @media (max-width: 760px) {
@@ -1128,7 +1176,9 @@ const CSS = `
   .ol-results { padding-left: 20px; padding-right: 20px; }
   .ol-result-slide { flex-basis: 100%; }
   .ol-result-slide:not(:first-child) { display: none; }
-  .ol-result-card { min-height: 330px; padding: 24px; }
+  .ol-result-card { min-height: 465px; }
+  .ol-result-image { height: 160px; }
+  .ol-result-card-content { min-height: 465px; padding: 184px 24px 24px; }
   .ol-result-case { margin-top: 20px; }
   .ol-result-metric { margin-top: 24px; }
   .ol-result-card h3 { margin-top: 20px; font-size: 29px; }

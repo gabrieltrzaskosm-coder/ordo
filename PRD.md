@@ -6,6 +6,21 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — FAQ compacto e cases com efeito visual
+
+- Reduzido o espaçamento vertical do hub “FAQ” para uma apresentação mais
+  compacta, preservando as duas colunas no desktop e a leitura em coluna única
+  no mobile.
+- Aplicado aos cards de “Cases” o efeito visual inspirado no anexo: vidro
+  translúcido, blur, brilho de borda, elevação e inclinação 3D controlada pelo
+  ponteiro, com desativação para `prefers-reduced-motion` e dispositivos de
+  toque.
+- Adicionada imagem editorial de fachada de restaurante em
+  `public/images/ordo-case-facade.png` para dar identidade visual aos cases.
+- Validações: lint aprovado, 32 testes aprovados, build de produção aprovado e
+  `git diff --check` aprovado.
+- Pendente: commit, push e novo deploy de produção.
+
 ### 2026-08-30 — Ajuste da navegação e dos cases
 
 - Removida da seção “Resultados” a frase de observação sobre cases

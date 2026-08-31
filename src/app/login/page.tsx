@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { GradientWaves } from "./GradientWaves";
 import { LoginNav } from "./LoginNav";
 import { LoginForm } from "./LoginForm";
 
@@ -33,51 +32,6 @@ export default async function LoginPage({
         isolation: "isolate",
       }}
     >
-      {/* Fundo: shader WebGL de fios sobre um radial quente. */}
-      <div
-        aria-hidden
-        style={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 0,
-          background:
-            "radial-gradient(120% 100% at 20% 35%,#160d09 0%,#0a0807 55%,#060504 100%)",
-        }}
-      >
-        <GradientWaves />
-      </div>
-
-      {/* Brilho ember que deriva devagar. */}
-      <div
-        aria-hidden
-        style={{
-          position: "absolute",
-          top: "-10%",
-          left: "12%",
-          width: "60vw",
-          height: "60vw",
-          zIndex: 1,
-          pointerEvents: "none",
-          background:
-            "radial-gradient(circle at center,rgba(217,96,58,.20),rgba(217,96,58,0) 60%)",
-          filter: "blur(20px)",
-          animation: "ordoEmber 30s ease-in-out infinite",
-        }}
-      />
-
-      {/* Vinhetas para dar contraste ao painel à direita. */}
-      <div
-        aria-hidden
-        style={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 2,
-          pointerEvents: "none",
-          background:
-            "linear-gradient(90deg,rgba(10,8,7,.34) 0%,rgba(10,8,7,0) 28%,rgba(10,8,7,.55) 60%,rgba(10,8,7,.93) 100%),linear-gradient(180deg,rgba(10,8,7,.62) 0%,rgba(10,8,7,0) 24%,rgba(10,8,7,0) 74%,rgba(10,8,7,.9) 100%)",
-        }}
-      />
-
       <LoginNav />
 
       <div

@@ -389,7 +389,7 @@ body {
    Login (rota /login) — visual escuro/editorial próprio, ESCOPADO
    a .ordo-login. Sora + JetBrains Mono; paleta quase-preta quente
    com acento terracota. Animações congelam com prefers-reduced-motion
-   (regra global acima). O shader de fundo é WebGL (GradientWaves).
+   (regra global acima). O fundo é uma cor sólida para máxima legibilidade.
    ============================================================= */
 .ordo-login {
   font-family: var(--font-sora), system-ui, sans-serif;
@@ -411,17 +411,6 @@ body {
   color: rgba(255, 255, 255, 0.25);
 }
 
-@keyframes ordoEmber {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(6%, -5%) scale(1.15);
-  }
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-}
 @keyframes ordoSweep {
   0% {
     transform: translateX(-30%);

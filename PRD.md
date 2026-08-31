@@ -1480,6 +1480,34 @@ PR → Lint → Typecheck → Tests → Build → Preview (Vercel) → Review �
 - Deploy de produção concluído na Vercel: `dpl_DAwn7Hhw9uvyk4132eXXBvkewC6R`,
   estado `READY`; alias `https://app-pedidos-seven.vercel.app` validado com
   HTTP 200.
+
+---
+
+# 50. Resumo da sessão — 2026-08-31 — Fundo sólido no login
+
+## Alterações
+
+- Removido da página `/login` o shader WebGL `GradientWaves`, o brilho ember e
+  as vinhetas em gradiente.
+- Mantido o fundo escuro sólido `#0a0807`, preservando o contraste dos textos,
+  campos, alertas e botão de acesso.
+- Removida a animação CSS `ordoEmber`, que deixou de ser utilizada.
+
+## Validações
+
+- `npm run lint` — aprovado.
+- `npm test` — aprovado: 32 testes em 3 arquivos.
+- `git diff --check` — aprovado.
+- `npm run build` — bloqueado nesta sessão por falha de rede ao baixar as
+  fontes Google em `fonts.gstatic.com`; não houve erro de TypeScript relacionado
+  à alteração.
+
+## Entrega
+
+- As mudanças do login foram preparadas para commit, mas o deploy de produção
+  ficou pendente até o build voltar a concluir com acesso às fontes.
+- Alterações não relacionadas já existentes em `supabase/migrations/0017_*` e
+  `supabase/.temp/` foram preservadas e não incluídas.
 - Navegador no domínio de produção — aprovado: pop-up abriu, foco inicial caiu na primeira opção, a leitura preliminar foi personalizada e o foco da etapa intermediária caiu em “Continuar”.
 - Console do navegador — sem mensagens.
 - Nenhum lead real foi enviado durante a validação.

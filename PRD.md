@@ -17,7 +17,9 @@
   navegadores sem suporte à propriedade CSS animada.
 - Validações: lint aprovado, 32 testes aprovados, build de produção aprovado e
   `git diff --check` aprovado.
-- Pendente: commit, push e novo deploy de produção.
+- Deploy de produção concluído na Vercel: `dpl_5dSr1tSnK6dsQYtzWSVJGsGkWqjV`,
+  status `READY`; domínio validado com HTTP 200 e animação de contagem presente
+  no HTML.
 
 ### 2026-08-30 — FAQ compacto e cases com efeito visual
 

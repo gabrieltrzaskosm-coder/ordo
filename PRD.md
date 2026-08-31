@@ -6,6 +6,32 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Auditoria de design, conversão e UX da landing
+
+- Auditoria executada com as referências de UI/UX, design anti-slop, click-path,
+  inteligência de lead, acessibilidade e browser QA instaladas no projeto.
+- Fluxo principal verificado: CTA do hero abre o modal, o avanço vazio mostra
+  alerta, o carrossel do diagnóstico informa “Passo 1 de 8” e o resultado exibe
+  aderência e projeções ao final. Não foi enviado nenhum lead de produção.
+- Lighthouse desktop e mobile: acessibilidade 90, boas práticas 100, SEO 100 e
+  agentic browsing 100. Falhas encontradas: ausência de landmark `<main>`,
+  contraste insuficiente no número do primeiro card do diagnóstico e dots dos
+  carrosséis menores que 24 px.
+- Browser QA: nenhum erro de console, nenhuma requisição 4xx/5xx observada,
+  sem overflow horizontal em viewport de 375 px. Trace: LCP 258 ms, INP 48 ms
+  e CLS 0,00. Não houve baseline visual versionado, então comparação pixel a
+  pixel ficou inconclusiva.
+- Principais recomendações de conversão: reduzir ou adiar os quatro campos de
+  identificação, substituir cases inventados por provas verificáveis ou
+  marcá-los como simulação, e tornar o diagnóstico acessível pelo primeiro CTA
+  com foco no primeiro campo.
+- Riscos de UX/lead registrados: a tela mostra sucesso local antes de a entrega
+  do e-mail terminar; falhas não oferecem retry; o campo `budget` é enviado no
+  e-mail como “Faixa de investimento”, embora pergunte sobre peso da equipe; e
+  o menu “Diagnóstico” leva à seção antes de abrir o questionário.
+- Veredito: `SHIP WITH FIXES`. Nenhuma alteração de código foi feita nesta
+  sessão; as mudanças ficam pendentes para priorização.
+
 ### 2026-08-30 — Hub Cases inspirado no card de referência
 
 - Renomeado o item da navegação lateral de “Resultados” para “Cases”, mantendo

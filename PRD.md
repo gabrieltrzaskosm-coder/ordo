@@ -12,7 +12,10 @@
   viewport, tanto na horizontal quanto na vertical.
 - Mantidos o limite de altura, o scroll interno e a adaptação para telas
   pequenas.
-- Pendente: validação final em produção após o deploy.
+- Validações executadas: `npm run lint`, `npm test` (32 testes), `npm run
+  build` e `git diff --check`, todas aprovadas.
+- Deploy de produção concluído na Vercel: `dpl_9Hn4hX6ZJGGVuPNqSNQyynbGoej6`,
+  status `READY`; domínio validado com HTTP 200.
 
 ### 2026-08-30 — Diagnóstico em modal com transição animada
 

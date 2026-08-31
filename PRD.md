@@ -16,7 +16,9 @@
   plano mais adequado aos processos e objetivos do restaurante.
 - Validações: lint aprovado, 32 testes aprovados, build de produção aprovado e
   `git diff --check` aprovado.
-- Pendente: commit, push e novo deploy de produção.
+- Deploy de produção concluído na Vercel: `dpl_Eir66QNBuiTiMhBiRgbY3sYYHcCs`,
+  status `READY`; domínio validado com HTTP 200 e os três passos presentes no
+  HTML.
 
 ### 2026-08-30 — Cases ilustrativos na seção Resultados
 

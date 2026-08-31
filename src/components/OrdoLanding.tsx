@@ -38,11 +38,11 @@ const SHOWCASE = [
 ] as const;
 
 const RESULTADOS = [
-  ["Mais ritmo", "O cliente inicia o pedido sem esperar um atendente chegar à mesa."],
-  ["Menos retrabalho", "A cozinha recebe o pedido com as informações certas e a equipe sabe o próximo passo."],
-  ["Mais mesas", "Uma equipe mais organizada consegue absorver melhor os horários de pico."],
-  ["Equipe mais enxuta", "As pessoas deixam de correr atrás de tarefas repetitivas e focam em servir e produzir."],
-  ["Mais clareza", "Dados de pedidos, vendas e horários de pico ajudam o dono a decidir com mais segurança."],
+  { restaurant: "Cantina 28", segment: "Alta demanda", metric: "+200%", metricLabel: "de lucro operacional", title: "Menos garçons no salão", body: "A operação saiu de 5 para 2 garçons com o pedido chegando direto à cozinha." },
+  { restaurant: "Brasa do Bairro", segment: "Equipe enxuta", metric: "−60%", metricLabel: "no custo do salão", title: "Mais ritmo no pico", body: "A casa absorveu o movimento sem transformar cada horário de pico em novas contratações." },
+  { restaurant: "Mesa Alta", segment: "Salão cheio", metric: "+31%", metricLabel: "de pedidos por hora", title: "Mais mesas atendidas", body: "O cliente começou o pedido sozinho e a equipe ganhou tempo para levar e finalizar cada mesa." },
+  { restaurant: "Casa do Pátio", segment: "Operação média", metric: "−72%", metricLabel: "de retrabalho", title: "Pedido certo na primeira vez", body: "As solicitações chegaram completas à cozinha, reduzindo correções, idas e voltas." },
+  { restaurant: "Ponto da Praça", segment: "Gestão do lucro", metric: "+26%", metricLabel: "de margem estimada", title: "Decisão com clareza", body: "O dono identificou os horários e itens que mais recuperavam margem para agir rápido." },
 ] as const;
 
 type ShowcaseType = (typeof SHOWCASE)[number]["type"];
@@ -479,17 +479,26 @@ export function OrdoLanding() {
         <div className="ol-results-inner">
           <div className="ol-results-head">
             <span className="ol-eyebrow ol-eyebrow-red">Resultados</span>
-            <h2 id="results-title" className="ol-h2">O impacto que aparece na operação e chega no lucro.</h2>
-            <p>O Ordo organiza o fluxo para que o restaurante ganhe velocidade sem depender de aumentar a equipe.</p>
+            <h2 id="results-title" className="ol-h2">Cases de quem trocou esforço por margem.</h2>
+            <p>Veja como diferentes operações podem transformar velocidade, equipe e clareza em mais lucro com o Ordo.</p>
+            <span className="ol-results-note">Cases ilustrativos para apresentação comercial. Os resultados reais variam conforme a operação.</span>
           </div>
           <div className="ol-results-carousel">
             <div className="ol-results-track" aria-live="polite">
-              {visibleResults.map(({ index, result: [title, body] }, offset) => (
+              {visibleResults.map(({ index, result }, offset) => (
                 <article key={`${index}-${offset}`} className="ol-result-slide">
                   <div className="ol-result-card">
                     <span className="ol-result-number">0{index + 1}</span>
-                    <h3>{title}</h3>
-                    <p>{body}</p>
+                    <div className="ol-result-case">
+                      <strong>{result.restaurant}</strong>
+                      <span>{result.segment}</span>
+                    </div>
+                    <div className="ol-result-metric">
+                      <strong>{result.metric}</strong>
+                      <span>{result.metricLabel}</span>
+                    </div>
+                    <h3>{result.title}</h3>
+                    <p>{result.body}</p>
                   </div>
                 </article>
               ))}
@@ -498,8 +507,8 @@ export function OrdoLanding() {
           <div className="ol-results-controls">
             <button type="button" className="ol-showcase-arrow" onClick={() => moveResults(-1)} aria-label="Resultado anterior">←</button>
             <div className="ol-showcase-dots" aria-label="Selecionar resultado">
-              {RESULTADOS.map(([title], index) => (
-                <button type="button" key={title} className={index === resultsIndex ? "is-active" : ""} onClick={() => setResultsIndex(index)} aria-label={`Mostrar resultado: ${title}`} aria-pressed={index === resultsIndex} />
+              {RESULTADOS.map(({ restaurant }, index) => (
+                <button type="button" key={restaurant} className={index === resultsIndex ? "is-active" : ""} onClick={() => setResultsIndex(index)} aria-label={`Mostrar case: ${restaurant}`} aria-pressed={index === resultsIndex} />
               ))}
             </div>
             <span className="ol-showcase-count">0{resultsIndex + 1} / 0{RESULTADOS.length}</span>
@@ -889,13 +898,20 @@ const CSS = `
 .ol-results-head { max-width: 720px; text-align: center; }
 .ol-results-head .ol-h2 { margin-top: 14px; }
 .ol-results-head p { max-width: 580px; margin: 18px auto 0; color: #6b5136; font-size: 16px; line-height: 1.55; }
+.ol-results-note { display: block; max-width: 560px; margin: 14px auto 0; color: #9a8067; font-size: 11px; line-height: 1.45; }
 .ol-results-carousel { width: 100%; overflow: hidden; margin-top: 44px; }
 .ol-results-track { display: flex; width: 100%; }
 .ol-result-slide { flex: 0 0 33.333%; padding: 0 8px; }
-.ol-result-card { position: relative; min-height: 218px; border: 1px solid #e7ddd2; border-radius: 20px; background: #fff; padding: 28px; transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease; }
+.ol-result-card { position: relative; min-height: 350px; border: 1px solid #e7ddd2; border-radius: 20px; background: #fff; padding: 28px; transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease; }
 .ol-result-card:hover { border-color: #d41d0d; transform: translateY(-2px); box-shadow: 0 14px 32px rgba(42,28,16,.09); }
 .ol-result-number { color: #d41d0d; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .12em; }
-.ol-result-card h3 { margin: 34px 0 10px; color: #2a1c10; font-family: var(--font-instrument-serif), Georgia, serif; font-size: 34px; font-weight: 400; line-height: 1; }
+.ol-result-case { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 24px; }
+.ol-result-case strong { color: #2a1c10; font-size: 14px; }
+.ol-result-case span { color: #9a8067; font-size: 10px; text-align: right; text-transform: uppercase; letter-spacing: .08em; }
+.ol-result-metric { display: flex; align-items: baseline; gap: 8px; margin-top: 28px; }
+.ol-result-metric strong { color: #d41d0d; font-size: clamp(40px, 4vw, 54px); font-weight: 700; letter-spacing: -.06em; line-height: .9; }
+.ol-result-metric span { max-width: 110px; color: #6b5136; font-size: 11px; line-height: 1.2; }
+.ol-result-card h3 { margin: 24px 0 8px; color: #2a1c10; font-family: var(--font-instrument-serif), Georgia, serif; font-size: 27px; font-weight: 400; line-height: 1; }
 .ol-result-card p { max-width: 280px; margin: 0; color: #6b5136; font-size: 14px; line-height: 1.5; }
 .ol-results-controls { display: flex; align-items: center; gap: 14px; width: 100%; max-width: 1140px; margin-top: 18px; padding: 0 8px; }
 .ol-results-controls .ol-showcase-count { margin-left: 0; }
@@ -1082,8 +1098,10 @@ const CSS = `
   .ol-results { padding-left: 20px; padding-right: 20px; }
   .ol-result-slide { flex-basis: 100%; }
   .ol-result-slide:not(:first-child) { display: none; }
-  .ol-result-card { min-height: 190px; padding: 24px; }
-  .ol-result-card h3 { margin-top: 28px; font-size: 32px; }
+  .ol-result-card { min-height: 330px; padding: 24px; }
+  .ol-result-case { margin-top: 20px; }
+  .ol-result-metric { margin-top: 24px; }
+  .ol-result-card h3 { margin-top: 20px; font-size: 29px; }
   .ol-diagnostic-dialog-header h2 { font-size: 27px; }
   .ol-diagnostic-dialog-header p { font-size: 13px; }
   .od-form-grid, .ol-metrics-list { grid-template-columns: 1fr; }

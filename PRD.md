@@ -6,6 +6,20 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Cases ilustrativos na seção Resultados
+
+- Substituídos os benefícios genéricos do carrossel “Resultados” por cinco
+  cases ilustrativos focados em donos de restaurantes.
+- Cada card agora apresenta operação, perfil, métrica de impacto, mudança
+  aplicada e resultado: equipe mais enxuta, menor custo de salão, mais pedidos
+  por hora, menos retrabalho e margem estimada.
+- Incluído aviso visível de que os números são simulações comerciais e variam
+  conforme a operação, evitando apresentar resultados inventados como prova
+  social real.
+- Validações: lint aprovado, 32 testes aprovados, build de produção aprovado e
+  `git diff --check` aprovado.
+- Pendente: commit, push e novo deploy de produção.
+
 ### 2026-08-30 — Centralização do modal de diagnóstico
 
 - Ajustado o pop-up do questionário para ficar explicitamente centralizado no

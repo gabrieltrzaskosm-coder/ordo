@@ -979,7 +979,7 @@ const CSS = `
 .ol-showcase-dots button.is-active { background: #d41d0d; transform: scale(1.35); }
 .ol-showcase-count { margin-left: auto; color: #806b57; font-family: ui-monospace, monospace; font-size: 10px; }
 
-/* Resultados */
+/* Cases */
 @property --result-count { syntax: "<integer>"; initial-value: 0; inherits: false; }
 .ol-results { position: relative; isolation: isolate; overflow: hidden; background: radial-gradient(circle at 8% 18%, rgba(212,29,13,.25), transparent 28%), radial-gradient(circle at 92% 76%, rgba(245,180,0,.14), transparent 30%), #2a1c10; padding: clamp(74px, 10vw, 126px) 32px; }
 .ol-results-inner { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }

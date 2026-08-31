@@ -17,8 +17,9 @@
   a inclinação 3D e a contagem progressiva já implementadas.
 - Validações: `git diff --check`, `npm run lint`, `npm test` (32 testes) e
   `npm run build`, todas aprovadas.
-- Pendente: publicar esta alteração na Vercel e confirmar o domínio de
-  produção.
+- Deploy de produção concluído na Vercel: `dpl_BNbYyvoKjJNR12nGY2qTyRdSKmQe`,
+  status `READY`; alias `https://app-pedidos-seven.vercel.app` validado com
+  HTTP 200 e os cards publicados com o efeito de vidro.
 
 ### 2026-08-30 — Animação de crescimento dos indicadores
 

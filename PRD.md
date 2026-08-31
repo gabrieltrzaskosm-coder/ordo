@@ -108,6 +108,17 @@
   compilável e funcional em nível estrutural, mas há gargalos de dados e
   inconsistências de UI suficientes para justificar uma rodada dedicada antes
   de expandir as páginas.
+- Nesta sessão foi aplicado o primeiro lote de backend: consultas independentes
+  do hub, menu, estoque e ingredientes foram paralelizadas; comparações de
+  Financeiro/Insights agora executam em paralelo; a Ordo IA passou a usar um
+  snapshot compartilhado para pedidos, itens, receitas, ingredientes e extras;
+  e foi criada a migration `0017_management_query_indexes.sql` com índices
+  compostos para estabelecimento/data e modificadores de pedido.
+- Validações após as alterações: `npm run lint`, `npm test` (32 testes) e
+  `npm run build`, todas aprovadas. A migration ainda depende de aplicação no
+  projeto Supabase; não foi executada diretamente contra a base nesta sessão.
+- Commit e publicação: a documentação da auditoria estava no commit `8eaebe7`;
+  este lote de backend será publicado em commit separado após a validação final.
 
 ## Histórico de sessões
 
@@ -1475,6 +1486,40 @@ PR → Lint → Typecheck → Tests → Build → Preview (Vercel) → Review �
 - Push para `main` concluído.
 - Deployment de produção Vercel: `dpl_GtJPj6tExmgAP8f9zHmVineYbgwF`, estado `READY`.
 - Domínio: `https://app-pedidos-seven.vercel.app`.
+
+---
+
+# 48. Resumo da sessão — 2026-08-31 — Alinhamento do frontend de Gestão
+
+## Escopo definido
+
+- Este chat passa a concentrar o trabalho de frontend da página de Gestão e
+  das suas subpáginas.
+- O escopo atual inclui o shell de Gestão, navegação, hub e as páginas de
+  menu, mesas, equipe, pagamentos, faturamento, financeiro, insights, estoque,
+  ingredientes, plano e Ordo IA.
+
+## Decisões e estado atual
+
+- A direção visual existente foi mantida como base: tema claro, superfícies
+  neutras, acento vermelho da Gestão, tipografia Manrope e sidebar dedicada.
+- A estrutura App Router já está organizada em
+  `src/app/(staff)/gestao` e as páginas usam o shell compartilhado
+  `GestaoShell`.
+- A auditoria anterior permanece como referência para priorização: navegação
+  mobile, consistência de tokens, estados de loading/erro/vazio, acessibilidade
+  de formulários e responsividade de tabelas.
+
+## Validações
+
+- Nenhuma alteração de código foi feita nesta sessão.
+- Foram inspecionados a estrutura da área de Gestão, os tokens globais, o
+  shell de navegação, páginas representativas e o estado do repositório.
+
+## Pendências
+
+- Definir a primeira subpágina ou fluxo de Gestão a ser refinado e seus
+  critérios visuais/funcionais específicos.
 
 ---
 

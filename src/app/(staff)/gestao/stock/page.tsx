@@ -9,17 +9,18 @@ export default async function StockPage() {
   await requirePlan("max");
   const supabase = await createClient();
 
-  const { data: cats } = await supabase
-    .from("menu_categories")
-    .select("id, name, sort")
-    .order("sort", { ascending: true });
-
-  const { data: items } = await supabase
-    .from("menu_items")
-    .select(
-      "id, name, category_id, track_stock, stock_qty, low_stock_threshold, sort",
-    )
-    .order("sort", { ascending: true });
+  const [{ data: cats }, { data: items }] = await Promise.all([
+    supabase
+      .from("menu_categories")
+      .select("id, name, sort")
+      .order("sort", { ascending: true }),
+    supabase
+      .from("menu_items")
+      .select(
+        "id, name, category_id, track_stock, stock_qty, low_stock_threshold, sort",
+      )
+      .order("sort", { ascending: true }),
+  ]);
 
   const catName = new Map((cats ?? []).map((c) => [c.id, c.name]));
 

@@ -263,3 +263,225 @@ export async function getIngredientForecast(): Promise<IngredientForecast[]> {
     .sort((a, b) => b.perDay - a.perDay)
     .slice(0, 10);
 }
+
+// ---------- Snapshot compartilhado para a página Ordo IA ----------
+
+type PredictionLine = {
+  id: string;
+  menu_item_id: string | null;
+  name_snapshot: string;
+  qty: number;
+  order_id: string;
+  created_at: string;
+};
+
+type PredictionSnapshot = {
+  trackedItems: { id: string; name: string; stock_qty: number }[];
+  ingredients: { id: string; name: string; stock_qty: number }[];
+  recipes: {
+    ingredient_id: string;
+    menu_item_id: string | null;
+    modifier_id: string | null;
+    qty: number;
+  }[];
+  orders: { id: string; created_at: string }[];
+  lines: PredictionLine[];
+  chosen: { order_item_id: string; modifier_id: string | null }[];
+};
+
+async function loadPredictionSnapshot(): Promise<PredictionSnapshot> {
+  const supabase = await createClient();
+  const since = daysAgoIso(14);
+
+  const [trackedResult, ingredientsResult, recipesResult, ordersResult, linesResult] =
+    await Promise.all([
+      supabase
+        .from("menu_items")
+        .select("id, name, stock_qty")
+        .eq("track_stock", true)
+        .gt("stock_qty", 0),
+      supabase.from("ingredients").select("id, name, stock_qty"),
+      supabase
+        .from("recipe_items")
+        .select("ingredient_id, menu_item_id, modifier_id, qty"),
+      supabase
+        .from("orders")
+        .select("id, created_at")
+        .neq("status", "cancelled")
+        .gte("created_at", since),
+      supabase
+        .from("order_items")
+        .select("id, menu_item_id, name_snapshot, qty, order_id, created_at")
+        .gte("created_at", since),
+    ]);
+
+  const lines = (linesResult.data ?? []) as PredictionLine[];
+  const chosenResult =
+    lines.length === 0
+      ? { data: [] as PredictionSnapshot["chosen"] }
+      : await supabase
+          .from("order_item_modifiers")
+          .select("order_item_id, modifier_id")
+          .in("order_item_id", lines.map((line) => line.id));
+
+  return {
+    trackedItems: trackedResult.data ?? [],
+    ingredients: ingredientsResult.data ?? [],
+    recipes: recipesResult.data ?? [],
+    orders: ordersResult.data ?? [],
+    lines,
+    chosen: chosenResult.data ?? [],
+  };
+}
+
+function snapshotUsage(
+  snapshot: PredictionSnapshot,
+  days: 7 | 14,
+): Map<string, number> {
+  const cutoff = Date.now() - days * 86_400_000;
+  const validOrderIds = new Set(
+    snapshot.orders
+      .filter((order) => new Date(order.created_at).getTime() >= cutoff)
+      .map((order) => order.id),
+  );
+  const byItem = new Map<string, { ingredientId: string; qty: number }[]>();
+  const byModifier = new Map<string, { ingredientId: string; qty: number }[]>();
+
+  for (const recipe of snapshot.recipes) {
+    const target = recipe.menu_item_id ? byItem : byModifier;
+    const targetId = recipe.menu_item_id ?? recipe.modifier_id;
+    if (!targetId) continue;
+    target.set(targetId, [
+      ...(target.get(targetId) ?? []),
+      { ingredientId: recipe.ingredient_id, qty: recipe.qty },
+    ]);
+  }
+
+  const lineQty = new Map(
+    snapshot.lines
+      .filter((line) => validOrderIds.has(line.order_id))
+      .map((line) => [line.id, line.qty]),
+  );
+  const usage = new Map<string, number>();
+  const add = (ingredientId: string, amount: number) =>
+    usage.set(ingredientId, (usage.get(ingredientId) ?? 0) + amount);
+
+  for (const line of snapshot.lines) {
+    if (!line.menu_item_id || !lineQty.has(line.id)) continue;
+    for (const recipe of byItem.get(line.menu_item_id) ?? []) {
+      add(recipe.ingredientId, recipe.qty * line.qty);
+    }
+  }
+  for (const chosen of snapshot.chosen) {
+    const qty = lineQty.get(chosen.order_item_id);
+    if (qty === undefined || !chosen.modifier_id) continue;
+    for (const recipe of byModifier.get(chosen.modifier_id) ?? []) {
+      add(recipe.ingredientId, recipe.qty * qty);
+    }
+  }
+  return usage;
+}
+
+function snapshotDemand(snapshot: PredictionSnapshot): ForecastItem[] {
+  const validOrderIds = new Set(snapshot.orders.map((order) => order.id));
+  const totals = new Map<string, { name: string; qty: number }>();
+  for (const line of snapshot.lines) {
+    if (!validOrderIds.has(line.order_id)) continue;
+    const current = totals.get(line.name_snapshot) ?? {
+      name: line.name_snapshot,
+      qty: 0,
+    };
+    current.qty += line.qty;
+    totals.set(line.name_snapshot, current);
+  }
+  return [...totals.values()]
+    .map((item) => {
+      const perDay = item.qty / 14;
+      return {
+        name: item.name,
+        perDay,
+        suggested: Math.max(1, Math.ceil(perDay)),
+      };
+    })
+    .sort((a, b) => b.perDay - a.perDay)
+    .slice(0, 8);
+}
+
+function snapshotAlerts(snapshot: PredictionSnapshot): StockAlert[] {
+  const since = Date.now() - 7 * 86_400_000;
+  const validOrderIds = new Set(
+    snapshot.orders
+      .filter((order) => new Date(order.created_at).getTime() >= since)
+      .map((order) => order.id),
+  );
+  const sold = new Map<string, number>();
+  for (const line of snapshot.lines) {
+    if (!line.menu_item_id || !validOrderIds.has(line.order_id)) continue;
+    sold.set(line.menu_item_id, (sold.get(line.menu_item_id) ?? 0) + line.qty);
+  }
+
+  const alerts: StockAlert[] = [];
+  for (const item of snapshot.trackedItems) {
+    const perDay = (sold.get(item.id) ?? 0) / 7;
+    if (perDay <= 0) continue;
+    const etaDays = item.stock_qty / perDay;
+    alerts.push({
+      kind: "artigo",
+      name: item.name,
+      stockQty: item.stock_qty,
+      perDay: round1(perDay),
+      etaDays,
+      message: `${item.name}: ${item.stock_qty} em stock, sai ~${round1(perDay)}/dia — esgota ${whenLabel(etaDays)}.`,
+    });
+  }
+
+  const usage = snapshotUsage(snapshot, 7);
+  for (const ingredient of snapshot.ingredients) {
+    const perDay = (usage.get(ingredient.id) ?? 0) / 7;
+    if (perDay <= 0) continue;
+    const etaDays = ingredient.stock_qty / perDay;
+    alerts.push({
+      kind: "ingrediente",
+      name: ingredient.name,
+      stockQty: ingredient.stock_qty,
+      perDay: round1(perDay),
+      etaDays,
+      message: `${ingredient.name}: ${ingredient.stock_qty} em stock, gasta ~${round1(perDay)}/dia — esgota ${whenLabel(etaDays)}.`,
+    });
+  }
+  return alerts.sort((a, b) => a.etaDays - b.etaDays);
+}
+
+function snapshotIngredientForecast(
+  snapshot: PredictionSnapshot,
+): IngredientForecast[] {
+  const usage = snapshotUsage(snapshot, 14);
+  return snapshot.ingredients
+    .map((ingredient) => {
+      const perDay = (usage.get(ingredient.id) ?? 0) / 14;
+      const weekNeed = Math.ceil(perDay * 7);
+      return {
+        name: ingredient.name,
+        stockQty: ingredient.stock_qty,
+        perDay,
+        toBuy: Math.max(0, weekNeed - ingredient.stock_qty),
+      };
+    })
+    .filter((item) => item.perDay > 0)
+    .sort((a, b) => b.perDay - a.perDay)
+    .slice(0, 10);
+}
+
+/** Carrega uma vez os dados comuns às três áreas da tela Ordo IA. */
+export async function getPredictionSnapshot(): Promise<{
+  forecast: ForecastItem[];
+  alerts: StockAlert[];
+  ingredients: IngredientForecast[];
+}> {
+  const snapshot = await loadPredictionSnapshot();
+  return {
+    forecast: snapshotDemand(snapshot),
+    alerts: snapshotAlerts(snapshot),
+    ingredients: snapshotIngredientForecast(snapshot),
+  };
+}

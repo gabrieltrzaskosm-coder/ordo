@@ -9,15 +9,18 @@ export const dynamic = "force-dynamic";
 export default async function GestaoPage() {
   const session = await requireManager();
   const supabase = await createClient();
-  const weekdays = await getWeekdayAverages();
+  const weekdaysPromise = getWeekdayAverages();
 
   const inicioDoDia = new Date();
   inicioDoDia.setHours(0, 0, 0, 0);
 
-  const { data: hoje } = await supabase
-    .from("orders")
-    .select("total_cents, status")
-    .gte("created_at", inicioDoDia.toISOString());
+  const [{ data: hoje }, weekdays] = await Promise.all([
+    supabase
+      .from("orders")
+      .select("total_cents, status")
+      .gte("created_at", inicioDoDia.toISOString()),
+    weekdaysPromise,
+  ]);
 
   const validos = (hoje ?? []).filter((o) => o.status !== "cancelled");
   const totalCents = validos.reduce((s, o) => s + o.total_cents, 0);

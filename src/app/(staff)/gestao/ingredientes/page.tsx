@@ -9,17 +9,18 @@ export default async function IngredientesPage() {
   const session = await requirePlan("max");
   const supabase = await createClient();
 
-  const { data: ings } = await supabase
-    .from("ingredients")
-    .select("id, name, stock_qty, low_stock_threshold")
-    .eq("establishment_id", session.establishmentId)
-    .order("name", { ascending: true });
-
-  // Quantos pratos/extras usam cada ingrediente — para o aviso ao remover.
-  const { data: recipes } = await supabase
-    .from("recipe_items")
-    .select("ingredient_id")
-    .eq("establishment_id", session.establishmentId);
+  const [{ data: ings }, { data: recipes }] = await Promise.all([
+    supabase
+      .from("ingredients")
+      .select("id, name, stock_qty, low_stock_threshold")
+      .eq("establishment_id", session.establishmentId)
+      .order("name", { ascending: true }),
+    // Quantos pratos/extras usam cada ingrediente — para o aviso ao remover.
+    supabase
+      .from("recipe_items")
+      .select("ingredient_id")
+      .eq("establishment_id", session.establishmentId),
+  ]);
 
   const usedBy = new Map<string, number>();
   for (const r of recipes ?? []) {

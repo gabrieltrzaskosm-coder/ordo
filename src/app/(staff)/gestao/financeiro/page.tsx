@@ -73,10 +73,10 @@ export default async function FinanceiroPage({
   const bRange = parseDateRange(sp.bFrom, sp.bTo);
   const comparison =
     aRange && bRange
-      ? {
-          a: await getRangeMetrics(aRange.from, aRange.to),
-          b: await getRangeMetrics(bRange.from, bRange.to),
-        }
+      ? await Promise.all([
+          getRangeMetrics(aRange.from, aRange.to),
+          getRangeMetrics(bRange.from, bRange.to),
+        ]).then(([a, b]) => ({ a, b }))
       : null;
 
   const cards = [

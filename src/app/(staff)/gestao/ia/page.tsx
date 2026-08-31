@@ -1,20 +1,12 @@
 import { requirePlan } from "@/lib/auth";
-import {
-  getDemandForecast,
-  getIngredientForecast,
-  getStockAlerts,
-} from "@/lib/predictions";
+import { getPredictionSnapshot } from "@/lib/predictions";
 import { AssistantClient } from "./AssistantClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function IaPage() {
   await requirePlan("max");
-  const [forecast, alerts, ingredients] = await Promise.all([
-    getDemandForecast(),
-    getStockAlerts(),
-    getIngredientForecast(),
-  ]);
+  const { forecast, alerts, ingredients } = await getPredictionSnapshot();
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-6">

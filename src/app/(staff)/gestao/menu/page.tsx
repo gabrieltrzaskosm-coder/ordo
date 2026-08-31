@@ -9,15 +9,16 @@ export default async function MenuPage() {
   const supabase = await createClient();
 
   // A RLS restringe ao estabelecimento do staff — sem filtro manual.
-  const { data: categories } = await supabase
-    .from("menu_categories")
-    .select("id, name, sort")
-    .order("sort", { ascending: true });
-
-  const { data: items } = await supabase
-    .from("menu_items")
-    .select("id, name, description, price_cents, available, category_id, sort")
-    .order("sort", { ascending: true });
+  const [{ data: categories }, { data: items }] = await Promise.all([
+    supabase
+      .from("menu_categories")
+      .select("id, name, sort")
+      .order("sort", { ascending: true }),
+    supabase
+      .from("menu_items")
+      .select("id, name, description, price_cents, available, category_id, sort")
+      .order("sort", { ascending: true }),
+  ]);
 
   const managed: ManagedCategory[] = (categories ?? []).map((c) => ({
     id: c.id,

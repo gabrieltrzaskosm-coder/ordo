@@ -1410,7 +1410,7 @@ PR → Lint → Typecheck → Tests → Build → Preview (Vercel) → Review �
 ## Evidências coletadas em produção
 
 - Domínio auditado: `https://app-pedidos-seven.vercel.app`.
-- Deployment atual: `dpl_HzaKScRmByLgqquYC2B5KypxHdHP`, estado `READY`.
+- Deployment atual: `dpl_6wY1zd7k52nhLUX3jGDh4m1Qu4JH`, estado `READY`.
 - Lighthouse: desktop e mobile com Accessibility 100, Best Practices 100, SEO 100 e Agentic Browsing 100; 52 auditorias aprovadas e nenhuma falha em cada dispositivo.
 - Browser QA: 0 mensagens no console; 28 requisições observadas, todas com status 200 ou 304.
 - Logs Vercel das últimas 24 horas: 27 respostas 200, 8 respostas 304 e nenhum log 4xx ou 5xx.

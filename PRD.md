@@ -1399,3 +1399,11 @@ PR → Lint → Typecheck → Tests → Build → Preview (Vercel) → Review �
 ## Pendência
 
 - Fazer um envio real autorizado para confirmar a entrega do e-mail após as mudanças, sem usar dados de teste de terceiros.
+
+## Entrega e validação de produção
+
+- Commit: `494267a` (`Apply diagnostic audit improvements`).
+- Push para `main` concluído.
+- Deployment de produção Vercel: `dpl_2jKUcH7Qtvx9sB7dfT5k9EYeThHa`, estado `READY`.
+- Lighthouse no domínio de produção: desktop e mobile com acessibilidade 100, boas práticas 100, SEO 100 e agentic browsing 100; 51 auditorias aprovadas e nenhuma falha.
+- Browser QA: o item “Diagnóstico” abriu o pop-up diretamente e o questionário iniciou com foco na primeira opção.

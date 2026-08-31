@@ -1368,7 +1368,7 @@ PR → Lint → Typecheck → Tests → Build → Preview (Vercel) → Review �
 
 - Commit: `33d64ea` (`Improve diagnostic conversion flow`).
 - Push para `main` concluído.
-- Deployment de produção Vercel: `dpl_14TqidwjxdFnY1zsxGgThaVu3C5Y`, estado `READY`.
+- Deployment de produção Vercel: `dpl_GtJPj6tExmgAP8f9zHmVineYbgwF`, estado `READY`.
 - Domínio: `https://app-pedidos-seven.vercel.app`.
 
 ## Pendências para a próxima etapa

@@ -117,8 +117,9 @@
 - Validações após as alterações: `npm run lint`, `npm test` (32 testes) e
   `npm run build`, todas aprovadas. A migration ainda depende de aplicação no
   projeto Supabase; não foi executada diretamente contra a base nesta sessão.
-- Commit e publicação: a documentação da auditoria estava no commit `8eaebe7`;
-  este lote de backend será publicado em commit separado após a validação final.
+- Commit e publicação: documentação e lote de backend publicados no commit
+  `f4d042e`; deployment Vercel `dpl_8Eb4m56XLNqb4X5bkGJdEtXheBBq` em estado
+  `READY`, com alias `https://app-pedidos-seven.vercel.app`.
 
 ## Histórico de sessões
 

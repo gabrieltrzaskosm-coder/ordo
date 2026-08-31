@@ -1537,6 +1537,18 @@ PR → Lint → Typecheck → Tests → Build → Preview (Vercel) → Review �
 
 ---
 
+# 53. Resumo da sessão — 2026-08-31 — Deploy do login claro
+
+## Entrega
+
+- Deploy de produção concluído na Vercel: `EQsxvoJA8kd6WEdTfaSVxMQZg7DC`,
+  estado `READY`.
+- Alias `https://app-pedidos-seven.vercel.app` atualizado.
+- Rota `/login` validada com HTTP 200; HTML confirmou o fundo `#f5f5f3`,
+  alinhamento central e ausência do texto “Criar conta”.
+
+---
+
 # 50. Resumo da sessão — 2026-08-31 — Fundo sólido no login
 
 ## Alterações

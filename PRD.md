@@ -1399,6 +1399,58 @@ PR → Lint → Typecheck → Tests → Build → Preview (Vercel) → Review �
 
 ---
 
+# 49. Resumo da sessão — 2026-08-30 — Auditoria final de UX e conversão
+
+## Escopo e referências usadas
+
+- Auditoria combinada com as skills instaladas `design-taste-frontend`, `browser-qa`, `frontend-a11y` e `click-path-audit`.
+- Revisados: hierarquia da landing, clareza da proposta, CTAs, Cases, FAQ, navegação lateral, modal do diagnóstico, estados de erro, teclado, touch, responsividade, console, rede e performance.
+- Nenhum lead real foi enviado durante a auditoria.
+
+## Evidências coletadas em produção
+
+- Domínio auditado: `https://app-pedidos-seven.vercel.app`.
+- Deployment atual: `dpl_HzaKScRmByLgqquYC2B5KypxHdHP`, estado `READY`.
+- Lighthouse: desktop e mobile com Accessibility 100, Best Practices 100, SEO 100 e Agentic Browsing 100; 52 auditorias aprovadas e nenhuma falha em cada dispositivo.
+- Browser QA: 0 mensagens no console; 28 requisições observadas, todas com status 200 ou 304.
+- Logs Vercel das últimas 24 horas: 27 respostas 200, 8 respostas 304 e nenhum log 4xx ou 5xx.
+- Mobile em 375 px: `scrollWidth` igual à largura da viewport, sem overflow horizontal; indicadores dos carrosséis com área de toque de 24 × 24 px.
+- Performance trace: LCP de 190 ms e CLS 0,00 em laboratório; não há dados de campo no CrUX para esta página.
+- Fluxo do diagnóstico: CTA abre o modal centralizado, o foco inicia na primeira opção, a navegação chega ao passo 09 e exibe o botão final habilitado. A validação foi interrompida antes do envio para não criar um lead de teste.
+- Carrossel de Cases, carrossel de hubs e FAQ responderam às interações de clique; o FAQ expande a resposta no próprio documento.
+
+## Conclusão
+
+Tecnicamente, a landing está apta para uma rodada controlada de QA comercial. Não foram encontrados bloqueios funcionais, problemas de acessibilidade detectáveis pelo Lighthouse, erros de console, falhas de rede ou overflow mobile.
+
+Eu não iniciaria aquisição paga em escala antes dos ajustes de confiança e medição abaixo. Eles não impedem o uso da página, mas podem reduzir conversão qualificada e dificultar a otimização do funil.
+
+## Recomendações priorizadas
+
+### Alta prioridade — confiança da prova comercial
+
+- Os Cases exibem números exatos como `+200%`, `−60%`, `+31%` e `−72%`, mas continuam sem uma identificação visível de que são exemplos/simulações. Substituir por cases autorizados e comprováveis ou rotular explicitamente como simulação de impacto, com método e período.
+- A frase “O único sistema que diminui o trabalho e aumenta a demanda” é uma afirmação absoluta de superioridade. Manter apenas com evidência comparativa; caso contrário, testar uma versão forte, porém verificável.
+- Os números do bloco “O diagnóstico olha para” — 7 minutos, 12 pedidos por hora, 36,5% e 5% — devem receber fonte/metodologia visível ou ser apresentados como referências operacionais, evitando que pareçam promessa ou benchmark universal.
+
+### Média prioridade — conversão e UX visual
+
+- No estado inicial dos Cards de Cases em desktop, a maior parte da prova fica escondida até hover/foco e o título aparece muito próximo do rodapé escuro. Manter pelo menos métrica e contexto essenciais visíveis por padrão, ou adicionar uma indicação clara de interação; em touch o conteúdo já fica aberto.
+- Instrumentar eventos do funil: clique por posição do CTA, abertura do diagnóstico, avanço/abandono por passo, conclusão, erro de envio e expansão de FAQ. Não há rastreamento de conversão customizado identificável no código atual.
+- Fazer um envio autorizado de produção para comprovar a entrega no Resend; a revisão confirmou timeout e retry no código, mas não comprova a entrega end-to-end sem um teste real.
+
+### Baixa prioridade — consistência de navegação
+
+- O clique no item “Diagnóstico” abre o modal, enquanto o acesso direto à âncora `/#contato` continua levando à seção. Definir se esse comportamento de deep-link deve abrir o modal também para manter a expectativa do nome da ação.
+
+## Decisão da sessão
+
+- Status: aprovado tecnicamente, com ressalvas comerciais.
+- Não houve alteração no código do produto; esta sessão registrou apenas a auditoria e as pendências no PRD.
+- Próxima sequência recomendada: prova dos Cases e das métricas → instrumentação do funil → teste autorizado do envio → nova rodada de aquisição controlada.
+
+---
+
 # 46. Resumo da sessão — 2026-08-30 — Ajustes da auditoria
 
 ## Mudanças aplicadas

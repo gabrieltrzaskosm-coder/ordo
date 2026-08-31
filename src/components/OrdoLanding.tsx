@@ -18,7 +18,7 @@ import { DiagnosticForm } from "./DiagnosticForm";
 const NAV = [
   { id: "inicio", label: "Início" },
   { id: "diferenciais", label: "Diferenciais" },
-  { id: "resultados", label: "Resultados" },
+  { id: "resultados", label: "Cases" },
   { id: "como", label: "Como Funciona" },
   { id: "planos", label: "Planos" },
   { id: "contato", label: "Diagnóstico" },
@@ -560,11 +560,11 @@ export function OrdoLanding() {
         </div>
       </section>
 
-      {/* ===== Resultados ===== */}
+      {/* ===== Cases ===== */}
       <section id="resultados" className="ol-results" aria-labelledby="results-title">
         <div className="ol-results-inner">
           <div className="ol-results-head">
-            <span className="ol-eyebrow ol-eyebrow-red">Resultados</span>
+            <span className="ol-eyebrow ol-eyebrow-red">Cases</span>
             <h2 id="results-title" className="ol-h2">Cases de quem trocou esforço por margem.</h2>
             <p>Veja como diferentes operações podem transformar velocidade, equipe e clareza em mais lucro com o Ordo.</p>
           </div>
@@ -990,7 +990,7 @@ const CSS = `
 .ol-results-carousel { width: 100%; overflow: hidden; margin-top: 44px; }
 .ol-results-track { display: flex; width: 100%; }
 .ol-result-slide { flex: 0 0 33.333%; padding: 0 8px; }
-.ol-result-card { position: relative; min-height: 530px; overflow: hidden; border: 1px solid rgba(255,255,255,.24); border-radius: 20px; background: rgba(255,255,255,.1); box-shadow: 0 15px 35px rgba(0,0,0,.2); transform: perspective(1000px) rotateX(var(--result-rotate-x, 0deg)) rotateY(var(--result-rotate-y, 0deg)) translateY(0); transition: border-color .45s ease, transform .45s cubic-bezier(.2,.8,.2,1), box-shadow .45s ease; will-change: transform; }
+.ol-result-card { position: relative; min-height: 530px; overflow: hidden; border: 1px solid rgba(255,255,255,.24); border-radius: 20px; background: rgba(255,255,255,.1); -webkit-backdrop-filter: blur(15px); backdrop-filter: blur(15px); box-shadow: 0 15px 35px rgba(0,0,0,.2); transform: perspective(1000px) rotateX(var(--result-rotate-x, 0deg)) rotateY(var(--result-rotate-y, 0deg)) translateY(0); transition: border-color .45s ease, transform .45s cubic-bezier(.2,.8,.2,1), box-shadow .45s ease; will-change: transform; }
 .ol-result-card::before { position: absolute; inset: 0 auto 0 0; width: 50%; background: rgba(255,255,255,.05); content: ""; pointer-events: none; z-index: 1; }
 .ol-result-card::after { position: absolute; inset: 1px; border: 1px solid rgba(255,255,255,.08); border-radius: 19px; content: ""; pointer-events: none; z-index: 3; }
 .ol-result-card:hover { border-color: rgba(255,255,255,.44); transform: perspective(1000px) rotateX(var(--result-rotate-x, 0deg)) rotateY(var(--result-rotate-y, 0deg)) translateY(-10px); box-shadow: 0 25px 50px rgba(0,0,0,.3); }

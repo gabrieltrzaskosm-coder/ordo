@@ -6,6 +6,20 @@
 
 ## Histórico de sessões
 
+### 2026-08-30 — Hub Cases inspirado no card de referência
+
+- Renomeado o item da navegação lateral de “Resultados” para “Cases”, mantendo
+  o ID interno `resultados` para preservar as âncoras e o scroll-spy existentes.
+- Atualizado o rótulo visual da seção para “Cases”, alinhando o menu e o
+  conteúdo da landing page.
+- Reforçado o efeito dos cards com `backdrop-filter: blur(15px)` e fallback
+  para WebKit, mantendo o vidro translúcido, a imagem de fachada, a elevação,
+  a inclinação 3D e a contagem progressiva já implementadas.
+- Validações: `git diff --check`, `npm run lint`, `npm test` (32 testes) e
+  `npm run build`, todas aprovadas.
+- Pendente: publicar esta alteração na Vercel e confirmar o domínio de
+  produção.
+
 ### 2026-08-30 — Animação de crescimento dos indicadores
 
 - Adicionada interação de contagem progressiva aos números dos cards de

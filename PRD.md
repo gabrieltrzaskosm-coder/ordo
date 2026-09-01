@@ -6,6 +6,29 @@
 
 ---
 
+# 58. Resumo da sessão — 2026-09-01 — Redesign editorial da Gestão
+
+## Alterações
+
+- A chrome compartilhada da Gestão passou a exibir o contexto da rota em um
+  marcador editorial no topo de cada menu e sub-página.
+- A sidebar ganhou navegação tipográfica com estados ativo e hover mais claros,
+  sem deslocamento ou efeito de proximidade.
+- O hub passou a usar cabeçalho com divisória, métricas em linha e módulos com
+  separadores, reduzindo a sensação de cards soltos e repetitivos.
+- A escala tipográfica, espaçamentos e tratamento das superfícies foram
+  padronizados também para as sub-páginas, com grid de uma coluna no mobile.
+- Blur, glow, tilt e efeitos reativos ao ponteiro continuam removidos.
+
+## Validações
+
+- `npm run lint` — aprovado.
+- `npm test` — aprovado: 32 testes em 3 arquivos.
+- `npm run build` — aprovado com Next.js 16.2.11.
+- `git diff --check` — aprovado.
+
+---
+
 # 57. Resumo da sessão — 2026-09-01 — Canvas visual da Gestão
 
 ## Alterações

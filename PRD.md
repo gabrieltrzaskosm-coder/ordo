@@ -1564,6 +1564,29 @@ PR → Lint → Typecheck → Tests → Build → Preview (Vercel) → Review �
 
 ---
 
+# 54. Resumo da sessão — 2026-09-01 — Remoção dos efeitos de mouse e blur
+
+## Alterações
+
+- Removidos o glow/tilt reativo ao ponteiro dos cards do hub de Gestão e o
+  efeito de proximidade dos itens da sidebar.
+- Removido o `backdrop-filter` do menu mobile do login e da sidebar de Gestão.
+- Excluído o componente legado `src/app/login/GradientWaves.tsx`, que não era
+  mais usado, mas ainda continha lógica de `pointermove`.
+- Cards do hub passaram a usar interação estática, sem blur, brilho ou
+  transformação baseada no mouse.
+
+## Validações
+
+- `npm run lint` — aprovado.
+- `npm test` — aprovado: 32 testes em 3 arquivos.
+- `npm run build` — aprovado com Next.js 16.2.11.
+- `git diff --check` — aprovado.
+- Busca de código confirmou ausência de `pointermove`, `backdrop-filter`,
+  `backdropFilter` e `GradientWaves` nas áreas Gestão/Login.
+
+---
+
 # 50. Resumo da sessão — 2026-08-31 — Fundo sólido no login
 
 ## Alterações

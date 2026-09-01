@@ -111,8 +111,6 @@ export function LoginNav() {
           alignItems: "center",
           justifyContent: "center",
           background: "rgba(255,255,255,.96)",
-          backdropFilter: "blur(26px) saturate(140%)",
-          WebkitBackdropFilter: "blur(26px) saturate(140%)",
           transition: "clip-path .7s cubic-bezier(.16,1,.3,1),opacity .45s ease",
           transformOrigin: "top right",
           clipPath: open

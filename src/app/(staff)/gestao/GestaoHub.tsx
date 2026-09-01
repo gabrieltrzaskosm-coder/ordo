@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
 import {
   hasFeature,
   PLAN_LABELS,
@@ -178,67 +177,12 @@ export function GestaoHub({
   stats: HubStat[];
   weekdays: WeekdayAvg[];
 }) {
-  const gridRef = useRef<HTMLDivElement>(null);
   const maxAvg = Math.max(0, ...weekdays.map((w) => w.avg));
   const todayWeekday = new Date().getDay();
   const busiest = weekdays.reduce(
     (a, b) => (b.avg > a.avg ? b : a),
     weekdays[0] ?? { weekday: 0, label: "", avg: 0 },
   );
-
-  // Hover "mágico" do bento: brilho que segue o cursor + tilt 3D por cartão.
-  useEffect(() => {
-    const grid = gridRef.current;
-    if (!grid) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    const cards = () => Array.from(grid.querySelectorAll<HTMLElement>("[data-bento]"));
-    const move = (e: PointerEvent) => {
-      const r = grid.getBoundingClientRect();
-      grid.style.setProperty("--mx", e.clientX - r.left + "px");
-      grid.style.setProperty("--my", e.clientY - r.top + "px");
-      cards().forEach((card) => {
-        const cr = card.getBoundingClientRect();
-        const cx = e.clientX - cr.left;
-        const cy = e.clientY - cr.top;
-        const inside = cx >= 0 && cy >= 0 && cx <= cr.width && cy <= cr.height;
-        const glow = card.querySelector<HTMLElement>("[data-glow]");
-        if (inside) {
-          const rx = (cy / cr.height - 0.5) * -7;
-          const ry = (cx / cr.width - 0.5) * 7;
-          card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-3px)`;
-          card.style.boxShadow = "0 22px 40px -22px rgba(212,29,13,.5)";
-          card.style.borderColor = "rgba(212,29,13,.35)";
-          if (glow) {
-            glow.style.background = `radial-gradient(180px circle at ${cx}px ${cy}px, rgba(212,29,13,.13), transparent 65%)`;
-            glow.style.opacity = "1";
-          }
-        } else {
-          card.style.transform = "";
-          card.style.boxShadow = "";
-          card.style.borderColor = "";
-          if (glow) glow.style.opacity = "0";
-        }
-      });
-    };
-    const leave = () => {
-      grid.style.setProperty("--mx", "-999px");
-      grid.style.setProperty("--my", "-999px");
-      cards().forEach((card) => {
-        card.style.transform = "";
-        card.style.boxShadow = "";
-        card.style.borderColor = "";
-        const g = card.querySelector<HTMLElement>("[data-glow]");
-        if (g) g.style.opacity = "0";
-      });
-    };
-    grid.addEventListener("pointermove", move);
-    grid.addEventListener("pointerleave", leave);
-    return () => {
-      grid.removeEventListener("pointermove", move);
-      grid.removeEventListener("pointerleave", leave);
-    };
-  }, []);
 
   return (
     <div className="gh-wrap">
@@ -335,8 +279,7 @@ export function GestaoHub({
         )}
       </section>
 
-      <div className="gh-grid" ref={gridRef} style={{ marginTop: 16 }}>
-        <div className="gh-spot" aria-hidden />
+      <div className="gh-grid" style={{ marginTop: 16 }}>
         {CARDS.map((c) => {
           const locked = c.feature ? !hasFeature(plan, c.feature) : false;
           const href = locked ? "/gestao/plano" : c.route;
@@ -344,14 +287,12 @@ export function GestaoHub({
             <Link
               key={c.route}
               href={href}
-              data-bento
               className={
                 "gh-card" +
                 (c.wide ? " is-wide" : "") +
                 (locked ? " is-locked" : "")
               }
             >
-              <div className="gh-glow" data-glow aria-hidden />
               {c.wide ? (
                 <div className="gh-wide-row">
                   <span className="gh-card-icon">{c.icon}</span>

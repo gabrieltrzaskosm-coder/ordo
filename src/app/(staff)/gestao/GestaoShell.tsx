@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
 import { signOut } from "@/app/login/actions";
 import { Banner } from "@/components/ui/banner";
 import { hasFeature, type Feature, type Plan } from "@/lib/plans";
@@ -51,74 +50,7 @@ export function GestaoShell({
   linkOverrides?: Record<string, string>;
 }) {
   const pathname = usePathname();
-  const ulRef = useRef<HTMLUListElement>(null);
   const activeIdx = NAV.findIndex((n) => isActive(pathname, n.route));
-
-  // Efeito de proximidade da sidebar: cada item tem `--effect` (0→1) que o
-  // desloca e o acende para o vermelho. O item ativo fica sempre a 1. Congela
-  // com prefers-reduced-motion.
-  useEffect(() => {
-    const ul = ulRef.current;
-    if (!ul) return;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) return;
-
-    const items = () => Array.from(ul.querySelectorAll<HTMLElement>("[data-idx]"));
-    const targets: Record<string, number> = {};
-    const current: Record<string, number> = {};
-    let raf: number | null = null;
-    let last = 0;
-    const smoothing = 90;
-    const radius = 115;
-    const falloff = (p: number) => p * p * (3 - 2 * p);
-
-    const frame = (now: number) => {
-      const dt = Math.min((now - last) / 1000, 0.05);
-      last = now;
-      const k = 1 - Math.exp(-dt / (smoothing / 1000));
-      let moving = false;
-      items().forEach((el) => {
-        const i = el.getAttribute("data-idx")!;
-        const active = el.dataset.active === "1" ? 1 : 0;
-        const target = Math.max(targets[i] || 0, active);
-        const cur = current[i] || 0;
-        const next = cur + (target - cur) * k;
-        const settled = Math.abs(target - next) < 0.0015;
-        const val = settled ? target : next;
-        current[i] = val;
-        el.style.setProperty("--effect", val.toFixed(4));
-        if (!settled) moving = true;
-      });
-      raf = moving ? requestAnimationFrame(frame) : null;
-    };
-    const start = () => {
-      if (raf != null) cancelAnimationFrame(raf);
-      last = performance.now();
-      raf = requestAnimationFrame(frame);
-    };
-    const onMove = (e: PointerEvent) => {
-      const rect = ul.getBoundingClientRect();
-      const y = e.clientY - rect.top;
-      items().forEach((el) => {
-        const i = el.getAttribute("data-idx")!;
-        const center = el.offsetTop + el.offsetHeight / 2;
-        targets[i] = falloff(Math.max(0, 1 - Math.abs(y - center) / radius));
-      });
-      start();
-    };
-    const onLeave = () => {
-      Object.keys(targets).forEach((k) => (targets[k] = 0));
-      start();
-    };
-    ul.addEventListener("pointermove", onMove);
-    ul.addEventListener("pointerleave", onLeave);
-    start();
-    return () => {
-      ul.removeEventListener("pointermove", onMove);
-      ul.removeEventListener("pointerleave", onLeave);
-      if (raf != null) cancelAnimationFrame(raf);
-    };
-  }, [pathname]);
 
   const initial = establishmentName.trim().charAt(0).toUpperCase() || "O";
 
@@ -135,7 +67,7 @@ export function GestaoShell({
           </span>
         </Link>
 
-        <ul className="gs-nav" ref={ulRef}>
+        <ul className="gs-nav">
           {NAV.map((item, i) => {
             const override = linkOverrides?.[item.route];
             const active = override ? pathname === override : i === activeIdx;
@@ -229,7 +161,7 @@ const GESTAO_CSS = `
 .gs-root a { text-decoration: none; }
 
 /* Sidebar */
-.gs-side { position: sticky; top: 0; align-self: flex-start; height: 100vh; flex: 0 0 236px; padding: 32px 22px; display: flex; flex-direction: column; background: rgba(255,255,255,.5); backdrop-filter: blur(8px); border-right: 1px solid var(--gs-line); }
+.gs-side { position: sticky; top: 0; align-self: flex-start; height: 100vh; flex: 0 0 236px; padding: 32px 22px; display: flex; flex-direction: column; background: rgba(255,255,255,.92); border-right: 1px solid var(--gs-line); }
 .gs-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 30px; }
 .gs-brand-mark { width: 32px; height: 32px; flex: 0 0 auto; border-radius: 10px; background: var(--gs-accent); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; box-shadow: 0 4px 12px -4px rgba(212,29,13,.6); }
 .gs-brand-txt { line-height: 1.15; min-width: 0; }
@@ -281,11 +213,9 @@ const GESTAO_CSS = `
 .gh-metric-note { margin: 8px 2px 0; font-size: 12px; color: var(--gs-muted); }
 
 .gh-grid { position: relative; display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; }
-.gh-spot { position: absolute; inset: 0; pointer-events: none; z-index: 5; border-radius: 24px; background: radial-gradient(220px circle at var(--mx,-999px) var(--my,-999px), rgba(212,29,13,.10), transparent 65%); }
-.gh-card { text-align: left; position: relative; overflow: hidden; background: var(--gs-surface); border: 1px solid var(--gs-accent-border); border-radius: 22px; padding: 20px; cursor: pointer; transition: transform .25s cubic-bezier(.34,1.2,.4,1), box-shadow .25s, border-color .25s; will-change: transform; display: block; }
+.gh-card { text-align: left; position: relative; overflow: hidden; background: var(--gs-surface); border: 1px solid var(--gs-accent-border); border-radius: 22px; padding: 20px; cursor: pointer; transition: background .2s, border-color .2s; display: block; }
 .gh-card.is-wide { grid-column: span 2; }
 .gh-card.is-locked { border-color: var(--gs-line); }
-.gh-glow { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s; }
 .gh-card-top { position: relative; display: flex; align-items: flex-start; justify-content: space-between; }
 .gh-card-icon { width: 46px; height: 46px; flex: 0 0 auto; border-radius: 13px; background: var(--gs-accent-weak); display: flex; align-items: center; justify-content: center; color: var(--gs-accent); }
 .gh-card-title { position: relative; font-size: 16px; font-weight: 700; margin-top: 16px; color: var(--gs-ink); }

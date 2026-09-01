@@ -295,6 +295,11 @@
   descartáveis e deverão ser removidos antes de qualquer uso produtivo.
   Validações: consulta direta ao Supabase confirmou as contagens e
   `/gestao/menu` respondeu HTTP 200 em sessão autenticada.
+- Encerramento da sessão: `npm run lint`, `npm test` (32 testes) e `npm run
+  build` aprovados. O commit local de documentação foi criado, mas o push para
+  GitHub ficou bloqueado por timeout no handshake SSH (`github.com:22`); nenhum
+  push ou novo deploy foi simulado. O cardápio permanece disponível porque os
+  dados foram inseridos diretamente no Supabase de produção.
 
 ## Histórico de sessões
 

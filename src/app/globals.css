@@ -57,10 +57,10 @@
 }
 
 .theme-kitchen {
-  --color-brand: oklch(0.54 0.14 248);
-  --color-brand-strong: oklch(0.46 0.15 248);
+  --color-brand: oklch(0.32 0 0);
+  --color-brand-strong: oklch(0.24 0 0);
   --color-brand-ink: oklch(0.99 0 0);
-  --color-brand-weak: oklch(0.955 0.03 248);
+  --color-brand-weak: oklch(0.94 0 0);
 }
 
 body {

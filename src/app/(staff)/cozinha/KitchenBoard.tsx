@@ -42,7 +42,7 @@ export type WaiterCall = { id: string; createdAt: string; tableLabel: string };
 // Colunas do board = estados operacionais da cozinha. `served` (entregue) sai do
 // board: se estiver por pagar cai na faixa "por pagar"; se pago, a mesa zera e
 // desaparece. `critAfter` (segundos desde a criação do pedido) é o limite a
-// partir do qual o card entra em estado "atrasado" (tempo a vermelho + pulsar).
+// partir do qual o card entra em estado "atrasado" (tempo + etiqueta).
 type BoardStatus = "placed" | "in_prep" | "ready";
 
 const STATUS: Record<
@@ -51,22 +51,22 @@ const STATUS: Record<
 > = {
   placed: {
     label: "Na fila",
-    color: "#f97316",
-    shadow: "rgba(249,115,22,.35)",
+    color: "#737373",
+    shadow: "rgba(64,64,64,.12)",
     next: "INICIAR PREPARO",
     critAfter: 600,
   },
   in_prep: {
     label: "Em preparo",
-    color: "#2563eb",
-    shadow: "rgba(37,99,235,.35)",
+    color: "#525252",
+    shadow: "rgba(64,64,64,.12)",
     next: "MARCAR PRONTO",
     critAfter: 1800,
   },
   ready: {
     label: "Pronto",
-    color: "#059669",
-    shadow: "rgba(5,150,105,.35)",
+    color: "#262626",
+    shadow: "rgba(64,64,64,.16)",
     next: "ENTREGAR",
     critAfter: 300,
   },
@@ -234,10 +234,10 @@ export function KitchenBoard({
     .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 
   const stats = [
-    { label: "Na fila", sub: "aguardando", color: "#f97316", value: count(orders, "placed") },
-    { label: "Em preparo", sub: "na chapa", color: "#2563eb", value: count(orders, "in_prep") },
-    { label: "Prontos", sub: "para entregar", color: "#059669", value: count(orders, "ready") },
-    { label: "A pagar", sub: "entregues", color: "#f59e0b", value: unpaidServed.length },
+    { label: "Na fila", sub: "aguardando", color: "#737373", value: count(orders, "placed") },
+    { label: "Em preparo", sub: "na chapa", color: "#525252", value: count(orders, "in_prep") },
+    { label: "Prontos", sub: "para entregar", color: "#262626", value: count(orders, "ready") },
+    { label: "A pagar", sub: "entregues", color: "#737373", value: unpaidServed.length },
   ];
 
   const clock =
@@ -267,7 +267,7 @@ export function KitchenBoard({
               width: 42,
               height: 42,
               borderRadius: 8,
-              background: "#2563eb",
+              background: "#404040",
               display: "grid",
               placeItems: "center",
             }}
@@ -313,7 +313,7 @@ export function KitchenBoard({
               border: "1px solid #e2e8f0",
               padding: "10px 16px",
               borderRadius: 7,
-              color: soundOn ? "#2563eb" : "#94a3b8",
+              color: soundOn ? "#404040" : "#94a3b8",
               cursor: "pointer",
               fontWeight: 600,
               fontSize: 14,
@@ -411,8 +411,8 @@ export function KitchenBoard({
       {unpaidServed.length > 0 && (
         <section
           style={{
-            background: "#fffaf0",
-            border: "1px solid rgba(245,158,11,.35)",
+            background: "#f5f5f5",
+            border: "1px solid #d4d4d4",
             borderRadius: 8,
             padding: "14px 16px",
             display: "flex",
@@ -426,13 +426,13 @@ export function KitchenBoard({
                 width: 12,
                 height: 12,
                 borderRadius: "50%",
-                background: "#f59e0b",
+                background: "#737373",
                 animation: "kdsBlink 1.2s infinite",
               }}
             />
             <span
               className="kds-cond"
-              style={{ fontWeight: 700, fontSize: 20, color: "#b45309", letterSpacing: ".6px" }}
+              style={{ fontWeight: 700, fontSize: 20, color: "#525252", letterSpacing: ".6px" }}
             >
               ENTREGUES · POR PAGAR
             </span>
@@ -441,7 +441,7 @@ export function KitchenBoard({
               style={{
                 fontWeight: 700,
                 fontSize: 16,
-                background: "#f59e0b",
+                background: "#737373",
                 color: "#fff",
                 padding: "2px 12px",
                 borderRadius: 20,
@@ -460,7 +460,7 @@ export function KitchenBoard({
                   width: 290,
                   borderRadius: 8,
                   background: "#fff",
-                  border: "2px solid #f59e0b",
+                  border: "2px solid #a3a3a3",
                   padding: "16px 18px",
                   overflow: "hidden",
                   display: "flex",
@@ -482,13 +482,13 @@ export function KitchenBoard({
                   </span>
                   <span
                     className="kds-cond"
-                    style={{ fontWeight: 700, fontSize: 42, lineHeight: 1, color: "#b45309" }}
+                    style={{ fontWeight: 700, fontSize: 42, lineHeight: 1, color: "#525252" }}
                   >
                     {tableNumber(o.tableLabel)}
                   </span>
                   <span
                     className="kds-cond tnum"
-                    style={{ marginLeft: "auto", fontWeight: 700, fontSize: 18, color: "#c2410c" }}
+                    style={{ marginLeft: "auto", fontWeight: 700, fontSize: 18, color: "#525252" }}
                   >
                     {fmt(ageSec(o.createdAt))}
                   </span>
@@ -513,7 +513,7 @@ export function KitchenBoard({
                     style={{
                       flex: 1,
                       border: "none",
-                      background: "#059669",
+                      background: "#404040",
                       color: "#fff",
                       padding: 13,
                       borderRadius: 11,
@@ -539,7 +539,7 @@ export function KitchenBoard({
                       width: 52,
                       border: "1px solid #fee2e2",
                       background: "#fef2f2",
-                      color: "#e11d48",
+                      color: "#404040",
                       borderRadius: 11,
                       fontWeight: 700,
                       fontSize: 22,
@@ -558,8 +558,8 @@ export function KitchenBoard({
       {calls.length > 0 && (
         <section
           style={{
-            background: "#fff5f6",
-            border: "1px solid rgba(225,29,72,.3)",
+            background: "#f5f5f5",
+            border: "1px solid #d4d4d4",
             borderRadius: 8,
             padding: "14px 16px",
             display: "flex",
@@ -573,13 +573,13 @@ export function KitchenBoard({
                 width: 12,
                 height: 12,
                 borderRadius: "50%",
-                background: "#e11d48",
+                background: "#404040",
                 animation: "kdsBlink 1s infinite",
               }}
             />
             <span
               className="kds-cond"
-              style={{ fontWeight: 700, fontSize: 20, color: "#be123c", letterSpacing: ".6px" }}
+              style={{ fontWeight: 700, fontSize: 20, color: "#404040", letterSpacing: ".6px" }}
             >
               CHAMADAS DE GARÇOM
             </span>
@@ -588,7 +588,7 @@ export function KitchenBoard({
               style={{
                 fontWeight: 700,
                 fontSize: 16,
-                background: "#e11d48",
+                background: "#404040",
                 color: "#fff",
                 padding: "2px 12px",
                 borderRadius: 20,
@@ -607,7 +607,7 @@ export function KitchenBoard({
                   width: 290,
                   borderRadius: 8,
                   background: "#fff",
-                  border: "2px solid #e11d48",
+                  border: "2px solid #a3a3a3",
                   padding: "16px 18px",
                   overflow: "hidden",
                 }}
@@ -635,13 +635,13 @@ export function KitchenBoard({
                     </span>
                     <span
                       className="kds-cond"
-                      style={{ fontWeight: 700, fontSize: 42, lineHeight: 1, color: "#be123c" }}
+                      style={{ fontWeight: 700, fontSize: 42, lineHeight: 1, color: "#404040" }}
                     >
                       {tableNumber(c.tableLabel)}
                     </span>
                     <span
                       className="kds-cond tnum"
-                      style={{ marginLeft: "auto", fontWeight: 700, fontSize: 18, color: "#e11d48" }}
+                      style={{ marginLeft: "auto", fontWeight: 700, fontSize: 18, color: "#404040" }}
                     >
                       {fmt(ageSec(c.createdAt))}
                     </span>
@@ -660,7 +660,7 @@ export function KitchenBoard({
                     style={{
                       width: "100%",
                       border: "none",
-                      background: "#e11d48",
+                      background: "#404040",
                       color: "#fff",
                       padding: 13,
                       borderRadius: 11,
@@ -768,13 +768,13 @@ export function KitchenBoard({
                         borderLeftWidth: 1,
                         borderTopColor: meta.color,
                         borderRightColor: critical
-                          ? "rgba(245,158,11,.55)"
+                          ? "#a3a3a3"
                           : "#e2e8f0",
                         borderBottomColor: critical
-                          ? "rgba(245,158,11,.55)"
+                          ? "#a3a3a3"
                           : "#e2e8f0",
                         borderLeftColor: critical
-                          ? "rgba(245,158,11,.55)"
+                          ? "#a3a3a3"
                           : "#e2e8f0",
                         boxShadow: "0 1px 2px rgba(15,23,42,.05)",
                         overflow: "hidden",
@@ -840,7 +840,7 @@ export function KitchenBoard({
                                 fontWeight: 700,
                                 fontSize: 26,
                                 lineHeight: 1,
-                                color: critical ? "#e11d48" : "#475569",
+                                color: critical ? "#404040" : "#475569",
                               }}
                             >
                               {fmt(sec)}
@@ -848,7 +848,7 @@ export function KitchenBoard({
                             {critical && (
                               <span
                                 className="kds-cond"
-                                style={{ fontWeight: 700, fontSize: 12, letterSpacing: ".8px", color: "#f59e0b" }}
+                                style={{ fontWeight: 700, fontSize: 12, letterSpacing: ".8px", color: "#525252" }}
                               >
                                 ATRASADO
                               </span>
@@ -886,7 +886,7 @@ export function KitchenBoard({
                                   </span>
                                 )}
                                 {it.notes && (
-                                  <span style={{ fontWeight: 600, fontSize: 17, color: "#e11d48" }}>
+                                  <span style={{ fontWeight: 600, fontSize: 17, color: "#404040" }}>
                                     ↳ {it.notes}
                                   </span>
                                 )}
@@ -923,7 +923,7 @@ export function KitchenBoard({
                               padding: "3px 10px",
                               borderRadius: 8,
                               background: o.paid ? "#ecfdf5" : "#fff7ed",
-                              color: o.paid ? "#059669" : "#c2410c",
+                              color: o.paid ? "#404040" : "#737373",
                             }}
                           >
                             {o.paid ? "✓ PAGO" : "A PAGAR"}
@@ -991,7 +991,7 @@ export function KitchenBoard({
                               width: 52,
                               border: "1px solid #fee2e2",
                               background: "#fef2f2",
-                              color: "#e11d48",
+                              color: "#404040",
                               borderRadius: 12,
                               fontWeight: 700,
                               fontSize: 22,

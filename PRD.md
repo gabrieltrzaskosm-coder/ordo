@@ -6,6 +6,26 @@
 
 ---
 
+# 60. Resumo da sessão — 2026-09-01 — Paleta neutra da Cozinha
+
+## Alterações
+
+- A Cozinha deixou de usar a paleta saturada azul, laranja, verde e rosa nos
+  estados operacionais.
+- Estados, métricas, alertas, botões e indicadores passaram a usar escala de
+  cinzas e grafites, com distinção por peso visual, borda e texto.
+- O tema `theme-kitchen` foi alinhado à paleta neutra para evitar que a
+  navegação reintroduza cores fortes.
+
+## Validações
+
+- `npm run lint` — aprovado.
+- `npm test` — aprovado: 32 testes em 3 arquivos.
+- `npm run build` — aprovado com Next.js 16.2.11.
+- `git diff --check` — aprovado.
+
+---
+
 # 59. Resumo da sessão — 2026-09-01 — Cozinha editorial minimalista
 
 ## Alterações

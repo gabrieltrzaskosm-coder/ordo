@@ -6,7 +6,6 @@ import {
   useRef,
   useState,
   useTransition,
-  type CSSProperties,
 } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -75,23 +74,6 @@ const STATUS: Record<
 
 const BOARD_ORDER: BoardStatus[] = ["placed", "in_prep", "ready"];
 
-const AMBER_PARTICLES = [
-  "#f59e0b",
-  "#fbbf24",
-  "#f59e0b",
-  "#f97316",
-  "#f59e0b",
-  "#fbbf24",
-];
-const RED_PARTICLES = [
-  "#e11d48",
-  "#f43f5e",
-  "#e11d48",
-  "#fb7185",
-  "#e11d48",
-  "#f43f5e",
-];
-
 // tableLabel pode vir como "Mesa 12" ou só "12"; no card gigante queremos o
 // número. Extrai o número final; se não houver, mostra a etiqueta como está.
 function tableNumber(label: string): string {
@@ -117,8 +99,6 @@ export function KitchenBoard({
   // Relógio/tempos ao vivo. `null` até montar para não divergir do HTML do
   // servidor (o relógio do server ≠ do cliente causaria erro de hidratação).
   const [now, setNow] = useState<number | null>(null);
-
-  const boardRef = useRef<HTMLDivElement | null>(null);
 
   // Alerta sonoro dos pedidos novos por pagar. O browser bloqueia áudio até um
   // gesto do utilizador, por isso o som é opt-in (botão) e a preferência fica
@@ -242,62 +222,6 @@ export function KitchenBoard({
     };
   }, [router, establishmentId]);
 
-  // Efeitos de rato: spotlight no board + glow/tilt 3D por card. Só reagem a
-  // rato (num touchscreen ficam inertes) e não alteram dados — puro enfeite.
-  useEffect(() => {
-    const board = boardRef.current;
-    if (!board) return;
-
-    const onMove = (e: MouseEvent) => {
-      const br = board.getBoundingClientRect();
-      board.style.setProperty("--spot-x", `${e.clientX - br.left}px`);
-      board.style.setProperty("--spot-y", `${e.clientY - br.top}px`);
-      board.querySelectorAll<HTMLElement>(".kds-card").forEach((card) => {
-        const r = card.getBoundingClientRect();
-        const cx = e.clientX - r.left;
-        const cy = e.clientY - r.top;
-        const inside = cx >= 0 && cy >= 0 && cx <= r.width && cy <= r.height;
-        const near =
-          e.clientX > r.left - 160 &&
-          e.clientX < r.right + 160 &&
-          e.clientY > r.top - 160 &&
-          e.clientY < r.bottom + 160;
-        card.style.setProperty("--gx", `${cx}px`);
-        card.style.setProperty("--gy", `${cy}px`);
-        card.style.setProperty(
-          "--glowc",
-          card.dataset.glowc || "rgba(37,99,235,.5)",
-        );
-        card.style.setProperty("--glow", near ? (inside ? "1" : "0.5") : "0");
-        if (inside) {
-          const rx = (cy / r.height - 0.5) * -6;
-          const ry = (cx / r.width - 0.5) * 6;
-          card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-3px)`;
-          card.style.zIndex = "20";
-        } else {
-          card.style.transform = "";
-          card.style.zIndex = "";
-        }
-      });
-    };
-
-    const onLeave = () => {
-      board.style.setProperty("--spot-x", "-999px");
-      board.querySelectorAll<HTMLElement>(".kds-card").forEach((c) => {
-        c.style.setProperty("--glow", "0");
-        c.style.transform = "";
-        c.style.zIndex = "";
-      });
-    };
-
-    board.addEventListener("mousemove", onMove);
-    board.addEventListener("mouseleave", onLeave);
-    return () => {
-      board.removeEventListener("mousemove", onMove);
-      board.removeEventListener("mouseleave", onLeave);
-    };
-  }, []);
-
   function ageSec(iso: string): number | null {
     return now === null
       ? null
@@ -326,9 +250,9 @@ export function KitchenBoard({
       className="kds theme-kitchen"
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(180deg,#eef1f6,#e6eaf2)",
+        background: "#f5f7f9",
         color: "#0f172a",
-        padding: "22px 26px 30px",
+        padding: "24px 30px 30px",
         display: "flex",
         flexDirection: "column",
         gap: 18,
@@ -340,13 +264,12 @@ export function KitchenBoard({
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <div
             style={{
-              width: 52,
-              height: 52,
-              borderRadius: 14,
+              width: 42,
+              height: 42,
+              borderRadius: 8,
               background: "#2563eb",
               display: "grid",
               placeItems: "center",
-              boxShadow: "0 8px 22px rgba(37,99,235,.35)",
             }}
           >
             <span
@@ -359,7 +282,7 @@ export function KitchenBoard({
           <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
             <span
               className="kds-cond"
-              style={{ fontWeight: 700, fontSize: 30, lineHeight: 1, letterSpacing: ".5px" }}
+              style={{ fontWeight: 700, fontSize: 26, lineHeight: 1, letterSpacing: ".5px" }}
             >
               COZINHA · KDS
             </span>
@@ -389,8 +312,7 @@ export function KitchenBoard({
               background: "#fff",
               border: "1px solid #e2e8f0",
               padding: "10px 16px",
-              borderRadius: 12,
-              boxShadow: "0 2px 6px rgba(15,23,42,.05)",
+              borderRadius: 7,
               color: soundOn ? "#2563eb" : "#94a3b8",
               cursor: "pointer",
               fontWeight: 600,
@@ -409,8 +331,7 @@ export function KitchenBoard({
               background: "#fff",
               border: "1px solid #e2e8f0",
               padding: "10px 16px",
-              borderRadius: 12,
-              boxShadow: "0 2px 6px rgba(15,23,42,.05)",
+              borderRadius: 7,
             }}
           >
             <span
@@ -433,7 +354,7 @@ export function KitchenBoard({
               background: "#0f172a",
               color: "#fff",
               padding: "8px 18px",
-              borderRadius: 12,
+              borderRadius: 7,
               fontWeight: 700,
               fontSize: 32,
               lineHeight: 1,
@@ -460,7 +381,7 @@ export function KitchenBoard({
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              boxShadow: "0 2px 8px rgba(15,23,42,.05)",
+              boxShadow: "none",
             }}
           >
             <div style={{ display: "flex", flexDirection: "column", lineHeight: 1, gap: 6 }}>
@@ -490,9 +411,9 @@ export function KitchenBoard({
       {unpaidServed.length > 0 && (
         <section
           style={{
-            background: "linear-gradient(90deg,rgba(245,158,11,.12),rgba(245,158,11,.03))",
+            background: "#fffaf0",
             border: "1px solid rgba(245,158,11,.35)",
-            borderRadius: 16,
+            borderRadius: 8,
             padding: "14px 16px",
             display: "flex",
             flexDirection: "column",
@@ -534,11 +455,10 @@ export function KitchenBoard({
               <div
                 key={o.id}
                 className="kds-card"
-                data-glowc="rgba(245,158,11,.5)"
                 style={{
                   flex: "none",
                   width: 290,
-                  borderRadius: 16,
+                  borderRadius: 8,
                   background: "#fff",
                   border: "2px solid #f59e0b",
                   padding: "16px 18px",
@@ -578,7 +498,7 @@ export function KitchenBoard({
                     {formatMoney(o.totalCents)}
                   </span>
                   <span style={{ fontWeight: 600, fontSize: 15, color: "#64748b" }}>
-                    👤 {o.customerName ?? "sem nome"}
+                    {o.customerName ?? "sem nome"}
                   </span>
                 </div>
                 <div style={{ display: "flex", gap: 9 }}>
@@ -638,9 +558,9 @@ export function KitchenBoard({
       {calls.length > 0 && (
         <section
           style={{
-            background: "linear-gradient(90deg,rgba(225,29,72,.1),rgba(225,29,72,.03))",
+            background: "#fff5f6",
             border: "1px solid rgba(225,29,72,.3)",
-            borderRadius: 16,
+            borderRadius: 8,
             padding: "14px 16px",
             display: "flex",
             flexDirection: "column",
@@ -682,19 +602,16 @@ export function KitchenBoard({
               <div
                 key={c.id}
                 className="kds-card"
-                data-glowc="rgba(225,29,72,.5)"
                 style={{
                   flex: "none",
                   width: 290,
-                  borderRadius: 16,
+                  borderRadius: 8,
                   background: "#fff",
                   border: "2px solid #e11d48",
                   padding: "16px 18px",
-                  animation: "kdsPulse 1.8s infinite",
                   overflow: "hidden",
                 }}
               >
-                <Particles colors={RED_PARTICLES} />
                 <div
                   style={{
                     position: "relative",
@@ -764,12 +681,11 @@ export function KitchenBoard({
 
       <div
         className="kds-board"
-        ref={boardRef}
         style={{
           flex: 1,
           display: "grid",
           gridTemplateColumns: "repeat(3,1fr)",
-          gap: 16,
+          gap: 24,
           alignItems: "start",
         }}
       >
@@ -782,10 +698,11 @@ export function KitchenBoard({
             <section
               key={status}
               style={{
-                background: "rgba(255,255,255,.55)",
-                border: "1px solid #e2e8f0",
-                borderRadius: 18,
-                padding: 12,
+                background: "transparent",
+                border: "none",
+                borderTop: `2px solid ${meta.color}`,
+                borderRadius: 0,
+                padding: "12px 0 0",
                 display: "flex",
                 flexDirection: "column",
                 gap: 12,
@@ -836,19 +753,16 @@ export function KitchenBoard({
                     <article
                       key={o.id}
                       className="kds-card"
-                      data-glowc={
-                        critical ? "rgba(245,158,11,.55)" : "rgba(37,99,235,.5)"
-                      }
                       style={{
                         flexShrink: 0,
-                        borderRadius: 16,
+                        borderRadius: 8,
                         background: "#fff",
                         // Só longhands por lado — nenhum shorthand (`border`,
                         // `borderColor`, `borderWidth`) para não conflitar com os
                         // valores por lado (o React descartaria a cor). Topo = cor
                         // do status; restantes = âmbar quando atrasado.
                         borderStyle: "solid",
-                        borderTopWidth: 6,
+                        borderTopWidth: 4,
                         borderRightWidth: 1,
                         borderBottomWidth: 1,
                         borderLeftWidth: 1,
@@ -862,14 +776,10 @@ export function KitchenBoard({
                         borderLeftColor: critical
                           ? "rgba(245,158,11,.55)"
                           : "#e2e8f0",
-                        boxShadow: "0 4px 14px rgba(15,23,42,.08)",
+                        boxShadow: "0 1px 2px rgba(15,23,42,.05)",
                         overflow: "hidden",
-                        ...(critical
-                          ? { animation: "kdsPulse 2s infinite" }
-                          : {}),
                       }}
                     >
-                      {critical && <Particles colors={AMBER_PARTICLES} />}
                       <div
                         style={{
                           position: "relative",
@@ -940,7 +850,7 @@ export function KitchenBoard({
                                 className="kds-cond"
                                 style={{ fontWeight: 700, fontSize: 12, letterSpacing: ".8px", color: "#f59e0b" }}
                               >
-                                ⚠ ATRASADO
+                                ATRASADO
                               </span>
                             )}
                           </div>
@@ -995,7 +905,7 @@ export function KitchenBoard({
                           }}
                         >
                           <span style={{ fontWeight: 600, fontSize: 16, color: "#64748b" }}>
-                            👤 {o.customerName ?? "sem nome"}
+                            {o.customerName ?? "sem nome"}
                           </span>
                           <span
                             className="kds-cond tnum"
@@ -1131,16 +1041,6 @@ function fmt(sec: number | null): string {
   const m = Math.floor(sec / 60);
   const r = sec % 60;
   return `${m}:${String(r).padStart(2, "0")}`;
-}
-
-function Particles({ colors }: { colors: string[] }) {
-  return (
-    <div className="kds-plyr" aria-hidden>
-      {colors.map((c, i) => (
-        <span key={i} className="kds-particle" style={{ "--pc": c } as CSSProperties} />
-      ))}
-    </div>
-  );
 }
 
 // "Ding" de duas notas via Web Audio — sem ficheiro de áudio para carregar.

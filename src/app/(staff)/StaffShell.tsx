@@ -36,7 +36,7 @@ export function StaffShell({
 
   return (
     <div className={`${theme} min-h-screen bg-canvas`}>
-      <header className="sticky top-0 z-20 border-b border-line bg-surface/85 backdrop-blur-md">
+      <header className="sticky top-0 z-20 border-b border-line bg-surface">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-2 text-sm font-semibold text-ink">

@@ -6,6 +6,30 @@
 
 ---
 
+# 59. Resumo da sessão — 2026-09-01 — Cozinha editorial minimalista
+
+## Alterações
+
+- O KDS da Cozinha passou a usar fundo sólido, cabeçalho compacto e controles
+  com tratamento visual simples.
+- As métricas foram simplificadas e as colunas agora usam linhas superiores de
+  status e divisórias, reduzindo sombras e cartões decorativos.
+- Removidos spotlight, tilt 3D, glow, partículas e pulsos decorativos dos
+  pedidos e chamadas; os estados continuam explícitos por cor e texto.
+- Removidos emojis da informação operacional dos pedidos.
+- O layout responsivo empilha as colunas e libera a altura dos pedidos em telas
+  menores.
+- O header compartilhado do staff deixou de usar blur/transparência.
+
+## Validações
+
+- `npm run lint` — aprovado.
+- `npm test` — aprovado: 32 testes em 3 arquivos.
+- `npm run build` — aprovado com Next.js 16.2.11.
+- `git diff --check` — aprovado.
+
+---
+
 # 58. Resumo da sessão — 2026-09-01 — Redesign editorial da Gestão
 
 ## Alterações

@@ -300,6 +300,14 @@
   GitHub ficou bloqueado por timeout no handshake SSH (`github.com:22`); nenhum
   push ou novo deploy foi simulado. O cardápio permanece disponível porque os
   dados foram inseridos diretamente no Supabase de produção.
+- 2026-09-01 — Imagens temporárias do cardápio de teste: vinculadas as miniaturas
+  públicas da mesma fonte a 80 dos 132 itens importados. Os outros 52 itens não
+  possuem imagem publicada na origem e foram mantidos sem foto. A CSP foi
+  ampliada apenas para o host exato `leadsfood.nyc3.cdn.digitaloceanspaces.com`,
+  necessário para a renderização por `<img>` no cardápio do cliente; não houve
+  mudança de modelo, storage ou componentes. A URL de amostra e a contagem no
+  Supabase foram verificadas com HTTP 200. Essas URLs externas são descartáveis
+  e devem ser removidas junto com o cardápio de teste.
 
 ## Histórico de sessões
 

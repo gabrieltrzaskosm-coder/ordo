@@ -5,6 +5,9 @@ import type { NextConfig } from "next";
 // pública; fallback para o wildcard do Supabase se faltar no build.
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const supabaseHost = supabaseUrl ? new URL(supabaseUrl).host : "*.supabase.co";
+// Fonte temporária das imagens do cardápio de teste. É mantida específica para
+// não transformar a CSP em uma permissão genérica para CDNs externos.
+const temporaryMenuImageHost = "leadsfood.nyc3.cdn.digitaloceanspaces.com";
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -22,7 +25,7 @@ const sentryConnect = process.env.NEXT_PUBLIC_SENTRY_DSN
 //    outros headers fecha clickjacking, base-uri e object.
 //  - connect-src: só o próprio site e o Supabase (https + wss do Realtime).
 //  - img-src: menu vem do Storage do Supabase; data:/blob: para os QR codes;
-//    images.unsplash.com só serve a foto do hero da landing pública.
+//    Unsplash serve a landing e o CDN temporário serve o cardápio de teste.
 //  - frame-ancestors 'none': ninguém pode embutir o site num iframe.
 //  - dev precisa de 'unsafe-eval' (o React usa eval para debug) e não força
 //    upgrade-insecure-requests (senão parte o localhost em http).
@@ -30,7 +33,7 @@ const csp = [
   `default-src 'self'`,
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   `style-src 'self' 'unsafe-inline'`,
-  `img-src 'self' data: blob: https://${supabaseHost} https://images.unsplash.com`,
+  `img-src 'self' data: blob: https://${supabaseHost} https://images.unsplash.com https://${temporaryMenuImageHost}`,
   `font-src 'self' data:`,
   `connect-src 'self' https://${supabaseHost} wss://${supabaseHost}${sentryConnect}`,
   `form-action 'self'`,

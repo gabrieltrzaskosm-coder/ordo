@@ -28,7 +28,10 @@ export async function proxy(request: NextRequest) {
     },
   );
 
-  await supabase.auth.getUser();
+  // Verifica a assinatura do JWT e renova a sessão quando preciso. Com chaves
+  // assimétricas, `getClaims` usa JWKS em cache e evita deixar o Auth remoto no
+  // caminho crítico de toda navegação entre telas de Gestão.
+  await supabase.auth.getClaims();
   return response;
 }
 

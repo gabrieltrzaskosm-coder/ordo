@@ -150,6 +150,18 @@
   de autenticação, sem registar ou expor tokens. Credencial inicial comunicada
   apenas ao responsável solicitante; recomenda-se a sua alteração após o
   primeiro acesso.
+- 2026-09-01 — Navegação da Gestão: a troca entre subpáginas repetia a
+  resolução de Auth e de `staff` nos layouts aninhados e na página. A sessão
+  passou a ser deduplicada por request com `React.cache`; a validação de JWT no
+  proxy e no servidor passou de `getUser()` para `getClaims()`. O projeto usa
+  chaves JWT assimétricas (JWKS disponível), logo a validação passa a reutilizar
+  chaves públicas em cache e deixa de depender do Auth remoto em cada clique.
+  Foi acrescentado `loading.tsx` ao segmento `/gestao`, dando resposta visual
+  imediata enquanto a consulta específica da nova tela é renderizada. As RLS e
+  as verificações de papel/plano continuam no servidor. Validações: `npm run
+  lint`, `npm test` (32 testes) e `npm run build` aprovados. Pendente para a
+  próxima rodada: medir RUM/Server-Timing com base de dados maior para priorizar
+  consultas específicas que ainda excedam o tempo desejado.
 
 ## Histórico de sessões
 

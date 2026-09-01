@@ -5,6 +5,7 @@
 // private.auth_establishment_id(), que é SECURITY DEFINER — por isso lê a
 // tabela sem reentrar na RLS e não há recursão infinita.
 import "server-only";
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/database.types";
@@ -23,18 +24,21 @@ export type StaffSession = {
 };
 
 /** Exige sessão de staff válida. Redireciona para /login se não houver. */
-export async function requireStaff(): Promise<StaffSession> {
+// `requireStaff` é chamado pelos layouts aninhados e, em algumas páginas, de
+// novo pela própria página. `cache` o deduplica apenas durante a renderização
+// atual no servidor: a sessão continua a ser validada em cada request, mas sem
+// repetir Auth + consulta a staff na mesma navegação.
+export const requireStaff = cache(async (): Promise<StaffSession> => {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const { data: claimResult } = await supabase.auth.getClaims();
+  const claims = claimResult?.claims;
+  if (!claims?.sub) redirect("/login");
 
   const { data: staff } = await supabase
     .from("staff")
     .select("id, role, establishment_id, establishments(name, plan)")
-    .eq("auth_user_id", user.id)
+    .eq("auth_user_id", claims.sub)
     .maybeSingle();
 
   // Autenticado mas sem registo de staff: conta sem acesso a nenhum
@@ -47,15 +51,15 @@ export async function requireStaff(): Promise<StaffSession> {
   } | null;
 
   return {
-    userId: user.id,
-    email: user.email ?? null,
+    userId: claims.sub,
+    email: claims.email ?? null,
     staffId: staff.id,
     role: staff.role,
     establishmentId: staff.establishment_id,
     establishmentName: est?.name ?? "",
     plan: est?.plan ?? "basic",
   };
-}
+});
 
 /** Exige papel de owner/manager (dados sensíveis: financeiro, edição de menu). */
 export async function requireManager(): Promise<StaffSession> {

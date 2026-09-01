@@ -1625,6 +1625,36 @@ PR → Lint → Typecheck → Tests → Build → Preview (Vercel) → Review �
 
 ---
 
+# 56. Resumo da sessão — 2026-09-01 — Padronização visual da Gestão
+
+## Alterações
+
+- A faixa `Banner` da Gestão passou a ocupar toda a largura disponível, com
+  bordas suaves e o tratamento rainbow da referência.
+- O hub de Gestão foi ampliado para um canvas mais confortável, com título
+  responsivo, métricas e cartões com superfícies, bordas e sombras consistentes.
+- O hover dos cartões foi mantido estático, sem blur, glow, tilt ou qualquer
+  efeito reativo ao ponteiro.
+- A sidebar e o banner continuam compartilhados pelo menu principal e por
+  todas as sub-páginas.
+
+## Validações
+
+- `npm run lint` — aprovado.
+- `npm test` — aprovado: 32 testes em 3 arquivos.
+- `git diff --check` — aprovado.
+- `npm run build` — bloqueado por erro de tipagem preexistente em
+  `src/lib/auth.ts` no retorno de `supabase.auth.getClaims()`; os arquivos de
+  autenticação, proxy e loading já estavam alterados e não foram modificados
+  nesta sessão.
+
+## Entrega
+
+- A alteração visual ainda não foi publicada na Vercel devido ao bloqueio do
+  build local.
+
+---
+
 # 55. Resumo da sessão — 2026-09-01 — Deploy sem efeitos de mouse
 
 ## Entrega

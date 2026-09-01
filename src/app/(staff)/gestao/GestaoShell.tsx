@@ -6,8 +6,8 @@ import { signOut } from "@/app/login/actions";
 import { Banner } from "@/components/ui/banner";
 import { hasFeature, type Feature, type Plan } from "@/lib/plans";
 
-// Chrome da área de gestão: sidebar fixa (navegação numerada com efeito de
-// proximidade) + rodapé com atalhos operacionais e sair. Port do design do
+// Chrome da área de gestão: sidebar fixa (navegação numerada) + rodapé com
+// atalhos operacionais e sair. Port do design do
 // Claude Design, na paleta da marca Ordo (vermelho #d41d0d) e fonte Manrope.
 // CSS escopado em `.gs-*`/`.gh-*` (o hub reutiliza `.gh-*`), sem tocar nos
 // temas de cozinha/atendimento nem na landing.
@@ -182,13 +182,13 @@ const GESTAO_CSS = `
 .gs-foot-link:hover { color: var(--gs-accent); }
 .gs-foot-user { margin: 8px 0 0; font-size: 11px; color: rgba(0,0,0,.38); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.gs-main { flex: 1; min-width: 0; padding: 34px 30px 90px; }
+.gs-main { flex: 1; min-width: 0; padding: 28px 30px 90px; }
 .gs-page-content { min-width: 0; }
-.gs-banner { margin: -10px auto 24px; max-width: 760px; }
+.gs-banner { width: 100%; margin: -4px auto 28px; }
 
 /* Faixa partilhada pelo hub e por todas as sub-páginas. A variante rainbow é
    uma adaptação sóbria do exemplo de referência, usando a paleta Ordo. */
-.ui-banner { position: relative; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: var(--banner-height, 2rem); overflow: hidden; border: 1px solid rgba(212,29,13,.14); border-radius: 999px; padding: 5px 14px; color: #191919; font-size: 11px; font-weight: 700; letter-spacing: .01em; line-height: 1.2; }
+.ui-banner { position: relative; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: var(--banner-height, 2rem); overflow: hidden; border: 1px solid rgba(212,29,13,.14); border-radius: 12px; padding: 5px 14px; color: #191919; font-size: 11px; font-weight: 700; letter-spacing: .01em; line-height: 1.2; }
 .ui-banner::before { position: absolute; inset: 0; content: ""; background: rgba(255,255,255,.78); }
 .ui-banner-rainbow { background: linear-gradient(90deg, #f7c6bd 0%, #f8dfaa 34%, #d7e7d1 68%, #c8dceb 100%); }
 .ui-banner-default { background: #fff; }
@@ -197,23 +197,24 @@ const GESTAO_CSS = `
 
 
 /* ---- Hub (.gh-*) ---- */
-.gh-wrap { max-width: 760px; margin: 0 auto; animation: gsFade .5s ease both; }
+.gh-wrap { max-width: 900px; margin: 0 auto; animation: gsFade .5s ease both; }
 @keyframes gsFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .gh-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
-.gh-title { margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -.02em; }
+.gh-title { margin: 0; font-size: clamp(28px, 4vw, 36px); font-weight: 800; letter-spacing: -.03em; }
 .gh-welcome { margin: 6px 0 0; font-size: 14px; color: var(--gs-muted); }
 .gh-plan { display: inline-flex; align-items: center; gap: 6px; background: var(--gs-accent); color: #fff; font-size: 12px; font-weight: 700; padding: 6px 13px; border-radius: 999px; box-shadow: 0 4px 12px -4px rgba(212,29,13,.55); white-space: nowrap; }
 .gh-plan-dot { width: 6px; height: 6px; border-radius: 999px; background: #fff; opacity: .85; }
 
 .gh-metrics { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 22px; }
-.gh-metric { background: var(--gs-surface); border: 1px solid var(--gs-line); border-radius: 20px; padding: 18px; }
+.gh-metric { background: var(--gs-surface); border: 1px solid var(--gs-line); border-radius: 16px; padding: 18px; box-shadow: 0 8px 24px rgba(25,25,25,.035); }
 .gh-metric-label { font-size: 12px; font-weight: 600; color: rgba(0,0,0,.45); margin-bottom: 8px; }
 .gh-metric-value { font-size: 28px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
 .gh-metric-value.is-accent { color: var(--gs-accent); }
 .gh-metric-note { margin: 8px 2px 0; font-size: 12px; color: var(--gs-muted); }
 
 .gh-grid { position: relative; display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; }
-.gh-card { text-align: left; position: relative; overflow: hidden; background: var(--gs-surface); border: 1px solid var(--gs-accent-border); border-radius: 22px; padding: 20px; cursor: pointer; transition: background .2s, border-color .2s; display: block; }
+.gh-card { text-align: left; position: relative; overflow: hidden; background: var(--gs-surface); border: 1px solid var(--gs-accent-border); border-radius: 16px; padding: 20px; cursor: pointer; transition: background .2s, border-color .2s, box-shadow .2s; display: block; box-shadow: 0 8px 24px rgba(25,25,25,.035); }
+.gh-card:hover { background: #fffafa; border-color: rgba(212,29,13,.38); box-shadow: 0 12px 28px rgba(25,25,25,.07); }
 .gh-card.is-wide { grid-column: span 2; }
 .gh-card.is-locked { border-color: var(--gs-line); }
 .gh-card-top { position: relative; display: flex; align-items: flex-start; justify-content: space-between; }

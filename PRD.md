@@ -135,6 +135,21 @@
   foi criado ou alterado. Repetir quando a conectividade com Supabase estiver
   disponível, verificando primeiro se o e-mail já existe para não criar dados
   duplicados.
+- 2026-09-01 — Conclusão da integração com Supabase: o projeto remoto
+  `app-pedidos` foi vinculado e sua estrutura foi conferida antes de qualquer
+  mudança. O histórico remoto divergente (versões com timestamp) foi
+  reconciliado com as migrations locais `0001` a `0016`, sem alteração de
+  schema; em seguida, o `db push --dry-run` confirmou como pendente apenas a
+  migration `0017` e ela foi aplicada com sucesso. Foram verificados no banco
+  os índices `orders_establishment_created_idx`,
+  `order_items_establishment_created_idx` e
+  `order_item_modifiers_establishment_item_idx`.
+- 2026-09-01 — Acesso criado para `otium.sap@gmail.com`: utilizador criado e
+  confirmado no Supabase Auth, associado como `owner` ao estabelecimento
+  `Lancheria Demo`. O login por senha foi validado diretamente contra o endpoint
+  de autenticação, sem registar ou expor tokens. Credencial inicial comunicada
+  apenas ao responsável solicitante; recomenda-se a sua alteração após o
+  primeiro acesso.
 
 ## Histórico de sessões
 

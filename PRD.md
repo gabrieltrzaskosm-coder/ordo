@@ -2165,3 +2165,38 @@ Sessão encerrada com o produto tecnicamente estável e pronto para QA comercial
 - Push para `main` concluído.
 - Deployment de produção Vercel: `dpl_BuQQpT8MMN2Kp5oGy3unWQPXU6X7`, estado `READY`.
 - Domínio: `https://app-pedidos-seven.vercel.app`.
+
+---
+
+# 51. Resumo da sessão — 2026-09-01 — Auditoria de backend e segurança
+
+## Escopo e evidências
+
+- Auditoria somente de leitura das Server Actions, route handlers, camada Supabase, migrations/RLS, dependências, headers e tempos de resposta em Production.
+- O isolamento anônimo foi confirmado na API publicada: `restaurant_tables`, `orders` e `establishment_invoicing` retornam coleção vazia; a RPC `reserve_stock` é recusada (401) à chave pública.
+- As rotas privadas redirecionam usuários sem sessão e os headers de produção incluem CSP, HSTS, `nosniff`, anti-iframe e política de permissões restrita.
+- `npm run lint`, `npm test` (32 testes) e `npm run build` foram aprovados. Não houve alteração de lógica nesta sessão.
+
+## Achados prioritários
+
+1. **P0 — integridade de pedido/estoque:** `createOrder` reserva estoque, cria pedido, itens e extras em operações independentes. Uma falha parcial pode deixar pedido sem itens, itens sem extras ou devolver estoque de um pedido que já ficou gravado. O cancelamento também não devolve o estoque reservado. Substituir por uma única RPC/transação no PostgreSQL, com rollback e testes de falha.
+2. **P0 — duplicidade financeira:** `markPaid` faz leitura, atualização e inserção de pagamento sem transação nem unicidade por pedido. Dois cliques/requisições concorrentes podem registrar dois pagamentos. Usar operação transacional/idempotency key e restrição única apropriada.
+3. **P1 — limites de abuso ineficazes em escala:** Production não possui as variáveis Upstash; o limitador cai para memória por instância. Pedidos/chamadas podem atravessar múltiplas funções. Configurar Redis, limitar também IP + mesa e proteger cadastro, recuperação, diagnóstico e geração de IA.
+4. **P1 — vulnerabilidades de dependências:** `npm audit --omit=dev` reportou 4 vulnerabilidades altas transitivas (`brace-expansion`, `browserslist`, `fast-uri`, `nanoid`). Atualizar lockfile/dependências e repetir a auditoria.
+5. **P1 — dados de relatórios não escalam:** financeiro/insights baixam pedidos e itens brutos, repetindo até quatro cálculos por tela; a IA lê snapshots inteiros de 14 dias. Migrar agregações para consultas/RPCs SQL paginadas e indexadas.
+6. **P1 — menu público lento:** a rota de mesa medida em Production teve TTFB de ~1,08 s; `getMenu` e polling fazem várias idas sucessivas ao Supabase. Paralelizar leituras, cachear menu por versão e revisar a topologia Brasil ↔ funções em Paris/Supabase.
+
+## Demais correções recomendadas
+
+- Corrigir o limite de upload: a action aceita 5 MB, mas o Next limita Server Actions a 1 MB por padrão; restringir o produto a 1 MB ou configurar limite compatível e validar magic bytes/tipos permitidos.
+- Neutralizar fórmulas em CSV (`=`, `+`, `-`, `@`) antes da exportação financeira.
+- Remover `document.write` da impressão de QR ou escapar o nome da mesa; o valor armazenado pode virar XSS na janela de impressão.
+- Validar no banco que todas as FKs relacionadas pertencem ao mesmo estabelecimento; RLS filtra linhas, mas não impede referências cruzadas entre tenants se um ID for conhecido.
+- Adicionar limite para a action de IA, máximo de tamanho aos campos do diagnóstico e monitoramento/alertas no Sentry. Sentry também não está configurado em Production.
+- Medir e tratar explicitamente falhas de escrita hoje ignoradas em alguns fluxos (itens, extras, imagem, status e fechamento de mesa).
+
+## Pendências operacionais
+
+- O acesso SQL administrativo direto não estava disponível nesta máquina (CLI permaneceu aguardando inicialização de papel e `psql` não está instalado); a verificação publicada foi feita pela API anônima e pelas migrations sincronizadas.
+- O repositório local está 9 commits à frente de `origin/main` e `git fsck` apontou a referência remota inválida `refs/remotes/origin/main 2`. Corrigir a referência/remoto antes do próximo push; nenhuma tentativa de reparo foi feita para preservar o estado de trabalho.
+- O PRD foi atualizado localmente; push e deploy não foram executados porque publicariam também commits paralelos fora do escopo desta auditoria.

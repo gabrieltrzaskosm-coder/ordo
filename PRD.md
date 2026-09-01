@@ -28,6 +28,12 @@
 - `npm run build` — aprovado com Next.js 16.2.11.
 - `git diff --check` — aprovado.
 
+## Entrega
+
+- Commit local: `7d78e09` (`Simplify kitchen editorial interface`).
+- O push para `origin/main` e o deploy Vercel ficaram pendentes porque a
+  conexão com o GitHub excedeu o limite de tempo desta sessão.
+
 ---
 
 # 58. Resumo da sessão — 2026-09-01 — Redesign editorial da Gestão

@@ -6,6 +6,115 @@
 
 ---
 
+# 61. Auditoria frontend e UI/UX — 2026-09-01
+
+## Escopo e método
+
+- Revisão estática de todas as rotas públicas, cliente, staff, Gestão,
+  Cozinha, Atendimento, autenticação, componentes compartilhados e estados de
+  erro/loading.
+- `npm run lint`, `npm test` e `npm run build` — aprovados; 32 testes em 3
+  arquivos; Next.js 16.2.11.
+- Smoke test HTTP em `/`, `/login`, `/privacidade`, `/termos`,
+  `/preview-cozinha` e `/preview-gestao` — todas responderam HTTP 200.
+- Axe/Playwright e inspeção visual real não foram executados: não há navegador
+  automatizado nem axe disponível no workspace. Portanto, os achados de foco,
+  overflow e contraste precisam de confirmação manual em browser.
+
+## Achados prioritários
+
+### P1 — Modais do cliente não têm semântica nem gestão de foco
+
+- `src/app/(cliente)/mesa/[token]/ClienteMenu.tsx:423-549` e `725-814` usam
+  `<div>` como bottom sheet, sem `role="dialog"`, `aria-modal`, foco inicial,
+  focus trap, restauração de foco ou fechamento por `Escape`.
+- Um usuário de teclado/leitor de tela pode continuar navegando no conteúdo de
+  fundo enquanto escolhe opções ou revisa o pedido.
+- Impacto: acessibilidade WCAG 2.1.2/4.1.2 e risco de erro na finalização do
+  pedido.
+
+### P1 — Menu mobile de login declara diálogo, mas não contém o foco
+
+- `src/app/login/LoginNav.tsx:106-151` usa `role="dialog"` e `aria-modal="true"`,
+  porém só trata `Escape`; não move o foco para o menu, não prende o foco e não
+  o devolve ao botão ao fechar.
+- Impacto: navegação confusa para teclado e leitor de tela.
+
+### P1 — Imagens do produto ignoram o pipeline otimizado
+
+- `src/app/(cliente)/mesa/[token]/ClienteMenu.tsx:371-378` usa `<img>` bruto com
+  URL remota; `src/app/(staff)/gestao/menu/[itemId]/ItemEditor.tsx:98` repete o
+  padrão.
+- Há risco de maior payload, ausência de otimização responsiva e layout shift
+  em conexões móveis, especialmente no cardápio acessado pelo QR code.
+
+### P1 — Efeito de tilt/glow ainda existe na landing
+
+- `src/components/OrdoLanding.tsx:74-99` registra `onPointerMove` e altera a
+  rotação dos cards de cases; `:1011-1020` combina transformação, zoom e
+  conteúdo que aparece apenas em hover/focus.
+- Isso contradiz a direção já adotada de remover efeitos de mouse e pode criar
+  instabilidade visual, sobretudo em teclado e dispositivos híbridos.
+
+### P2 — Header do cliente ainda usa blur/transparência
+
+- `src/app/(cliente)/mesa/[token]/page.tsx:31` mantém
+  `backdrop-blur-md`/`bg-canvas/90`, apesar da decisão de manter interfaces
+  operacionais sem blur.
+- Impacto: inconsistência entre Gestão, Cozinha, Atendimento e Cliente, além
+  de custo visual/performance desnecessário.
+
+### P2 — KDS pode exceder a viewport operacional
+
+- `src/app/(staff)/StaffShell.tsx:39` renderiza o header e
+  `src/app/(staff)/cozinha/KitchenBoard.tsx:249-259` aplica `minHeight: 100vh` ao
+  conteúdo abaixo dele.
+- Em monitores menores, isso soma a altura do header ao viewport e pode forçar
+  scroll externo; o board também possui scroll interno de `66vh`.
+
+### P2 — Navegação de staff não informa item atual à tecnologia assistiva
+
+- `src/app/(staff)/StaffShell.tsx:46-58` estiliza `NavLink` visualmente, mas não
+  expõe `aria-current="page"` no link ativo.
+- A sidebar da Gestão também depende principalmente de estilo para comunicar o
+  item ativo.
+
+### P2 — Consistência de conteúdo e nomenclatura
+
+- Há mistura de português brasileiro e europeu: “Equipe/Equipa”,
+  “Faturamento/Faturação”, “A minha conta”, “Chamadas de garçom”.
+- A landing contém claims e cases que o próprio PRD marca como ainda não
+  autorizados/validados. Isso afeta confiança, não apenas copy.
+
+### P3 — Qualidade e cobertura da auditoria visual
+
+- Não existem testes automatizados de rota/interação, snapshots ou axe no
+  `package.json`; o build garante compilação, mas não garante foco, reflow em
+  375 px, teclado, leitores de tela ou ausência de overflow.
+- A auditoria visual de produção fica inconclusiva até executar browser QA em
+  375/768/1440 px com dados de teste.
+
+## Pontos positivos observados
+
+- O design system global tem tokens de canvas, superfície, texto, linhas e foco
+  visível, com `:focus-visible` global e suporte a `prefers-reduced-motion`.
+- O diagnóstico possui progresso semântico, `aria-live`, mensagens de erro e
+  foco inicial após abertura.
+- Os fluxos principais têm estados vazios, loading/pending e erro recuperável.
+- A Cozinha e a Gestão já removeram os efeitos de mouse mais invasivos.
+
+## Ordem recomendada de correção
+
+1. Corrigir semântica, foco e `Escape` dos bottom sheets do cliente e do menu
+   mobile de login.
+2. Remover o tilt da landing e o blur restante do cliente.
+3. Migrar imagens de produto para `next/image` com dimensões reservadas.
+4. Corrigir altura do KDS e adicionar `aria-current` à navegação.
+5. Padronizar idioma, validar claims/cases e criar uma suíte mínima de browser
+   QA com axe e três breakpoints.
+
+---
+
 # 60. Resumo da sessão — 2026-09-01 — Paleta neutra da Cozinha
 
 ## Alterações

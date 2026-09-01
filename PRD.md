@@ -285,6 +285,16 @@
   `npm run lint`, `npm test` (32 testes) e `npm run build` aprovados. Aferir o
   novo baseline após o deploy e continuar a reduzir consultas por página se
   necessário.
+- 2026-09-01 — Dados temporários para teste operacional: importado o cardápio
+  público indicado pelo responsável (Fat Bull Tap) apenas no estabelecimento
+  `Lancheria Demo`, sem migrations nem mudança de código. Foram adicionadas 11
+  categorias e 132 opções (incluindo 39 variações de tamanho como itens
+  individuais), preservando as 2 categorias e 5 itens de demonstração que já
+  existiam. Total após a importação: 13 categorias e 137 itens. Não foram
+  importadas imagens, ingredientes, estoque ou modificadores; os dados são
+  descartáveis e deverão ser removidos antes de qualquer uso produtivo.
+  Validações: consulta direta ao Supabase confirmou as contagens e
+  `/gestao/menu` respondeu HTTP 200 em sessão autenticada.
 
 ## Histórico de sessões
 

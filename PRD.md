@@ -31,8 +31,11 @@
 ## Entrega
 
 - Commit local: `7d78e09` (`Simplify kitchen editorial interface`).
-- O push para `origin/main` e o deploy Vercel ficaram pendentes porque a
-  conexão com o GitHub excedeu o limite de tempo desta sessão.
+- Deploy de produção Vercel concluído: `dpl_EugafaNDyzHayksMPg4Y3W8iLypd`,
+  estado `READY`.
+- Alias atualizado: `https://app-pedidos-seven.vercel.app`.
+- O push para `origin/main` continua pendente porque a conexão com o GitHub
+  excedeu o limite de tempo desta sessão.
 
 ---
 

@@ -27,6 +27,14 @@
 - `npm run build` — aprovado com Next.js 16.2.11.
 - `git diff --check` — aprovado.
 
+## Entrega
+
+- Commit: `1f08122` (`Create editorial management interface`).
+- Push para `main` concluído.
+- Deployment de produção Vercel: `dpl_B4izZn7gt2DXsDziX7DCpBn7QPUa`, estado
+  `READY`.
+- Alias atualizado: `https://app-pedidos-seven.vercel.app`.
+
 ---
 
 # 57. Resumo da sessão — 2026-09-01 — Canvas visual da Gestão
@@ -206,6 +214,15 @@
   lint`, `npm test` (32 testes) e `npm run build` aprovados. Pendente para a
   próxima rodada: medir RUM/Server-Timing com base de dados maior para priorizar
   consultas específicas que ainda excedam o tempo desejado.
+- 2026-09-01 — Latência de carregamento da Gestão: a medição autenticada em
+  produção registrou TTFB entre 0,38 s e 0,66 s e resposta total entre 0,66 s e
+  0,93 s nas rotas principais. As funções Vercel estavam no padrão `iad1`
+  (Washington), enquanto o Supabase está em Paris. O `vercel.json` passou a
+  fixar `cdg1` para co-localizar backend e banco, reduzindo as duas etapas de
+  I/O remoto comuns a uma renderização (sessão e dados). Validações locais:
+  `npm run lint`, `npm test` (32 testes) e `npm run build` aprovados. Aferir o
+  novo baseline após o deploy e continuar a reduzir consultas por página se
+  necessário.
 
 ## Histórico de sessões
 

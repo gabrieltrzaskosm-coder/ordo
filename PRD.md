@@ -24,6 +24,15 @@
 - `npm run build` — aprovado com Next.js 16.2.11.
 - `git diff --check` — aprovado.
 
+## Entrega
+
+- Commit local: `584c146` (`Neutralize kitchen color palette`).
+- Deploy de produção Vercel concluído: `dpl_HpmbXjxYdzbvH21gtefHJUbukYH6`,
+  estado `READY`.
+- Alias atualizado: `https://app-pedidos-seven.vercel.app`.
+- O push para `origin/main` continua pendente por timeout na conexão com o
+  GitHub.
+
 ---
 
 # 59. Resumo da sessão — 2026-09-01 — Cozinha editorial minimalista

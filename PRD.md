@@ -4,6 +4,27 @@
 **Responsável:** Gabriel Trzaskos
 **Data:** 2026-08-10
 
+---
+
+# 57. Resumo da sessão — 2026-09-01 — Canvas visual da Gestão
+
+## Alterações
+
+- O banner rainbow passou a ficar separado do conteúdo e ocupar a largura da
+  área principal.
+- O menu de Gestão e todas as sub-páginas agora são renderizados dentro de um
+  canvas claro compartilhado, com borda, raio, sombra e espaçamento responsivo.
+- A alteração torna a referência visual do exemplo perceptível em todas as
+  rotas sem reintroduzir blur ou efeitos reativos ao mouse.
+
+## Validações
+
+- `npm run lint` — aprovado.
+- `npm test` — aprovado: 32 testes em 3 arquivos.
+- `git diff --check` — aprovado.
+- O build continua pendente pelo erro de tipagem preexistente em
+  `src/lib/auth.ts` no retorno de `supabase.auth.getClaims()`.
+
 ### 2026-08-31 — Auditoria das páginas do sistema de gestão
 
 - Escopo auditado: shell e navegação de Gestão, hub, menu/editor de prato,

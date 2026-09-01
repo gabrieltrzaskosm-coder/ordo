@@ -118,7 +118,9 @@ export function GestaoShell({
           variant="rainbow"
           className="gs-banner"
         />
-        <div className="gs-page-content">{children}</div>
+        <div className="gs-content-frame">
+          <div className="gs-page-content">{children}</div>
+        </div>
       </div>
     </div>
   );
@@ -184,6 +186,7 @@ const GESTAO_CSS = `
 
 .gs-main { flex: 1; min-width: 0; padding: 28px 30px 90px; }
 .gs-page-content { min-width: 0; }
+.gs-content-frame { min-height: calc(100vh - 126px); padding: 30px; background: rgba(255,255,255,.72); border: 1px solid rgba(0,0,0,.06); border-radius: 24px; box-shadow: 0 16px 42px rgba(25,25,25,.045); }
 .gs-banner { width: 100%; margin: -4px auto 28px; }
 
 /* Faixa partilhada pelo hub e por todas as sub-páginas. A variante rainbow é
@@ -236,6 +239,7 @@ const GESTAO_CSS = `
   .gs-foot { margin-top: 0; margin-left: auto; padding-top: 0; border-top: none; flex-direction: row; gap: 12px; align-items: center; }
   .gs-foot-user { display: none; }
   .gs-main { padding: 16px 16px 80px; }
+  .gs-content-frame { min-height: calc(100vh - 106px); padding: 18px 14px 28px; border-radius: 18px; }
   .gs-banner { margin: 0 auto 18px; max-width: none; }
   .gh-metrics { grid-template-columns: 1fr; }
 }

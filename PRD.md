@@ -1625,6 +1625,23 @@ PR → Lint → Typecheck → Tests → Build → Preview (Vercel) → Review �
 
 ---
 
+# 55. Resumo da sessão — 2026-09-01 — Deploy sem efeitos de mouse
+
+## Entrega
+
+- Deploy de produção concluído na Vercel: `8pK7bhZnBPGFKEnS1qdXkHdzBT92`,
+  estado `READY`.
+- Alias `https://app-pedidos-seven.vercel.app` atualizado.
+- Rota `/login` validada com HTTP 200; o HTML servido não contém referências a
+  `GradientWaves`, `backdrop-filter` ou `pointermove`.
+
+## Estado
+
+- A remoção dos efeitos reativos ao mouse e dos blurs está publicada em
+  produção.
+
+---
+
 # 48. Resumo da sessão — 2026-08-31 — Alinhamento do frontend de Gestão
 
 ## Escopo definido

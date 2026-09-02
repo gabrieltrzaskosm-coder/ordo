@@ -2309,3 +2309,26 @@ Sessão encerrada com o produto tecnicamente estável e pronto para QA comercial
 1. Testar um pedido presencial completo pelo QR físico da mesa, confirmando que o carrinho é limpo e o status aparece na própria página.
 2. No frontend, tornar explícita a escolha “Pagar presencialmente” antes do envio.
 3. Definir e configurar a operação Stripe Connect + webhook antes de disponibilizar pagamento on-line.
+
+---
+
+# 54. Resumo da sessão — 2026-09-02 — Nome do cliente na notificação do atendimento
+
+## Diagnóstico e correção
+
+- A consulta de produção confirmou que os 4 pedidos ativos possuem `customer_name`; não havia perda do nome na criação ou no banco.
+- O painel de atendimento recebia mudanças de `orders` por Realtime, mas descartava o payload e apenas recarregava a página. Assim, o aviso não identificava quem havia feito o pedido.
+- O evento `INSERT` de `orders` agora mostra o toast `Novo pedido de [nome]` usando o valor persistido no evento. Atualizações posteriores continuam apenas sincronizando o painel.
+- Pedidos legados sem nome recebem a mensagem neutra `Novo pedido recebido.`; o toast passou a anunciar seu conteúdo para tecnologias assistivas.
+- Adicionados testes unitários para o texto de notificação com nome e para o fallback sem nome.
+
+## Validações
+
+- `npm run lint` — aprovado.
+- `npm test` — aprovado: 35 testes em 5 arquivos.
+- `npm run build` — aprovado com Next.js 16.2.11.
+- `git diff --check` — aprovado.
+
+## Pendência
+
+- Após a publicação, confirmar em uma sessão de atendimento aberta que um pedido novo pelo QR apresenta o nome no toast em tempo real.

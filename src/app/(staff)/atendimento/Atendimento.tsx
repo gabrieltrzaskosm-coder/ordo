@@ -17,6 +17,8 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { MenuCategory, MenuItem } from "@/lib/menu";
 import { formatMoney } from "@/lib/money";
+import { newOrderNotification } from "@/lib/orders/notification";
+import type { Database } from "@/lib/supabase/database.types";
 import { createStaffOrder } from "./actions";
 import { advanceOrder, markPaid, resolveWaiterCall } from "../cozinha/actions";
 
@@ -63,6 +65,7 @@ function onlyDigits(s: string) {
 }
 
 type Tab = "pedido" | "chamadas" | "pagamentos";
+type OrderRow = Database["public"]["Tables"]["orders"]["Row"];
 
 export function Atendimento({
   establishmentId,
@@ -171,7 +174,8 @@ export function Atendimento({
     [],
   );
 
-  // Realtime: qualquer mudança em orders/waiter_calls refaz os dados do servidor.
+  // Realtime mantém os dados frescos. Um INSERT de pedido também traz o nome
+  // guardado no próprio evento, para o atendente saber imediatamente quem pediu.
   useEffect(() => {
     const supabase = createClient();
     const filter = `establishment_id=eq.${establishmentId}`;
@@ -185,8 +189,21 @@ export function Atendimento({
         .channel("atendimento")
         .on(
           "postgres_changes",
+          { event: "INSERT", schema: "public", table: "orders", filter },
+          (payload) => {
+            const order = payload.new as OrderRow;
+            showToast(newOrderNotification(order.customer_name));
+            router.refresh();
+          },
+        )
+        .on(
+          "postgres_changes",
           { event: "*", schema: "public", table: "orders", filter },
-          () => router.refresh(),
+          (payload) => {
+            // INSERT já mostra um toast acima. Os demais eventos apenas
+            // sincronizam estado (pronto, pago, entregue ou cancelado).
+            if (payload.eventType !== "INSERT") router.refresh();
+          },
         )
         .on(
           "postgres_changes",
@@ -198,7 +215,7 @@ export function Atendimento({
     return () => {
       if (channel) supabase.removeChannel(channel);
     };
-  }, [router, establishmentId]);
+  }, [router, establishmentId, showToast]);
 
   // ---------- Montar pedido ----------
   const [tableId, setTableId] = useState("");
@@ -1018,7 +1035,11 @@ export function Atendimento({
       {/* ---------- Toast ---------- */}
       {toast && (
         <div className="fixed inset-x-0 bottom-28 z-50 flex justify-center px-4">
-          <div className="flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-[13.5px] font-semibold text-white shadow-[0_10px_30px_-8px_rgba(0,0,0,.5)] animate-[rise-in_0.3s_var(--ease-out-quint)]">
+          <div
+            role="status"
+            aria-live="polite"
+            className="flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-[13.5px] font-semibold text-white shadow-[0_10px_30px_-8px_rgba(0,0,0,.5)] animate-[rise-in_0.3s_var(--ease-out-quint)]"
+          >
             <span className="grid h-4 w-4 place-items-center rounded-full bg-success">
               <CheckIcon size={10} className="text-white" />
             </span>

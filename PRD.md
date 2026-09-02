@@ -2423,3 +2423,25 @@ Sessão encerrada com o produto tecnicamente estável e pronto para QA comercial
 ## Pendência
 
 - Em operação, validar os dois fluxos: entregar por último um pedido já pago e pagar por último um pedido já entregue; ambos devem fechar a mesa automaticamente.
+
+---
+
+# 57. Planejamento registrado — 2026-09-02 — Taxa de serviço de 10%
+
+## Decisão de produto
+
+- O atual conceito de **gorjeta** será descontinuado. Para a operação brasileira, o produto passará a trabalhar com uma taxa de serviço de 10% sobre o consumo.
+- No fechamento pelo cliente, haverá uma caixa marcada por padrão com o texto `Aceitar 10%`. Mantendo-a marcada, o total inclui os 10%; ao desmarcá-la, a taxa não é cobrada.
+- A opção deve ser clara antes da confirmação do pagamento e refletir corretamente o total a pagar, tanto no fluxo por QR da mesa quanto nos demais fechamentos aplicáveis.
+
+## Escopo para a próxima etapa
+
+- Remover o comportamento e as referências de interface do sistema de gorjetas, substituindo-os pela escolha de taxa de serviço.
+- Centralizar o cálculo de 10% no backend e validar o valor no servidor; o valor enviado pelo navegador não será tratado como fonte confiável.
+- Ajustar pedido, cobrança, comprovantes, relatórios, indicadores financeiros e eventuais exportações para separar subtotal, taxa de serviço e total.
+- Preservar dados históricos de gorjetas para que pedidos e relatórios anteriores não sejam corrompidos; a remoção de colunas ou dados só será avaliada após o levantamento completo das dependências.
+
+## Estado da sessão
+
+- Esta sessão apenas registrou a decisão e o escopo. Nenhuma regra de cobrança, tela, migration ou dado de produção foi alterado.
+- Antes da implementação, será feito o inventário das referências atuais a gorjetas e definido o plano de migração compatível com o histórico financeiro.

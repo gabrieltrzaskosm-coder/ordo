@@ -2281,7 +2281,7 @@ Sessão encerrada com o produto tecnicamente estável e pronto para QA comercial
 
 - Confirmado que a produção estava com a migration `0018_order_payment_integrity.sql` pendente. Isso fazia a criação do pedido falhar antes de a interface limpar o carrinho, pois a RPC atômica `create_order_with_stock` ainda não existia no banco remoto.
 - A migration `0018` foi aplicada com sucesso ao projeto Supabase vinculado. A criação, o cancelamento e a confirmação manual de pagamento passam a usar as transações e proteções de concorrência previstas na correção P0.
-- O acompanhamento de pedidos pelo QR já existe no produto: a página da mesa consulta os pedidos ativos da própria mesa a cada cinco segundos e apresenta o estado `Recebido → A preparar → Pronto → Entregue`, além de `Pago` ou `Por pagar`. Ele será incluído na próxima publicação da aplicação.
+- O acompanhamento de pedidos pelo QR já existe no produto: a página da mesa consulta os pedidos ativos da própria mesa a cada cinco segundos e apresenta o estado `Recebido → A preparar → Pronto → Entregue`, além de `Pago` ou `Por pagar`. Ele foi incluído na publicação desta sessão.
 
 ## Decisão de pagamento
 
@@ -2295,9 +2295,17 @@ Sessão encerrada com o produto tecnicamente estável e pronto para QA comercial
 - `npx supabase db push --linked` — aplicou `0018_order_payment_integrity.sql` com sucesso.
 - `npm run lint` — aprovado.
 - `npm test` — aprovado: 33 testes em 4 arquivos.
+- `npm run build` — aprovado com Next.js 16.2.11.
+- Verificação final de migrations — `0018` está sincronizada local e remotamente.
+
+## Entrega
+
+- Commit e push concluídos no `main`.
+- Deployment de produção Vercel `dpl_BaZjfm6w9bJTiVTDdUJrKcX8EeBf` — estado `READY`.
+- Domínio de produção: `https://app-pedidos-seven.vercel.app`.
 
 ## Pendências
 
-1. Publicar a versão que chama a RPC agora disponível e contém o rastreador por QR; em seguida, testar um pedido presencial completo numa mesa de teste.
+1. Testar um pedido presencial completo pelo QR físico da mesa, confirmando que o carrinho é limpo e o status aparece na própria página.
 2. No frontend, tornar explícita a escolha “Pagar presencialmente” antes do envio.
 3. Definir e configurar a operação Stripe Connect + webhook antes de disponibilizar pagamento on-line.

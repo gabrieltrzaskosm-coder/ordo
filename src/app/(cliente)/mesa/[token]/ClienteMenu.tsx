@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import Image from "next/image";
 import type { MenuCategory, MenuItem } from "@/lib/menu";
 import { formatMoney } from "@/lib/money";
 import {
@@ -75,6 +76,8 @@ export function ClienteMenu({
   const [modalItem, setModalItem] = useState<MenuItem | null>(null);
   const [choices, setChoices] = useState<Record<string, string[]>>({});
   const [modQty, setModQty] = useState<Record<string, number>>({});
+  const modalRef = useRef<HTMLDivElement | null>(null);
+  const modalRestoreFocus = useRef<HTMLElement | null>(null);
   // O que ainda se pode pedir: pratos e extras (um extra some quando o seu
   // ingrediente esgota). null = ainda não consultámos; vale o que o servidor
   // mandou, que já vem filtrado.
@@ -85,6 +88,46 @@ export function ClienteMenu({
 
   const subtotal = cart.reduce((s, l) => s + lineUnit(l) * l.qty, 0);
   const count = cart.reduce((s, l) => s + l.qty, 0);
+
+  const modalOpen = Boolean(modalItem);
+  useEffect(() => {
+    if (!modalOpen) return;
+    modalRestoreFocus.current = document.activeElement as HTMLElement | null;
+    const frame = window.requestAnimationFrame(() => {
+      modalRef.current?.querySelector<HTMLElement>(
+        "button, input, select, textarea, a[href]",
+      )?.focus();
+    });
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setModalItem(null);
+        return;
+      }
+      if (event.key !== "Tab" || !modalRef.current) return;
+      const focusable = Array.from(
+        modalRef.current.querySelectorAll<HTMLElement>(
+          "button, input, select, textarea, a[href]",
+        ),
+      ).filter((el) => !el.hasAttribute("disabled") && el.tabIndex >= 0);
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      document.removeEventListener("keydown", onKeyDown);
+      modalRestoreFocus.current?.focus();
+      modalRestoreFocus.current = null;
+    };
+  }, [modalOpen]);
 
   const refreshOrderable = useCallback(async () => {
     const o = await getOrderableItems(token);
@@ -369,13 +412,15 @@ export function ClienteMenu({
                 className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-3 shadow-[var(--shadow-card)] transition-colors hover:border-brand/40"
               >
                 {item.imageUrl && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={item.imageUrl}
-                    alt={item.name}
-                    className="h-18 w-18 shrink-0 rounded-xl object-cover"
-                    style={{ height: "4.5rem", width: "4.5rem" }}
-                  />
+                  <div className="relative h-[4.5rem] w-[4.5rem] shrink-0 overflow-hidden rounded-xl">
+                    <Image
+                      src={item.imageUrl}
+                      alt={item.name}
+                      fill
+                      sizes="72px"
+                      className="object-cover"
+                    />
+                  </div>
                 )}
                 <div className="min-w-0 flex-1">
                   <p className="font-medium leading-snug text-ink">{item.name}</p>
@@ -428,6 +473,10 @@ export function ClienteMenu({
           onClick={() => setModalItem(null)}
         >
           <div
+            ref={modalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="options-dialog-title"
             className="max-h-[88vh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-surface shadow-[var(--shadow-sheet)]"
             style={{ animation: "sheet-in 0.32s var(--ease-out-quint)" }}
             onClick={(e) => e.stopPropagation()}
@@ -436,7 +485,7 @@ export function ClienteMenu({
               <span className="h-1.5 w-10 rounded-full bg-line" />
             </div>
             <div className="px-5 pb-4 pt-3">
-              <h3 className="text-lg font-semibold text-ink">{modalItem.name}</h3>
+              <h3 id="options-dialog-title" className="text-lg font-semibold text-ink">{modalItem.name}</h3>
               <p className="tnum mt-0.5 text-sm text-muted">
                 {formatMoney(modalItem.priceCents, currency)}
               </p>

@@ -10,7 +10,7 @@ export default async function ContaPage() {
 
   return (
     <main className="mx-auto max-w-md p-6">
-      <h1 className="mb-1 text-xl font-medium">A minha conta</h1>
+      <h1 className="mb-1 text-xl font-medium">Minha conta</h1>
       <p className="mb-6 text-sm text-neutral-500">{session.email}</p>
 
       <h2 className="mb-3 text-sm font-medium text-neutral-500">

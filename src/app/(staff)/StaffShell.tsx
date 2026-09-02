@@ -12,8 +12,7 @@ type Props = {
   children: React.ReactNode;
 };
 
-// A área de staff partilha o mesmo layout mas troca de acento por secção:
-// gestão = vermelho, cozinha = azul. O tema é escolhido pela rota atual e
+// A área de staff partilha o mesmo layout e escolhe o tema operacional pela rota atual.
 // aplicado a todo o wrapper (header incluído).
 export function StaffShell({
   email,
@@ -31,11 +30,11 @@ export function StaffShell({
   // renderiza o header do staff para não duplicar a navegação.
   if (inGestao) return <>{children}</>;
 
-  // Cozinha e atendimento são operacionais (azul); gestão é vermelho.
+  // Cozinha e atendimento são operacionais; gestão tem sua própria chrome.
   const theme = inKitchen || inAtendimento ? "theme-kitchen" : "theme-manager";
 
   return (
-    <div className={`${theme} min-h-screen bg-canvas`}>
+    <div className={`${theme} staff-shell min-h-screen bg-canvas`}>
       <header className="sticky top-0 z-20 border-b border-line bg-surface">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <div className="flex items-center gap-4">
@@ -65,7 +64,7 @@ export function StaffShell({
               {email} · {role}
             </Link>
             <form action={signOut}>
-              <button className="rounded-full border border-line bg-surface px-3 py-1.5 text-sm font-medium text-ink transition active:scale-95">
+              <button type="submit" className="rounded-full border border-line bg-surface px-3 py-1.5 text-sm font-medium text-ink transition active:scale-95">
                 Sair
               </button>
             </form>
@@ -94,6 +93,7 @@ function NavLink({
           ? "bg-brand-weak text-brand-strong"
           : "text-muted hover:text-ink"
       }`}
+      aria-current={active ? "page" : undefined}
     >
       {children}
     </Link>

@@ -10,7 +10,7 @@ import { DiagnosticForm } from "./DiagnosticForm";
  * (hex fixos, iguais aos tokens --l-* do globals.css). Todo o CSS está escopado
  * em `.ol-*` + um <style> local para NÃO tocar nos temas da app.
  *
- * Interatividade (client): hero "spotlight" que segue o cursor, sidebar com
+ * Interatividade (client): hero "spotlight", sidebar com
  * scroll-spy + proximidade, e reveals on-scroll. Tudo congela com
  * prefers-reduced-motion.
  */
@@ -71,32 +71,11 @@ function ResultCaseCard({ result, index }: { result: ResultCase; index: number }
     return () => observer.disconnect();
   }, []);
 
-  const handlePointerMove = (event: React.PointerEvent<HTMLElement>) => {
-    if (event.pointerType !== "mouse" || !cardRef.current) return;
-
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    const multiplier = 7;
-    const rotateY = (x / rect.width - 0.5) * multiplier;
-    const rotateX = (y / rect.height - 0.5) * -multiplier;
-
-    cardRef.current.style.setProperty("--result-rotate-x", `${rotateX}deg`);
-    cardRef.current.style.setProperty("--result-rotate-y", `${rotateY}deg`);
-  };
-
-  const resetTilt = () => {
-    cardRef.current?.style.setProperty("--result-rotate-x", "0deg");
-    cardRef.current?.style.setProperty("--result-rotate-y", "0deg");
-  };
-
   return (
     <article
       ref={cardRef}
       className="ol-result-card"
       tabIndex={0}
-      onPointerMove={handlePointerMove}
-      onPointerLeave={resetTilt}
       style={{ "--result-image-position": `${index * 25}%` } as React.CSSProperties}
     >
       <div
@@ -1005,14 +984,13 @@ const CSS = `
 .ol-results-carousel { width: 100%; overflow: hidden; margin-top: 44px; }
 .ol-results-track { display: flex; width: 100%; }
 .ol-result-slide { flex: 0 0 33.333%; padding: 0 8px; }
-.ol-result-card { position: relative; display: flex; min-height: 530px; align-items: flex-end; overflow: hidden; border: 1px solid rgba(255,255,255,.24); border-radius: 20px; background: #17110c; box-shadow: 0 15px 35px rgba(0,0,0,.2); isolation: isolate; outline: none; transform: perspective(1000px) rotateX(var(--result-rotate-x, 0deg)) rotateY(var(--result-rotate-y, 0deg)) translateY(0); transition: border-color .45s ease, transform .45s cubic-bezier(.2,.8,.2,1), box-shadow .45s ease; will-change: transform; }
+.ol-result-card { position: relative; display: flex; min-height: 530px; align-items: flex-end; overflow: hidden; border: 1px solid rgba(255,255,255,.24); border-radius: 20px; background: #17110c; box-shadow: 0 15px 35px rgba(0,0,0,.2); isolation: isolate; outline: none; transition: border-color .45s ease, box-shadow .45s ease; }
 .ol-result-card::before { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(23,16,12,.04) 0%, rgba(23,16,12,.08) 28%, rgba(23,16,12,.82) 72%, rgba(23,16,12,.98) 100%); content: ""; pointer-events: none; z-index: 1; transition: background .7s cubic-bezier(.19,1,.22,1); }
 .ol-result-card::after { position: absolute; inset: 1px; border: 1px solid rgba(255,255,255,.08); border-radius: 19px; content: ""; pointer-events: none; z-index: 3; }
-.ol-result-card:hover, .ol-result-card:focus { border-color: rgba(255,255,255,.48); transform: perspective(1000px) rotateX(var(--result-rotate-x, 0deg)) rotateY(var(--result-rotate-y, 0deg)) translateY(-10px); box-shadow: 0 25px 50px rgba(0,0,0,.3); }
+.ol-result-card:hover, .ol-result-card:focus { border-color: rgba(255,255,255,.48); box-shadow: 0 25px 50px rgba(0,0,0,.3); }
 .ol-result-card:focus-visible { outline: 2px solid #f5b400; outline-offset: 4px; }
 .ol-result-card:hover::before, .ol-result-card:focus::before { background: linear-gradient(to bottom, rgba(23,16,12,.1) 0%, rgba(23,16,12,.2) 34%, rgba(23,16,12,.78) 68%, rgba(23,16,12,.98) 100%); }
 .ol-result-image { position: absolute; inset: 0; width: 100%; height: 110%; background-image: url('/images/ordo-case-facade.png'); background-position: var(--result-image-position, 50%) center; background-size: cover; opacity: .92; transition: transform calc(var(--result-card-duration, 700ms) * 1.5) cubic-bezier(.19,1,.22,1); }
-.ol-result-card:hover .ol-result-image, .ol-result-card:focus .ol-result-image { transform: translateY(-4%) scale(1.04); }
 .ol-result-card-content { position: absolute; right: 0; bottom: 0; left: 0; z-index: 2; display: flex; min-height: 0; flex-direction: column; padding: 24px 26px 26px; color: #fff; transform: translateY(calc(100% - 6.6rem)); transition: transform 700ms cubic-bezier(.19,1,.22,1); }
 .ol-result-card-content > * { transition: opacity 700ms cubic-bezier(.19,1,.22,1), transform 700ms cubic-bezier(.19,1,.22,1); }
 .ol-result-card-content > *:not(.ol-result-title) { opacity: 0; transform: translateY(1.5rem); }
@@ -1085,7 +1063,7 @@ const CSS = `
 
 /* Diagnóstico aberto pelos CTAs */
 .ol-diagnostic-dialog { position: fixed; top: 50%; left: 50%; width: min(calc(100% - 32px), 860px); max-width: none; max-height: calc(100dvh - 32px); margin: 0; overflow: hidden; transform: translate(-50%, -50%); border: 0; border-radius: 24px; background: #fff; color: #2a1c10; padding: 0; box-shadow: 0 28px 90px rgba(42,28,16,.3); }
-.ol-diagnostic-dialog::backdrop { background: rgba(23,16,12,.68); backdrop-filter: blur(5px); }
+.ol-diagnostic-dialog::backdrop { background: rgba(23,16,12,.68); }
 .ol-diagnostic-dialog-inner { max-height: calc(100dvh - 32px); overflow-y: auto; padding: 34px; }
 .ol-diagnostic-dialog-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 22px; }
 .ol-diagnostic-dialog-header h2 { max-width: 620px; margin: 10px 0 7px; color: #2a1c10; font-family: var(--font-instrument-serif), Georgia, serif; font-size: clamp(28px, 4vw, 42px); font-weight: 400; line-height: 1; }

@@ -6,6 +6,51 @@
 
 ---
 
+# 62. Correções da auditoria frontend e UI/UX — 2026-09-01
+
+## Organização e mudanças aplicadas
+
+- **Acessibilidade:** o diálogo de opções do cardápio do cliente agora usa
+  semântica de diálogo, foco inicial, focus trap, Escape e restauração de foco;
+  o menu mobile do login recebeu o mesmo comportamento. A navegação de staff e
+  a sidebar da Gestão agora expõem `aria-current="page"`.
+- **Performance e estabilidade visual:** imagens de itens foram migradas para
+  `next/image`, com dimensões reservadas e hosts remotos configurados. O tilt,
+  zoom e glow disparados pelo mouse nos cases da landing foram removidos, assim
+  como o blur do header do cliente e do diálogo de diagnóstico.
+- **Responsividade:** o KDS passou a respeitar a altura do header operacional e
+  usar `100dvh`, evitando somar `100vh` ao conteúdo abaixo da navegação.
+- **Conteúdo:** rótulos visíveis foram padronizados para português do Brasil
+  (por exemplo, “Minha conta” e “Meu plano”). O `<img>` usado na janela de
+  impressão de QR permanece uma exceção isolada, pois é HTML gerado fora do
+  React e usa uma imagem `data:`.
+
+## Validações
+
+- `npm run lint` — aprovado, sem warnings.
+- `npm test` — aprovado: 33 testes em 4 arquivos.
+- `npm run build` — aprovado com Next.js 16.2.11.
+- `git diff --check` — aprovado.
+- Browser QA/axe continua pendente: não há navegador automatizado nem axe
+  instalado neste workspace para confirmar visualmente 375/768/1440 px.
+
+## Entrega
+
+- Deployment de produção Vercel: `dpl_2p1LVc6giaEHT4b6naYuC8TrrckXU`, estado
+  `READY`.
+- URL: `https://app-pedidos-seven.vercel.app`.
+- Push para `origin/main`: tentativa sem resposta; interrompida após timeout.
+  O commit permanece local e a publicação Vercel foi concluída diretamente.
+
+## Pendências fora do escopo visual
+
+- Claims e cases comerciais da landing continuam aguardando validação/autorização
+  de negócio, conforme a auditoria anterior.
+- As vulnerabilidades e melhorias de integridade de dados registradas na
+  auditoria de backend permanecem pendentes e não foram alteradas nesta sessão.
+
+---
+
 # 61. Auditoria frontend e UI/UX — 2026-09-01
 
 ## Escopo e método

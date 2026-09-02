@@ -48,7 +48,7 @@
    num wrapper. Os utilitários bg-brand/text-brand-ink herdam estes overrides.
    - Cliente (/mesa): terracota (default acima).
    - Gestão: vermelho (financeiro/decisão).
-   - Cozinha: azul (operacional, legível de longe num ecrã ocupado). */
+   - Cozinha: neutro escuro (operacional, legível de longe num ecrã ocupado). */
 .theme-manager {
   --color-brand: oklch(0.52 0.2 27);
   --color-brand-strong: oklch(0.44 0.2 27);
@@ -61,6 +61,11 @@
   --color-brand-strong: oklch(0.24 0 0);
   --color-brand-ink: oklch(0.99 0 0);
   --color-brand-weak: oklch(0.94 0 0);
+}
+
+/* O header operacional ocupa espaço próprio; o KDS começa abaixo dele. */
+.staff-shell > .kds {
+  min-height: calc(100dvh - 3.5rem) !important;
 }
 
 body {

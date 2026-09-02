@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // Links da nav → secções da landing pública (/).
 const LINKS = [
@@ -17,14 +17,43 @@ const linkStyle: React.CSSProperties = {
 
 export function LoginNav() {
   const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const burgerRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
-    const onEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+    if (!open) return;
+    const previous = document.activeElement as HTMLElement | null;
+    const fallback = burgerRef.current;
+    const frame = window.requestAnimationFrame(() => {
+      menuRef.current?.querySelector<HTMLElement>("a[href], button")?.focus();
+    });
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+        return;
+      }
+      if (event.key !== "Tab" || !menuRef.current) return;
+      const focusable = Array.from(
+        menuRef.current.querySelectorAll<HTMLElement>("a[href], button"),
+      );
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
-    window.addEventListener("keydown", onEsc);
-    return () => window.removeEventListener("keydown", onEsc);
-  }, []);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      document.removeEventListener("keydown", onKeyDown);
+      (previous ?? fallback)?.focus();
+    };
+  }, [open]);
 
   return (
     <>
@@ -74,6 +103,8 @@ export function LoginNav() {
           </div>
 
           <button
+            ref={burgerRef}
+            type="button"
             onClick={() => setOpen((v) => !v)}
             className="ordo-burger font-mono-ui"
             aria-expanded={open}
@@ -99,6 +130,7 @@ export function LoginNav() {
       </nav>
 
       <div
+        ref={menuRef}
         role="dialog"
         aria-modal="true"
         aria-label="Menu"

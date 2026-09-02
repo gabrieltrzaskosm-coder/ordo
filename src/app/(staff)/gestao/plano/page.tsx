@@ -28,7 +28,7 @@ export default async function PlanoPage({
   return (
     <main className="mx-auto max-w-3xl px-4 py-6">
       <div className="mb-1 flex items-center gap-3">
-        <h1 className="text-2xl font-semibold text-ink">O meu plano</h1>
+        <h1 className="text-2xl font-semibold text-ink">Meu plano</h1>
         <Link href="/gestao" className="text-sm text-muted hover:underline">
           ← Gestão
         </Link>

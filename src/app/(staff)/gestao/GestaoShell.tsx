@@ -82,6 +82,7 @@ export function GestaoShell({
                 <Link
                   href={override ?? item.route}
                   className={"gs-navlink" + (active ? " is-active" : "")}
+                  aria-current={active ? "page" : undefined}
                 >
                   <span className="gs-tick" />
                   <span className="gs-num">

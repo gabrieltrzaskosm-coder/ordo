@@ -249,7 +249,7 @@ export function KitchenBoard({
     <main
       className="kds theme-kitchen"
       style={{
-        minHeight: "100vh",
+        minHeight: "100dvh",
         background: "#f5f7f9",
         color: "#0f172a",
         padding: "24px 30px 30px",

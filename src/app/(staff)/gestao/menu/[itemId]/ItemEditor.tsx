@@ -2,6 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { formatMoney } from "@/lib/money";
 import {
   attachGroup,
@@ -94,12 +95,9 @@ export function ItemEditor({
         <h2 className="mb-2 text-sm font-medium text-muted">Imagem</h2>
         <div className="flex items-center gap-4">
           {imageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={imageUrl}
-              alt={name}
-              className="h-24 w-24 rounded-lg object-cover"
-            />
+            <div className="relative h-24 w-24 overflow-hidden rounded-lg">
+              <Image src={imageUrl} alt={name} fill sizes="96px" className="object-cover" />
+            </div>
           ) : (
             <div className="flex h-24 w-24 items-center justify-center rounded-lg border border-dashed border-line text-xs text-muted">
               Sem imagem

@@ -2352,10 +2352,8 @@ Sessão encerrada com o produto tecnicamente estável e pronto para QA comercial
 ## Diagnóstico e correção
 
 - A consulta de produção confirmou que os 4 pedidos ativos possuem `customer_name`; não havia perda do nome na criação ou no banco.
-- O painel de atendimento recebia mudanças de `orders` por Realtime, mas descartava o payload e apenas recarregava a página. Assim, o aviso não identificava quem havia feito o pedido.
-- O evento `INSERT` de `orders` agora mostra o toast `Novo pedido de [nome]` usando o valor persistido no evento. Atualizações posteriores continuam apenas sincronizando o painel.
-- Pedidos legados sem nome recebem a mensagem neutra `Novo pedido recebido.`; o toast passou a anunciar seu conteúdo para tecnologias assistivas.
-- Adicionados testes unitários para o texto de notificação com nome e para o fallback sem nome.
+- Foi testado um alerta no `INSERT` de `orders`, usando o nome do evento em tempo real.
+- Essa abordagem foi removida na sessão #55 por não corresponder ao momento operacional correto: o nome deve chegar quando o pedido fica pronto para entrega, não quando ele é criado.
 
 ## Validações
 
@@ -2366,7 +2364,7 @@ Sessão encerrada com o produto tecnicamente estável e pronto para QA comercial
 
 ## Pendência
 
-- Após a publicação, confirmar em uma sessão de atendimento aberta que um pedido novo pelo QR apresenta o nome no toast em tempo real.
+- Substituída pela entrega descrita na sessão #55.
 
 ---
 
@@ -2387,6 +2385,12 @@ Sessão encerrada com o produto tecnicamente estável e pronto para QA comercial
 - `npm run build` — aprovado com Next.js 16.2.11.
 - `git diff --check` — aprovado.
 
+## Entrega
+
+- Commit `94655bb` (`fix: identificar cliente na entrega`) enviado ao `main`.
+- Deployment de produção Vercel `dpl_Hsj4SRD7P6yciR7qo2cgPuWe4eTs` — estado `READY`.
+- Domínio de produção: `https://app-pedidos-seven.vercel.app`.
+
 ## Pendência
 
-- Publicar e confirmar em operação: marcar um pedido como pronto na Cozinha e verificar que o Atendimento aberto recebe o nome no aviso e na aba Prontos.
+- Confirmar em operação: marcar um pedido como pronto na Cozinha e verificar que o Atendimento aberto recebe o nome no aviso e na aba Prontos.

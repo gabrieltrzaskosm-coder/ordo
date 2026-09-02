@@ -2414,6 +2414,12 @@ Sessão encerrada com o produto tecnicamente estável e pronto para QA comercial
 - Verificação final — migrations local e remota sincronizadas até `0019`.
 - `npm run lint`, `npm test` (35 testes) e `npm run build` — aprovados.
 
+## Entrega
+
+- Commit `37f5fc3` (`fix: fechar mesa após entrega e pagamento`) enviado ao `main`.
+- Deployment de produção Vercel `dpl_4gwYXHnuhaCz9XDpPXyxesxFKHgp` — estado `READY`.
+- Domínio de produção: `https://app-pedidos-seven.vercel.app`.
+
 ## Pendência
 
 - Em operação, validar os dois fluxos: entregar por último um pedido já pago e pagar por último um pedido já entregue; ambos devem fechar a mesa automaticamente.

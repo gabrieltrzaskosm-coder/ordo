@@ -2272,3 +2272,32 @@ Sessão encerrada com o produto tecnicamente estável e pronto para QA comercial
 
 - A migration ainda não foi aplicada em Production: `supabase db push --linked` e o dry-run ficaram travados em `Initialising login role`, mesmo com acesso de rede, e foram interrompidos sem alteração no banco.
 - O deploy do código foi deliberadamente retido, pois a aplicação nova depende das funções SQL da migration. Retomar pela aplicação de `0018_order_payment_integrity.sql`, testar criação/cancelamento/pagamento em uma mesa de teste e só então publicar a aplicação.
+
+---
+
+# 53. Resumo da sessão — 2026-09-02 — Finalização de pedido por QR
+
+## Correção operacional aplicada
+
+- Confirmado que a produção estava com a migration `0018_order_payment_integrity.sql` pendente. Isso fazia a criação do pedido falhar antes de a interface limpar o carrinho, pois a RPC atômica `create_order_with_stock` ainda não existia no banco remoto.
+- A migration `0018` foi aplicada com sucesso ao projeto Supabase vinculado. A criação, o cancelamento e a confirmação manual de pagamento passam a usar as transações e proteções de concorrência previstas na correção P0.
+- O acompanhamento de pedidos pelo QR já existe no produto: a página da mesa consulta os pedidos ativos da própria mesa a cada cinco segundos e apresenta o estado `Recebido → A preparar → Pronto → Entregue`, além de `Pago` ou `Por pagar`. Ele será incluído na próxima publicação da aplicação.
+
+## Decisão de pagamento
+
+- O estabelecimento configurado não possui conta Stripe Connect nem cobranças Stripe habilitadas. Também não há Checkout/webhook Stripe implementados no código atual. Portanto, não é seguro prometer um fluxo de pagamento on-line neste momento.
+- Até a configuração do provedor ser definida, o caminho suportado é pagamento presencial: o pedido chega à cozinha e o atendente confirma o pagamento posteriormente. A interface deverá explicitar essa escolha com a opção “Pagar presencialmente”.
+- Para liberar pagamento on-line com a regra correta (só enviar à cozinha após aprovação), será necessário definir a conta recebedora Stripe Connect e registrar um webhook. O backend deverá manter o pedido como rascunho durante o Checkout e promovê-lo para `placed` somente após validar o evento assinado do Stripe.
+
+## Validações executadas
+
+- `npx supabase migration list --linked` — confirmou `0018` ausente antes da aplicação.
+- `npx supabase db push --linked` — aplicou `0018_order_payment_integrity.sql` com sucesso.
+- `npm run lint` — aprovado.
+- `npm test` — aprovado: 33 testes em 4 arquivos.
+
+## Pendências
+
+1. Publicar a versão que chama a RPC agora disponível e contém o rastreador por QR; em seguida, testar um pedido presencial completo numa mesa de teste.
+2. No frontend, tornar explícita a escolha “Pagar presencialmente” antes do envio.
+3. Definir e configurar a operação Stripe Connect + webhook antes de disponibilizar pagamento on-line.

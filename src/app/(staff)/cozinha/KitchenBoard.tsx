@@ -250,7 +250,7 @@ export function KitchenBoard({
       className="kds theme-kitchen"
       style={{
         minHeight: "100dvh",
-        background: "#f5f7f9",
+        background: "#f4f4f2",
         color: "#0f172a",
         padding: "24px 30px 30px",
         display: "flex",
@@ -266,15 +266,15 @@ export function KitchenBoard({
             style={{
               width: 42,
               height: 42,
-              borderRadius: 8,
-              background: "#404040",
+              borderRadius: 4,
+              background: "transparent",
               display: "grid",
               placeItems: "center",
             }}
           >
             <span
               className="kds-cond"
-              style={{ fontWeight: 700, fontSize: 26, color: "#fff", letterSpacing: ".5px" }}
+              style={{ fontWeight: 700, fontSize: 18, color: "#404040", letterSpacing: "1px" }}
             >
               KD
             </span>
@@ -282,7 +282,7 @@ export function KitchenBoard({
           <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
             <span
               className="kds-cond"
-              style={{ fontWeight: 700, fontSize: 26, lineHeight: 1, letterSpacing: ".5px" }}
+              style={{ fontWeight: 700, fontSize: 22, lineHeight: 1, letterSpacing: ".5px" }}
             >
               COZINHA · KDS
             </span>
@@ -312,7 +312,7 @@ export function KitchenBoard({
               background: "#fff",
               border: "1px solid #e2e8f0",
               padding: "10px 16px",
-              borderRadius: 7,
+              borderRadius: 4,
               color: soundOn ? "#404040" : "#94a3b8",
               cursor: "pointer",
               fontWeight: 600,
@@ -340,8 +340,8 @@ export function KitchenBoard({
                 height: 11,
                 borderRadius: "50%",
                 background: live ? "#10b981" : "#94a3b8",
-                boxShadow: live ? "0 0 0 4px rgba(16,185,129,.18)" : "none",
-                animation: live ? "kdsBlink 1.6s infinite" : "none",
+                boxShadow: "none",
+                animation: "none",
               }}
             />
             <span style={{ fontWeight: 600, fontSize: 15, color: "#334155", letterSpacing: ".4px" }}>
@@ -370,6 +370,7 @@ export function KitchenBoard({
         {stats.map((s) => (
           <div
             key={s.label}
+            className="kds-stat"
             style={{
               flex: 1,
               minWidth: 170,
@@ -427,7 +428,7 @@ export function KitchenBoard({
                 height: 12,
                 borderRadius: "50%",
                 background: "#737373",
-                animation: "kdsBlink 1.2s infinite",
+                animation: "none",
               }}
             />
             <span
@@ -574,7 +575,7 @@ export function KitchenBoard({
                 height: 12,
                 borderRadius: "50%",
                 background: "#404040",
-                animation: "kdsBlink 1s infinite",
+                animation: "none",
               }}
             />
             <span
@@ -966,15 +967,15 @@ export function KitchenBoard({
                               title="Marcar pago"
                               style={{
                                 flex: "none",
-                                width: 52,
+                                width: 66,
                                 border: "1px solid #e2e8f0",
                                 background: "#f8fafc",
                                 borderRadius: 12,
-                                fontSize: 22,
+                                fontSize: 13,
                                 cursor: "pointer",
                               }}
                             >
-                              💳
+                              PAGO
                             </button>
                           )}
                           <button

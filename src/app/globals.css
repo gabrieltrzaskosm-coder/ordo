@@ -270,6 +270,17 @@ body {
   position: relative;
 }
 
+/* O KDS é um painel de trabalho: bordas e ações diretas, sem aparência de jogo. */
+.kds button,
+.kds-card,
+.kds-stat {
+  border-radius: 4px !important;
+  box-shadow: none !important;
+}
+.kds-stat {
+  border-left-width: 3px !important;
+}
+
 .kds-scroll::-webkit-scrollbar {
   width: 8px;
 }

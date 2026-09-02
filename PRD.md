@@ -6,6 +6,35 @@
 
 ---
 
+# 63. Simplificação do hub da Cozinha — 2026-09-02
+
+## Mudanças
+
+- O KDS recebeu uma hierarquia mais direta para operação: fundo neutro,
+  controles e cartões sem sombras, bordas/cantos discretos e menos elementos
+  decorativos.
+- O bloco de identidade foi reduzido e os estados de conexão/som ficaram mais
+  silenciosos visualmente, mantendo seus rótulos e acessibilidade.
+- A ação de pagamento deixou de usar emoji e passou a ser identificada pelo
+  texto `PAGO`, evitando aparência cartoon e melhorando compreensão imediata.
+- As pulsações decorativas foram removidas; números de mesa, contagens, tempos
+  e ações principais continuam grandes para leitura à distância.
+
+## Validações e entrega
+
+- `npm run lint` — aprovado.
+- `npm test` — aprovado: 35 testes em 5 arquivos.
+- `npm run build` — aprovado com Next.js 16.2.11.
+- `git diff --check` — aprovado.
+- QA visual automatizado continua indisponível neste workspace por falta de
+  navegador/Axe.
+- Deployment Vercel: `dpl_CrWv5fRCEhwZiscNHyMeuevy3dPy`, estado `READY`,
+  publicado em `https://app-pedidos-seven.vercel.app`.
+- Push para o remoto GitHub não executado: o destino foi bloqueado pela política
+  de segurança do ambiente; o commit permanece local.
+
+---
+
 # 62. Correções da auditoria frontend e UI/UX — 2026-09-01
 
 ## Organização e mudanças aplicadas

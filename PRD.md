@@ -2394,3 +2394,26 @@ Sessão encerrada com o produto tecnicamente estável e pronto para QA comercial
 ## Pendência
 
 - Confirmar em operação: marcar um pedido como pronto na Cozinha e verificar que o Atendimento aberto recebe o nome no aviso e na aba Prontos.
+
+---
+
+# 56. Resumo da sessão — 2026-09-02 — Fechamento automático de mesa
+
+## Regra operacional garantida
+
+- A mesa só é fechada quando todos os pedidos ativos estão simultaneamente `served` e com `paid_at` preenchido. Qualquer pedido ainda em preparo, pronto mas não entregue, ou com débito pendente mantém a mesa aberta.
+- A regra já era avaliada nos botões `Entregue` e `Marcar como pago`. Foi adicionada a migration `0019_auto_close_completed_tables.sql` para também reavaliá-la diretamente no banco após qualquer mudança de status, pagamento ou cancelamento, inclusive por integrações futuras.
+- A reavaliação usa o lock transacional de `close_table_if_complete`; pedidos cancelados não bloqueiam a mesa e pedidos novos não podem ser fechados por uma corrida de concorrência.
+
+## Reconciliação e validações
+
+- Foram identificadas e fechadas duas mesas que já possuíam apenas pedidos entregues e pagos, mas continuavam abertas de dados anteriores.
+- Após a reconciliação, há uma única mesa aberta com débito pendente; não restou nenhuma mesa elegível para fechamento.
+- `npx supabase db push --linked --dry-run` — migration validada.
+- `npx supabase db push --linked` — `0019` aplicada com sucesso.
+- Verificação final — migrations local e remota sincronizadas até `0019`.
+- `npm run lint`, `npm test` (35 testes) e `npm run build` — aprovados.
+
+## Pendência
+
+- Em operação, validar os dois fluxos: entregar por último um pedido já pago e pagar por último um pedido já entregue; ambos devem fechar a mesa automaticamente.

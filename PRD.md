@@ -2367,3 +2367,26 @@ Sessão encerrada com o produto tecnicamente estável e pronto para QA comercial
 ## Pendência
 
 - Após a publicação, confirmar em uma sessão de atendimento aberta que um pedido novo pelo QR apresenta o nome no toast em tempo real.
+
+---
+
+# 55. Resumo da sessão — 2026-09-02 — Entrega identificada no Atendimento
+
+## Ajuste de fluxo
+
+- A notificação de pedido recém-criado da sessão anterior foi removida por não corresponder ao momento operacional desejado.
+- O atendimento agora alerta somente quando a cozinha muda o pedido para `ready`: o aviso informa o **nome do cliente** e a **mesa** para a entrega correta.
+- Criada a aba **Prontos** no Atendimento. Ela mantém a fila de entregas com cliente, mesa, itens, estado de pagamento e ação `Entregue` até a baixa do pedido.
+- Os balões persistentes de “Pronto para entregar”, visíveis em qualquer aba, também passaram a exibir o nome do cliente.
+- Pedidos legados sem nome continuam utilizáveis, com fallback para a identificação da mesa.
+
+## Validações
+
+- `npm run lint` — aprovado.
+- `npm test` — aprovado: 35 testes em 5 arquivos.
+- `npm run build` — aprovado com Next.js 16.2.11.
+- `git diff --check` — aprovado.
+
+## Pendência
+
+- Publicar e confirmar em operação: marcar um pedido como pronto na Cozinha e verificar que o Atendimento aberto recebe o nome no aviso e na aba Prontos.

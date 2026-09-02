@@ -17,8 +17,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { MenuCategory, MenuItem } from "@/lib/menu";
 import { formatMoney } from "@/lib/money";
-import { newOrderNotification } from "@/lib/orders/notification";
-import type { Database } from "@/lib/supabase/database.types";
+import { deliveryReadyNotification } from "@/lib/orders/delivery-notification";
 import { createStaffOrder } from "./actions";
 import { advanceOrder, markPaid, resolveWaiterCall } from "../cozinha/actions";
 
@@ -64,8 +63,7 @@ function onlyDigits(s: string) {
   return d || s;
 }
 
-type Tab = "pedido" | "chamadas" | "pagamentos";
-type OrderRow = Database["public"]["Tables"]["orders"]["Row"];
+type Tab = "pedido" | "chamadas" | "prontos" | "pagamentos";
 
 export function Atendimento({
   establishmentId,
@@ -88,12 +86,13 @@ export function Atendimento({
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const [tab, setTab] = useState<Tab>(calls.length > 0 ? "chamadas" : "pedido");
-  const [live, setLive] = useState(false);
-  const [soundOn, setSoundOn] = useState(false);
-
   // Pedidos prontos = comida à espera de ser levada à mesa.
   const readyOrders = payments.filter((p) => p.status === "ready");
+  const [tab, setTab] = useState<Tab>(
+    calls.length > 0 ? "chamadas" : readyOrders.length > 0 ? "prontos" : "pedido",
+  );
+  const [live, setLive] = useState(false);
+  const [soundOn, setSoundOn] = useState(false);
 
   // Alerta sonoro dos pedidos que ficam prontos. O browser bloqueia áudio até um
   // gesto do utilizador, por isso o som é opt-in (botão) e a preferência fica
@@ -103,6 +102,21 @@ export function Atendimento({
   // Ids de prontos já vistos: distingue um pedido acabado de ficar pronto de um
   // refresh qualquer. `null` = ainda não semeámos (primeira renderização).
   const seenReady = useRef<Set<string> | null>(null);
+
+  // Toast efémero de confirmação e de pedido pronto.
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const showToast = useCallback((msg: string) => {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    setToast(msg);
+    toastTimer.current = setTimeout(() => setToast(null), 2200);
+  }, []);
+  useEffect(
+    () => () => {
+      if (toastTimer.current) clearTimeout(toastTimer.current);
+    },
+    [],
+  );
 
   useEffect(() => {
     // Lê a preferência após montar, num callback — evita render em cascata e
@@ -128,18 +142,22 @@ export function Atendimento({
     }
   }, []);
 
-  // Toca só quando um pedido NOVO fica pronto (id inédito entre os `ready`),
-  // não a cada refresh do Realtime.
+  // O aviso chega quando a cozinha muda o estado para `ready`, trazendo nome e
+  // mesa para que o garçom entregue ao cliente correto. Pedidos já prontos no
+  // carregamento inicial aparecem na aba Prontos, sem repetir alertas antigos.
   useEffect(() => {
-    const ids = readyOrders.map((p) => p.id);
     if (seenReady.current === null) {
-      seenReady.current = new Set(ids);
+      seenReady.current = new Set(readyOrders.map((p) => p.id));
       return;
     }
-    const fresh = ids.some((id) => !seenReady.current!.has(id));
-    seenReady.current = new Set(ids);
-    if (fresh) playDing();
-  }, [readyOrders, playDing]);
+    const fresh = readyOrders.filter((p) => !seenReady.current!.has(p.id));
+    seenReady.current = new Set(readyOrders.map((p) => p.id));
+    if (fresh.length === 0) return;
+
+    playDing();
+    const order = fresh[0];
+    showToast(deliveryReadyNotification(order.customerName, order.tableLabel));
+  }, [readyOrders, playDing, showToast]);
 
   function toggleSound() {
     const next = !soundOn;
@@ -159,23 +177,8 @@ export function Atendimento({
     }
   }
 
-  // Toast efémero de confirmação (substitui a linha de status).
-  const [toast, setToast] = useState<string | null>(null);
-  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const showToast = useCallback((msg: string) => {
-    if (toastTimer.current) clearTimeout(toastTimer.current);
-    setToast(msg);
-    toastTimer.current = setTimeout(() => setToast(null), 2200);
-  }, []);
-  useEffect(
-    () => () => {
-      if (toastTimer.current) clearTimeout(toastTimer.current);
-    },
-    [],
-  );
-
-  // Realtime mantém os dados frescos. Um INSERT de pedido também traz o nome
-  // guardado no próprio evento, para o atendente saber imediatamente quem pediu.
+  // Realtime atualiza os dados; a notificação com nome é emitida acima apenas
+  // quando a lista passa a conter um pedido `ready` novo.
   useEffect(() => {
     const supabase = createClient();
     const filter = `establishment_id=eq.${establishmentId}`;
@@ -189,21 +192,8 @@ export function Atendimento({
         .channel("atendimento")
         .on(
           "postgres_changes",
-          { event: "INSERT", schema: "public", table: "orders", filter },
-          (payload) => {
-            const order = payload.new as OrderRow;
-            showToast(newOrderNotification(order.customer_name));
-            router.refresh();
-          },
-        )
-        .on(
-          "postgres_changes",
           { event: "*", schema: "public", table: "orders", filter },
-          (payload) => {
-            // INSERT já mostra um toast acima. Os demais eventos apenas
-            // sincronizam estado (pronto, pago, entregue ou cancelado).
-            if (payload.eventType !== "INSERT") router.refresh();
-          },
+          () => router.refresh(),
         )
         .on(
           "postgres_changes",
@@ -215,7 +205,7 @@ export function Atendimento({
     return () => {
       if (channel) supabase.removeChannel(channel);
     };
-  }, [router, establishmentId, showToast]);
+  }, [router, establishmentId]);
 
   // ---------- Montar pedido ----------
   const [tableId, setTableId] = useState("");
@@ -481,17 +471,17 @@ export function Atendimento({
             <Badge active={tab === "chamadas"}>{calls.length}</Badge>
           )}
         </TabBtn>
+        <TabBtn active={tab === "prontos"} onClick={() => setTab("prontos")}>
+          Prontos
+          {readyOrders.length > 0 && (
+            <Badge active={tab === "prontos"}>{readyOrders.length}</Badge>
+          )}
+        </TabBtn>
         <TabBtn
           active={tab === "pagamentos"}
           onClick={() => setTab("pagamentos")}
         >
           Contas
-          {readyOrders.length > 0 && (
-            <span
-              className="h-1.5 w-1.5 animate-pulse rounded-full bg-success"
-              title={`${readyOrders.length} pronto(s) para entregar`}
-            />
-          )}
           {payments.length > 0 && (
             <Badge active={tab === "pagamentos"}>{payments.length}</Badge>
           )}
@@ -635,6 +625,53 @@ export function Atendimento({
                   Atender
                 </button>
               </div>
+            ))}
+          </div>
+        )}
+
+        {/* ---------- PRONTOS ---------- */}
+        {tab === "prontos" && (
+          <div className="flex flex-col gap-3">
+            {readyOrders.length === 0 && (
+              <div className="px-6 py-16 text-center text-muted">
+                <div className="mx-auto mb-3.5 grid h-14 w-14 place-items-center rounded-full bg-success-weak">
+                  <CheckIcon className="text-success" size={26} />
+                </div>
+                <p className="font-semibold text-ink">Nenhum pedido pronto</p>
+                <p className="mt-1 text-sm">Os próximos pratos liberados pela cozinha aparecem aqui.</p>
+              </div>
+            )}
+            {readyOrders.map((p) => (
+              <article
+                key={p.id}
+                className="rounded-xl border border-success/40 bg-surface p-4 shadow-[var(--shadow-card)] ring-1 ring-success/15 animate-[rise-in_0.3s_var(--ease-out-quint)]"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-success">
+                      Pronto para entregar
+                    </p>
+                    <p className="mt-1 truncate text-lg font-bold text-ink">
+                      {p.customerName ?? "Cliente não informado"}
+                    </p>
+                    <p className="mt-0.5 text-[12.5px] text-muted">{p.tableLabel}</p>
+                  </div>
+                  <span className="rounded-full bg-success-weak px-2.5 py-1 text-xs font-bold text-success">
+                    {p.paid ? "Pago" : "Por pagar"}
+                  </span>
+                </div>
+                <p className="mt-3 border-t border-line pt-3 text-[12.5px] leading-relaxed text-muted">
+                  {p.items.map((i) => `${i.qty}× ${i.name}`).join(" · ")}
+                </p>
+                <button
+                  onClick={() => entregar(p.id)}
+                  disabled={pending}
+                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-brand py-3 text-sm font-semibold text-brand-ink shadow-[0_4px_12px_-3px_var(--color-brand)] transition active:scale-[0.99] disabled:opacity-50"
+                >
+                  <CheckIcon size={16} />
+                  Entregue
+                </button>
+              </article>
             ))}
           </div>
         )}
@@ -1016,6 +1053,9 @@ export function Atendimento({
                   {p.tableLabel}
                 </span>
               </div>
+              <p className="mt-2 truncate text-sm font-semibold text-ink">
+                {p.customerName ?? "Cliente não informado"}
+              </p>
               <p className="mt-1.5 truncate text-[12.5px] text-muted">
                 {p.items.map((i) => `${i.qty}× ${i.name}`).join(" · ")}
               </p>

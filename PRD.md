@@ -2176,6 +2176,12 @@ Sessão encerrada com o produto tecnicamente estável e pronto para QA comercial
 - `npm run build` — aprovado com Next.js 16.2.11.
 - `git diff --check` — aprovado.
 
+## Entrega
+
+- Commit `6033f77` (`fix: identificar cliente no alerta de pedido`) enviado ao `main`.
+- Deployment de produção Vercel `dpl_6WV4ptfMumhvhEYGJrwR32kKCTPk` — estado `READY`.
+- Domínio de produção: `https://app-pedidos-seven.vercel.app`.
+
 ## Pendência
 
 - Fazer um envio real autorizado para confirmar a entrega do e-mail após as mudanças, sem usar dados de teste de terceiros.

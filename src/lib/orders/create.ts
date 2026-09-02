@@ -6,9 +6,8 @@
 // mesa confirmados.
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { loadStockContext } from "@/lib/recipes";
 import { prepareOrderLines, type RequestedLine } from "@/lib/pricing";
-import { aggregateIngredientNeeds } from "@/lib/availability";
+import { toOrderItemsPayload } from "@/lib/orders/payload";
 
 export type CreateOrderResult =
   | { ok: true; orderId: string }
@@ -99,126 +98,31 @@ export async function createOrder(
   const prepared = priced.lines;
   const subtotal = priced.subtotalCents;
 
-  // Total pedido por artigo seguido — para a reserva do stock por prato.
-  const byTrackedItem = new Map<string, number>();
-  for (const line of items) {
-    const it = (dbItems ?? []).find((d) => d.id === line.menuItemId);
-    if (it?.track_stock) {
-      byTrackedItem.set(
-        line.menuItemId,
-        (byTrackedItem.get(line.menuItemId) ?? 0) + line.qty,
-      );
-    }
+  // A reserva, o pedido, as linhas e os extras têm de nascer ou falhar juntos.
+  // A RPC usa uma única transação no PostgreSQL; compensação via chamadas
+  // separadas deixava janelas para pedido/estoque divergirem em falhas parciais.
+  const { data, error } = await supabase.rpc("create_order_with_stock", {
+    p_establishment_id: establishmentId,
+    p_table_id: tableId,
+    p_customer_name: customerName,
+    p_subtotal_cents: subtotal,
+    p_order_items: toOrderItemsPayload(prepared),
+  });
+
+  if (error) {
+    console.error("[order] transação falhou:", error.message);
+    return { ok: false, error: "Não foi possível criar o pedido." };
   }
 
-  // ---- Reserva de stock ANTES de criar o pedido ----
-  const reserveItems = [...byTrackedItem.entries()].map(([item_id, qty]) => ({
-    item_id,
-    qty,
-  }));
-
-  const { itemNeeds, modifierNeeds } = await loadStockContext(establishmentId);
-  const ingredientNeed = aggregateIngredientNeeds(
-    prepared.map((l) => ({
-      itemId: l.itemId,
-      qty: l.qty,
-      modifierIds: l.modifiers.map((m) => m.id),
-    })),
-    itemNeeds,
-    modifierNeeds,
-  );
-  const reserveIngredients = [...ingredientNeed.entries()].map(
-    ([ingredient_id, qty]) => ({ ingredient_id, qty }),
-  );
-
-  const needsReserve = reserveItems.length > 0 || reserveIngredients.length > 0;
-
-  if (needsReserve) {
-    const { data: reserved, error: reserveErr } = await supabase.rpc(
-      "reserve_stock",
-      { p_items: reserveItems, p_ingredients: reserveIngredients },
-    );
-    if (reserveErr) {
-      console.error("[stock] reserva falhou:", reserveErr.message);
-      return { ok: false, error: "Não foi possível confirmar o stock." };
-    }
-    const r = reserved as { ok: boolean; item?: string } | null;
-    if (!r?.ok) {
-      return {
-        ok: false,
-        error: r?.item
-          ? `Sem stock de ${r.item} neste momento. Ajuste o pedido para continuar.`
-          : "Um dos itens esgotou agora mesmo.",
-      };
-    }
+  const result = data as { ok?: boolean; order_id?: string; item?: string } | null;
+  if (!result?.ok || !result.order_id) {
+    return {
+      ok: false,
+      error: result?.item
+        ? `Sem stock de ${result.item} neste momento. Ajuste o pedido para continuar.`
+        : "Não foi possível confirmar o pedido.",
+    };
   }
 
-  // A partir daqui o stock já está reservado: se algo falhar, devolve-se.
-  const releaseReserved = async () => {
-    if (!needsReserve) return;
-    const { error } = await supabase.rpc("release_stock", {
-      p_items: reserveItems,
-      p_ingredients: reserveIngredients,
-    });
-    if (error) {
-      console.error(
-        "[stock] devolução falhou:",
-        error.message,
-        reserveItems,
-        reserveIngredients,
-      );
-    }
-  };
-
-  const { data: order, error: orderErr } = await supabase
-    .from("orders")
-    .insert({
-      establishment_id: establishmentId,
-      table_id: tableId,
-      customer_name: customerName,
-      status: "placed",
-      subtotal_cents: subtotal,
-      total_cents: subtotal,
-    })
-    .select("id")
-    .single();
-
-  if (orderErr || !order) {
-    await releaseReserved();
-    return { ok: false, error: "Falha ao criar o pedido." };
-  }
-
-  // Insere cada linha e as suas opções (uma a uma para obter o id do item).
-  for (const l of prepared) {
-    const { data: oi, error: oiErr } = await supabase
-      .from("order_items")
-      .insert({
-        establishment_id: establishmentId,
-        order_id: order.id,
-        menu_item_id: l.itemId,
-        name_snapshot: l.name,
-        unit_price_cents: l.unitPriceCents,
-        qty: l.qty,
-        notes: l.notes,
-      })
-      .select("id")
-      .single();
-    if (oiErr || !oi) {
-      await releaseReserved();
-      return { ok: false, error: "Falha ao registar os itens." };
-    }
-
-    if (l.modifiers.length > 0) {
-      const rows = l.modifiers.map((m) => ({
-        establishment_id: establishmentId,
-        order_item_id: oi.id,
-        modifier_id: m.id,
-        name_snapshot: m.name,
-        price_delta_cents: m.delta,
-      }));
-      await supabase.from("order_item_modifiers").insert(rows);
-    }
-  }
-
-  return { ok: true, orderId: order.id };
+  return { ok: true, orderId: result.order_id };
 }

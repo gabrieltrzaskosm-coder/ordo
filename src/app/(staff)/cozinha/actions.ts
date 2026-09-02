@@ -39,57 +39,48 @@ export async function advanceOrder(orderId: string, current: OrderStatus) {
   revalidatePath("/atendimento");
 }
 
-export async function cancelOrder(orderId: string) {
-  await requireStaff();
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("orders")
-    .update({ status: "cancelled", updated_at: new Date().toISOString() })
-    .eq("id", orderId)
-    .select("table_id")
-    .maybeSingle();
-
-  // Cancelar um pedido pode deixar os restantes já entregues+pagos → zerar.
-  if (data) await maybeCloseTable(data.table_id);
-
-  revalidatePath("/cozinha");
-  revalidatePath("/atendimento");
-}
-
-/** Pagamento pelo garçom (dinheiro/mesa): marca o pedido como pago. */
-export async function markPaid(orderId: string) {
+export async function cancelOrder(orderId: string): Promise<boolean> {
   const session = await requireStaff();
   const admin = createAdminClient();
 
-  // Confirma que o pedido é deste estabelecimento antes de usar o admin client.
-  const { data: order } = await admin
-    .from("orders")
-    .select("id, establishment_id, table_id, total_cents, paid_at")
-    .eq("id", orderId)
-    .maybeSingle();
-  if (!order || order.establishment_id !== session.establishmentId) return;
-  if (order.paid_at) return; // já pago
-
-  const now = new Date().toISOString();
-  await admin
-    .from("orders")
-    .update({ paid_at: now, updated_at: now })
-    .eq("id", orderId);
-
-  // Regista o pagamento manual para o financeiro ficar completo.
-  await admin.from("payments").insert({
-    establishment_id: order.establishment_id,
-    order_id: order.id,
-    provider: "manual",
-    method: "cash",
-    amount_cents: order.total_cents,
-    status: "paid",
+  // Cancela e devolve exatamente a reserva gravada no pedido na mesma
+  // transação. Um segundo pedido de cancelamento só vê o estado já cancelado e
+  // nunca devolve o stock duas vezes.
+  const { data, error } = await admin.rpc("cancel_order_and_release_stock", {
+    p_establishment_id: session.establishmentId,
+    p_order_id: orderId,
   });
-
-  await maybeCloseTable(order.table_id);
+  const result = data as { ok?: boolean } | null;
+  if (error || !result?.ok) {
+    console.error("[order] cancelamento falhou:", error?.message ?? result);
+    return false;
+  }
 
   revalidatePath("/cozinha");
   revalidatePath("/atendimento");
+  return true;
+}
+
+/** Pagamento pelo garçom (dinheiro/mesa): marca o pedido como pago. */
+export async function markPaid(orderId: string): Promise<boolean> {
+  const session = await requireStaff();
+  const admin = createAdminClient();
+
+  // O lock do pedido e a chave de idempotência vivem no PostgreSQL. Assim dois
+  // cliques concorrentes produzem no máximo um pagamento e um paid_at.
+  const { data, error } = await admin.rpc("mark_order_paid", {
+    p_establishment_id: session.establishmentId,
+    p_order_id: orderId,
+  });
+  const result = data as { ok?: boolean } | null;
+  if (error || !result?.ok) {
+    console.error("[payment] confirmação falhou:", error?.message ?? result);
+    return false;
+  }
+
+  revalidatePath("/cozinha");
+  revalidatePath("/atendimento");
+  return true;
 }
 
 export async function resolveWaiterCall(callId: string) {

@@ -11,28 +11,11 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function maybeCloseTable(tableId: string): Promise<boolean> {
   const admin = createAdminClient();
-
-  const { data: active } = await admin
-    .from("orders")
-    .select("id, status, paid_at")
-    .eq("table_id", tableId)
-    .is("closed_at", null)
-    .neq("status", "cancelled");
-
-  if (!active || active.length === 0) return false;
-
-  const allDone = active.every(
-    (o) => o.status === "served" && o.paid_at !== null,
-  );
-  if (!allDone) return false;
-
-  const now = new Date().toISOString();
-  await admin
-    .from("orders")
-    .update({ closed_at: now })
-    .eq("table_id", tableId)
-    .is("closed_at", null)
-    .neq("status", "cancelled");
-
-  return true;
+  // A função bloqueia a mesa antes de avaliar/fechar os pedidos. Sem esse lock,
+  // um pedido novo podia entrar entre a leitura e o UPDATE e ser fechado por
+  // engano junto com os pedidos já concluídos.
+  const { data, error } = await admin.rpc("close_table_if_complete", {
+    p_table_id: tableId,
+  });
+  return !error && data === true;
 }

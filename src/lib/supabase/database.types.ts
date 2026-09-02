@@ -522,6 +522,7 @@ export type Database = {
           id: string;
           paid_at: string | null;
           status: Database["public"]["Enums"]["order_status"];
+          stock_reservation: Json | null;
           subtotal_cents: number;
           table_id: string;
           tip_cents: number;
@@ -536,6 +537,7 @@ export type Database = {
           id?: string;
           paid_at?: string | null;
           status?: Database["public"]["Enums"]["order_status"];
+          stock_reservation?: Json | null;
           subtotal_cents?: number;
           table_id: string;
           tip_cents?: number;
@@ -550,6 +552,7 @@ export type Database = {
           id?: string;
           paid_at?: string | null;
           status?: Database["public"]["Enums"]["order_status"];
+          stock_reservation?: Json | null;
           subtotal_cents?: number;
           table_id?: string;
           tip_cents?: number;
@@ -758,10 +761,31 @@ export type Database = {
     };
     Views: { [_ in never]: never };
     // Os helpers de RLS vivem no schema `private`, fora da API exposta.
-    // reserve_stock/release_stock são as únicas funções públicas (baixa/devolução
-    // atómica de stock de pratos + ingredientes), com execute revogado a
-    // anon/authenticated — só o service role as chama.
+    // Funções de pedido/estoque e pagamento só são chamadas pelo service role;
+    // anon/authenticated não têm execute nelas.
     Functions: {
+      cancel_order_and_release_stock: {
+        Args: { p_establishment_id: string; p_order_id: string };
+        Returns: Json;
+      };
+      close_table_if_complete: {
+        Args: { p_table_id: string };
+        Returns: boolean;
+      };
+      create_order_with_stock: {
+        Args: {
+          p_customer_name: string;
+          p_establishment_id: string;
+          p_order_items: Json;
+          p_subtotal_cents: number;
+          p_table_id: string;
+        };
+        Returns: Json;
+      };
+      mark_order_paid: {
+        Args: { p_establishment_id: string; p_order_id: string };
+        Returns: Json;
+      };
       release_stock: {
         Args: { p_items: Json; p_ingredients: Json };
         Returns: undefined;

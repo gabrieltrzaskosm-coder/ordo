@@ -2245,3 +2245,30 @@ Sessão encerrada com o produto tecnicamente estável e pronto para QA comercial
 - O acesso SQL administrativo direto não estava disponível nesta máquina (CLI permaneceu aguardando inicialização de papel e `psql` não está instalado); a verificação publicada foi feita pela API anônima e pelas migrations sincronizadas.
 - O repositório local está 9 commits à frente de `origin/main` e `git fsck` apontou a referência remota inválida `refs/remotes/origin/main 2`. Corrigir a referência/remoto antes do próximo push; nenhuma tentativa de reparo foi feita para preservar o estado de trabalho.
 - O PRD foi atualizado localmente; push e deploy não foram executados porque publicariam também commits paralelos fora do escopo desta auditoria.
+
+---
+
+# 52. Resumo da sessão — 2026-09-01 — Correção dos P0 de pedido e pagamento
+
+## Mudanças implementadas localmente
+
+- Criada a migration `0018_order_payment_integrity.sql`.
+- A criação do pedido agora será uma única transação PostgreSQL: valida a mesa/artigos/extras, calcula e baixa estoque, grava pedido, itens e extras, ou reverte tudo em erro.
+- Cada pedido novo gravará o snapshot exato da reserva de estoque. O cancelamento usa esse snapshot em transação e é idempotente, sem devolver estoque duas vezes.
+- O fechamento de mesa passou a bloquear a mesa antes de decidir e fechar, eliminando a corrida com um pedido novo.
+- O pagamento manual passou a bloquear o pedido e usar chave de idempotência; o novo índice único impede mais de um pagamento confirmado por pedido.
+- Pedidos anteriores à migration não possuem snapshot de reserva. Ao cancelá-los, o sistema não faz reposição estimada para evitar acrescentar estoque incorreto após mudança de receita/configuração.
+- Adicionado teste unitário do payload transacional; total atual: 33 testes.
+
+## Validações
+
+- Consulta somente leitura confirmou 2 pagamentos confirmados e 0 pedidos com pagamento duplicado; a restrição única pode ser aplicada sem conflito de dados atual.
+- `npm run lint` — aprovado.
+- `npm test` — aprovado: 33 testes em 4 arquivos.
+- `npm run build` — aprovado com Next.js 16.2.11.
+- `git diff --check` — aprovado.
+
+## Bloqueio de publicação
+
+- A migration ainda não foi aplicada em Production: `supabase db push --linked` e o dry-run ficaram travados em `Initialising login role`, mesmo com acesso de rede, e foram interrompidos sem alteração no banco.
+- O deploy do código foi deliberadamente retido, pois a aplicação nova depende das funções SQL da migration. Retomar pela aplicação de `0018_order_payment_integrity.sql`, testar criação/cancelamento/pagamento em uma mesa de teste e só então publicar a aplicação.
